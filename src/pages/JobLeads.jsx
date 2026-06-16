@@ -810,8 +810,13 @@ if (loading) return <LoadingScreen />;
                 {lead.email && (
 
                   <a
-                    href={`mailto:${lead.email}`}
+                   
                     className="action-link"
+
+
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${lead.email}`}
+target="_blank"
+rel="noreferrer"
                   >
                     <FiMail />
                     {lead.email}
