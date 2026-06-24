@@ -1,827 +1,114 @@
-import { useEffect } from "react";
+import {
+  FiArrowLeft,
+  FiCheckCircle,
+  FiBarChart2,
+  FiTarget,
+  FiFolder
+} from "react-icons/fi";
 
 export default function Home() {
   return (
-    <div className="page">
-      <style>{`
-        *{
-          margin:0;
-          padding:0;
-          box-sizing:border-box;
-        }
-
-        body{
-          font-family: Inter, Arial, sans-serif;
-          background:#020617;
-          overflow-x:hidden;
-        }
-
-        .page{
-          background:
-          radial-gradient(circle at top right, rgba(59,130,246,0.15), transparent 30%),
-          radial-gradient(circle at bottom left, rgba(168,85,247,0.15), transparent 30%),
-          #020617;
-
-          color:white;
-          min-height:100vh;
-        }
-
-        /* HERO */
-        .hero{
-          min-height:100vh;
-
-          display:flex;
-          align-items:center;
-          justify-content:center;
-
-          padding:120px 40px 80px;
-
-          position:relative;
-          overflow:hidden;
-        }
-
-        .hero::before{
-          content:"";
-          position:absolute;
-          width:500px;
-          height:500px;
-          background:#38bdf8;
-          filter:blur(180px);
-          opacity:0.08;
-          border-radius:50%;
-          top:-200px;
-          right:-150px;
-        }
-
-        .hero-container{
-          width:100%;
-          max-width:1300px;
-
-          display:grid;
-          grid-template-columns:1.1fr 0.9fr;
-          gap:70px;
-          align-items:center;
-
-          position:relative;
-          z-index:2;
-        }
-
-        /* LEFT */
-        .hero-left{
-          animation:fadeUp 0.8s ease;
-        }
-
-        .badge{
-          display:inline-flex;
-          align-items:center;
-          gap:8px;
-
-          padding:10px 16px;
-
-          background:rgba(255,255,255,0.06);
-          border:1px solid rgba(255,255,255,0.08);
-
-          border-radius:999px;
-
-          font-size:14px;
-          color:#cbd5e1;
-
-          margin-bottom:28px;
-
-          backdrop-filter:blur(10px);
-        }
-
-        .hero-title{
-          font-size:68px;
-          line-height:1.05;
-          font-weight:800;
-          margin-bottom:24px;
-          letter-spacing:-2px;
-        }
-
-        .hero-title span{
-          background:linear-gradient(135deg,#38bdf8,#818cf8,#c084fc);
-          -webkit-background-clip:text;
-          -webkit-text-fill-color:transparent;
-        }
-
-        .hero-text{
-          font-size:19px;
-          line-height:1.8;
-          color:#94a3b8;
-          max-width:620px;
-          margin-bottom:35px;
-        }
-
-        .hero-buttons{
-          display:flex;
-          gap:16px;
-          flex-wrap:wrap;
-          margin-bottom:40px;
-        }
-
-        .btn-primary{
-          border:none;
-          background:linear-gradient(135deg,#3b82f6,#6366f1);
-
-          color:white;
-          padding:16px 28px;
-
-          border-radius:16px;
-
-          font-size:15px;
-          font-weight:700;
-
-          cursor:pointer;
-
-          transition:0.3s;
-
-          box-shadow:
-          0 15px 40px rgba(59,130,246,0.25);
-        }
-
-        .btn-primary:hover{
-          transform:translateY(-3px);
-          box-shadow:
-          0 20px 45px rgba(59,130,246,0.4);
-        }
-
-        .btn-secondary{
-          border:1px solid rgba(255,255,255,0.12);
-          background:rgba(255,255,255,0.04);
-
-          color:white;
-          padding:16px 26px;
-
-          border-radius:16px;
-
-          font-size:15px;
-          font-weight:600;
-
-          cursor:pointer;
-
-          backdrop-filter:blur(10px);
-
-          transition:0.3s;
-        }
-
-        .btn-secondary:hover{
-          background:rgba(255,255,255,0.08);
-          transform:translateY(-3px);
-        }
-
-        .stats{
-          display:flex;
-          gap:18px;
-          flex-wrap:wrap;
-        }
-
-        .stat-card{
-          background:rgba(255,255,255,0.05);
-          border:1px solid rgba(255,255,255,0.08);
-
-          border-radius:18px;
-
-          padding:18px 22px;
-          min-width:140px;
-
-          backdrop-filter:blur(14px);
-        }
-
-        .stat-card h3{
-          font-size:24px;
-          margin-bottom:6px;
-        }
-
-        .stat-card p{
-          color:#94a3b8;
-          font-size:14px;
-        }
-
-        /* RIGHT */
-        .hero-right{
-          display:flex;
-          justify-content:center;
-          align-items:center;
-
-          animation:floatPhone 5s ease-in-out infinite;
-        }
-
-        .phone{
-          width:330px;
-          height:680px;
-
-          border-radius:40px;
-
-          background:
-          linear-gradient(145deg,#0f172a,#020617);
-
-          border:1px solid rgba(255,255,255,0.08);
-
-          padding:22px;
-
-          position:relative;
-
-          overflow:hidden;
-
-          box-shadow:
-          0 30px 80px rgba(0,0,0,0.55),
-          0 0 0 8px rgba(255,255,255,0.02);
-        }
-
-        .phone::before{
-          content:"";
-          position:absolute;
-          top:0;
-          left:0;
-
-          width:100%;
-          height:100%;
-
-          background:
-          linear-gradient(
-            180deg,
-            rgba(255,255,255,0.08),
-            transparent
-          );
-
-          pointer-events:none;
-        }
-
-        .phone-top{
-          display:flex;
-          flex-direction:column;
-          align-items:center;
-          margin-top:20px;
-          margin-bottom:30px;
-        }
-
-        .avatar{
-          width:90px;
-          height:90px;
-
-          border-radius:50%;
-
-          background:
-          linear-gradient(135deg,#3b82f6,#8b5cf6);
-
-          margin-bottom:16px;
-
-          border:4px solid rgba(255,255,255,0.08);
-        }
-
-        .phone-top h3{
-          font-size:22px;
-          margin-bottom:8px;
-        }
-
-        .phone-top p{
-          font-size:14px;
-          color:#94a3b8;
-          text-align:center;
-          line-height:1.6;
-        }
-
-        .socials{
-          display:flex;
-          justify-content:center;
-          gap:10px;
-          margin-top:18px;
-        }
-
-        .social{
-          width:40px;
-          height:40px;
-
-          border-radius:12px;
-
-          background:rgba(255,255,255,0.06);
-
-          display:flex;
-          align-items:center;
-          justify-content:center;
-
-          font-size:14px;
-
-          border:1px solid rgba(255,255,255,0.05);
-        }
-
-        .links{
-          display:flex;
-          flex-direction:column;
-          gap:14px;
-        }
-
-        .link-card{
-          background:
-          linear-gradient(
-            135deg,
-            rgba(59,130,246,0.16),
-            rgba(99,102,241,0.10)
-          );
-
-          border:1px solid rgba(255,255,255,0.08);
-
-          border-radius:18px;
-
-          padding:16px 18px;
-
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-
-          transition:0.3s;
-
-          backdrop-filter:blur(14px);
-        }
-
-        .link-card:hover{
-          transform:translateY(-2px);
-          background:
-          linear-gradient(
-            135deg,
-            rgba(59,130,246,0.25),
-            rgba(99,102,241,0.15)
-          );
-        }
-
-        .link-left{
-          display:flex;
-          align-items:center;
-          gap:14px;
-        }
-
-        .icon-box{
-          width:42px;
-          height:42px;
-
-          border-radius:14px;
-
-          background:rgba(255,255,255,0.08);
-
-          display:flex;
-          align-items:center;
-          justify-content:center;
-        }
-
-        .link-info h4{
-          font-size:15px;
-          margin-bottom:4px;
-        }
-
-        .link-info p{
-          font-size:12px;
-          color:#94a3b8;
-        }
-
-        /* FEATURES */
-        .features{
-          padding:100px 40px;
-        }
-
-        .features-container{
-          max-width:1200px;
-          margin:auto;
-        }
-
-        .section-title{
-          text-align:center;
-          margin-bottom:60px;
-        }
-
-        .section-title h2{
-          font-size:48px;
-          margin-bottom:18px;
-        }
-
-        .section-title p{
-          color:#94a3b8;
-          font-size:17px;
-          max-width:700px;
-          margin:auto;
-          line-height:1.8;
-        }
-
-        .features-grid{
-          display:grid;
-          grid-template-columns:repeat(3,1fr);
-          gap:24px;
-        }
-
-        .feature-card{
-          background:rgba(255,255,255,0.04);
-
-          border:1px solid rgba(255,255,255,0.06);
-
-          border-radius:28px;
-
-          padding:34px;
-
-          transition:0.35s;
-
-          backdrop-filter:blur(16px);
-        }
-
-        .feature-card:hover{
-          transform:translateY(-6px);
-          border-color:rgba(59,130,246,0.3);
-
-          box-shadow:
-          0 20px 40px rgba(0,0,0,0.35);
-        }
-
-        .feature-icon{
-          width:62px;
-          height:62px;
-
-          border-radius:18px;
-
-          display:flex;
-          align-items:center;
-          justify-content:center;
-
-          background:
-          linear-gradient(135deg,#3b82f6,#8b5cf6);
-
-          font-size:24px;
-
-          margin-bottom:22px;
-        }
-
-        .feature-card h3{
-          font-size:22px;
-          margin-bottom:14px;
-        }
-
-        .feature-card p{
-          color:#94a3b8;
-          line-height:1.8;
-          font-size:15px;
-        }
-
-        /* FINAL CTA */
-        .final{
-          padding:100px 40px 120px;
-        }
-
-        .final-box{
-          max-width:1200px;
-          margin:auto;
-
-          border-radius:40px;
-
-          background:
-          linear-gradient(
-            135deg,
-            rgba(59,130,246,0.18),
-            rgba(139,92,246,0.12)
-          );
-
-          border:1px solid rgba(255,255,255,0.08);
-
-          padding:80px 40px;
-
-          text-align:center;
-
-          backdrop-filter:blur(16px);
-        }
-
-        .final-box h2{
-          font-size:52px;
-          margin-bottom:20px;
-          line-height:1.1;
-        }
-
-        .final-box p{
-          max-width:700px;
-          margin:auto;
-          color:#94a3b8;
-          line-height:1.8;
-          margin-bottom:35px;
-          font-size:17px;
-        }
-
-        /* FOOTER */
-        .footer{
-          padding:30px;
-          border-top:1px solid rgba(255,255,255,0.06);
-
-          text-align:center;
-          color:#64748b;
-          font-size:14px;
-        }
-
-        /* ANIMATIONS */
-        @keyframes floatPhone{
-          0%{
-            transform:translateY(0px);
-          }
-          50%{
-            transform:translateY(-12px);
-          }
-          100%{
-            transform:translateY(0px);
-          }
-        }
-
-        @keyframes fadeUp{
-          from{
-            opacity:0;
-            transform:translateY(40px);
-          }
-          to{
-            opacity:1;
-            transform:translateY(0);
-          }
-        }
-
-        /* ========================= */
-        /* RESPONSIVE */
-        /* ========================= */
-
-        @media (max-width:1200px){
-
-          .hero-title{
-            font-size:56px;
-          }
-
-          .features-grid{
-            grid-template-columns:repeat(2,1fr);
-          }
-        }
-
-        @media (max-width:992px){
-
-          .hero{
-            padding-top:120px;
-          }
-
-          .hero-container{
-            grid-template-columns:1fr;
-            text-align:center;
-          }
-
-          .hero-left{
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-          }
-
-          .stats{
-            justify-content:center;
-          }
-
-          .phone{
-            width:320px;
-            height:650px;
-          }
-
-          .features-grid{
-            grid-template-columns:1fr;
-          }
-
-          .section-title h2{
-            font-size:38px;
-          }
-
-          .final-box h2{
-            font-size:40px;
-          }
-        }
-
-        @media (max-width:768px){
-
-          .hero{
-            padding:100px 20px 60px;
-          }
-
-          .hero-title{
-            font-size:42px;
-            line-height:1.15;
-          }
-
-          .hero-text{
-            font-size:16px;
-          }
-
-          .hero-buttons{
-            width:100%;
-            flex-direction:column;
-          }
-
-          .btn-primary,
-          .btn-secondary{
-            width:100%;
-          }
-
-          .stats{
-            width:100%;
-            flex-direction:column;
-          }
-
-          .stat-card{
-            width:100%;
-          }
-
-          .phone{
-            width:100%;
-            max-width:330px;
-            height:auto;
-            min-height:640px;
-          }
-
-          .features{
-            padding:70px 20px;
-          }
-
-          .feature-card{
-            padding:28px;
-          }
-
-          .section-title h2{
-            font-size:32px;
-          }
-
-          .final{
-            padding:70px 20px 100px;
-          }
-
-          .final-box{
-            padding:60px 24px;
-            border-radius:28px;
-          }
-
-          .final-box h2{
-            font-size:32px;
-          }
-
-          .final-box p{
-            font-size:15px;
-          }
-        }
-
-        @media (max-width:480px){
-
-          .hero-title{
-            font-size:34px;
-          }
-
-          .badge{
-            font-size:12px;
-          }
-
-          .phone{
-            padding:18px;
-            border-radius:30px;
-          }
-
-          .section-title h2{
-            font-size:28px;
-          }
-
-          .feature-card h3{
-            font-size:20px;
-          }
-
-          .final-box h2{
-            font-size:28px;
-          }
-        }
-      `}</style>
-     
+    <div className="landing-page">
 
       {/* HERO */}
+
       <section className="hero">
 
-        <div className="hero-container">
+        <div className="hero-left">
 
-          {/* LEFT */}
-          <div className="hero-left">
+          <div className="hero-badge">
+            ✨ منصة ذكية لإدارة المهام والإنتاجية
+          </div>
 
-            <div className="badge">
-              🚀 The Modern Bio Link Platform
-            </div>
+          <h1>
+            سيطر على يومك
+            <br />
+            وحقق أهدافك بسهولة
+          </h1>
 
-            <h1 className="hero-title">
-              One Link For Your
-              <br />
-              <span>Entire Digital World</span>
-            </h1>
+          <p>
+            منصة حديثة تساعدك على تنظيم مهامك،
+            متابعة تقدمك، تحليل إنتاجيتك،
+            والوصول لأهدافك من خلال لوحة تحكم
+            متطورة وإحصائيات ذكية.
+          </p>
 
-            <p className="hero-text">
-              Create a beautiful and professional bio link page,
-              share all your content in one place,
-              grow your audience and track every click with powerful analytics.
-            </p>
+          <div className="hero-buttons">
 
-            <div className="hero-buttons">
-              <button className="btn-primary">
-                Get Started Free
-              </button>
+            <button className="primary-btn">
+              ابدأ مجاناً
+            </button>
 
-              <button className="btn-secondary">
-                Watch Demo
-              </button>
-            </div>
-
-            <div className="stats">
-
-              <div className="stat-card">
-                <h3>50K+</h3>
-                <p>Active Users</p>
-              </div>
-
-              <div className="stat-card">
-                <h3>12M+</h3>
-                <p>Monthly Clicks</p>
-              </div>
-
-              <div className="stat-card">
-                <h3>99%</h3>
-                <p>Mobile Optimized</p>
-              </div>
-
-            </div>
+            <button className="secondary-btn">
+              اكتشف المميزات
+            </button>
 
           </div>
 
-          {/* RIGHT */}
-          <div className="hero-right">
+        </div>
 
-            <div className="phone">
+        <div className="hero-right">
 
-              <div className="phone-top">
+          <div className="dashboard-card">
 
-                <div className="avatar"></div>
+            <div className="dashboard-header">
 
-                <h3>@yourname</h3>
+              <div className="dot red"></div>
+              <div className="dot yellow"></div>
+              <div className="dot green"></div>
 
-                <p>
-                  Content Creator • Designer • Developer
-                </p>
+            </div>
 
-                <div className="socials">
-                  <div className="social">IG</div>
-                  <div className="social">YT</div>
-                  <div className="social">TT</div>
-                  <div className="social">IN</div>
-                </div>
+            <div className="stats-grid">
+
+              <div className="stat-box">
+                <h2>24</h2>
+                <span>إجمالي المهام</span>
+              </div>
+
+              <div className="stat-box">
+                <h2>18</h2>
+                <span>مكتملة</span>
+              </div>
+
+              <div className="stat-box">
+                <h2>75%</h2>
+                <span>نسبة الإنجاز</span>
+              </div>
+
+            </div>
+
+            <div className="task-card">
+
+              <div className="task-dot"></div>
+
+              <div>
+
+                <h3>
+                  إكمال مشروع React
+                </h3>
+
+                <span>
+                  أولوية عالية
+                </span>
 
               </div>
 
-              <div className="links">
+            </div>
 
-                <div className="link-card">
-                  <div className="link-left">
-                    <div className="icon-box">🌐</div>
+            <div className="task-card">
 
-                    <div className="link-info">
-                      <h4>My Website</h4>
-                      <p>Visit my official website</p>
-                    </div>
-                  </div>
+              <div className="task-dot green-bg"></div>
 
-                  →
-                </div>
+              <div>
 
-                <div className="link-card">
-                  <div className="link-left">
-                    <div className="icon-box">🎥</div>
+                <h3>
+                  التمرين اليومي
+                </h3>
 
-                    <div className="link-info">
-                      <h4>YouTube Channel</h4>
-                      <p>Watch my latest videos</p>
-                    </div>
-                  </div>
-
-                  →
-                </div>
-
-                <div className="link-card">
-                  <div className="link-left">
-                    <div className="icon-box">🛍</div>
-
-                    <div className="link-info">
-                      <h4>My Products</h4>
-                      <p>Check out my digital store</p>
-                    </div>
-                  </div>
-
-                  →
-                </div>
-
-                <div className="link-card">
-                  <div className="link-left">
-                    <div className="icon-box">📩</div>
-
-                    <div className="link-info">
-                      <h4>Contact Me</h4>
-                      <p>Work and collaborations</p>
-                    </div>
-                  </div>
-
-                  →
-                </div>
+                <span>
+                  مكتملة
+                </span>
 
               </div>
 
@@ -834,124 +121,1746 @@ export default function Home() {
       </section>
 
       {/* FEATURES */}
+
       <section className="features">
 
-        <div className="features-container">
-
-          <div className="section-title">
-            <h2>Everything You Need</h2>
-
-            <p>
-              Powerful tools to build your personal brand,
-              grow your audience and manage your online presence professionally.
-            </p>
-          </div>
-
-          <div className="features-grid">
-
-            <div className="feature-card">
-              <div className="feature-icon">⚡</div>
-
-              <h3>Fast Setup</h3>
-
-              <p>
-                Create your professional bio link page in less than a minute
-                with a smooth and intuitive experience.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">🎨</div>
-
-              <h3>Custom Themes</h3>
-
-              <p>
-                Beautiful modern themes fully optimized for all devices
-                and designed to increase engagement.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">📊</div>
-
-              <h3>Advanced Analytics</h3>
-
-              <p>
-                Track clicks, audience behavior and performance
-                with real-time detailed analytics.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">📱</div>
-
-              <h3>Mobile First</h3>
-
-              <p>
-                Optimized perfectly for smartphones, tablets and desktops
-                without breaking layouts.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">🔒</div>
-
-              <h3>Secure Platform</h3>
-
-              <p>
-                Your data and links are protected with modern security
-                standards and reliable infrastructure.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon">🚀</div>
-
-              <h3>Grow Faster</h3>
-
-              <p>
-                Increase conversions and direct your audience
-                exactly where you want with smart tools.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* FINAL CTA */}
-      <section className="final">
-
-        <div className="final-box">
+        <div className="section-title">
 
           <h2>
-            Start Building Your
-            <br />
-            Bio Link Today
+            كل ما تحتاجه لإدارة يومك
           </h2>
 
           <p>
-            Join thousands of creators, developers and businesses
-            using BioLink to grow their online presence professionally.
+            أدوات قوية لمساعدتك على تنظيم المهام وتحقيق أهدافك.
           </p>
 
-          <button className="btn-primary">
-            Create Your Page Now
-          </button>
+        </div>
+
+        <div className="features-grid">
+
+          <div className="feature-card">
+
+            <FiCheckCircle />
+
+            <h3>
+              إدارة المهام
+            </h3>
+
+            <p>
+              إنشاء المهام وتحديد الأولويات بسهولة.
+            </p>
+
+          </div>
+
+          <div className="feature-card">
+
+            <FiFolder />
+
+            <h3>
+              الفئات الذكية
+            </h3>
+
+            <p>
+              تنظيم المهام باستخدام الألوان والأيقونات.
+            </p>
+
+          </div>
+
+          <div className="feature-card">
+
+            <FiBarChart2 />
+
+            <h3>
+              الإحصائيات
+            </h3>
+
+            <p>
+              متابعة نشاطك اليومي والأسبوعي.
+            </p>
+
+          </div>
+
+          <div className="feature-card">
+
+            <FiTarget />
+
+            <h3>
+              تحقيق الأهداف
+            </h3>
+
+            <p>
+              زيادة الإنتاجية ومتابعة التقدم.
+            </p>
+
+          </div>
 
         </div>
 
       </section>
 
-      {/* FOOTER */}
-      <footer className="footer">
-        © 2026 BioLink — All Rights Reserved
-      </footer>
+      {/* DASHBOARD SHOWCASE */}
+
+<section className="showcase">
+
+  <div className="showcase-header">
+
+    <span>
+      لوحة تحكم متكاملة
+    </span>
+
+    <h2>
+      كل ما تحتاجه لإدارة يومك في مكان واحد
+    </h2>
+
+    <p>
+      تابع مهامك، راقب تقدمك، واحصل على إحصائيات
+      دقيقة تساعدك على تحقيق أهدافك بسهولة.
+    </p>
+
+  </div>
+
+  <div className="showcase-container">
+
+    {/* البطاقة الرئيسية */}
+
+    <div className="main-dashboard">
+
+      <div className="dashboard-top">
+
+        <div className="small-card">
+
+          <h3>
+            24
+          </h3>
+
+          <span>
+            إجمالي المهام
+          </span>
+
+        </div>
+
+        <div className="small-card">
+
+          <h3>
+            18
+          </h3>
+
+          <span>
+            مكتملة
+          </span>
+
+        </div>
+
+        <div className="small-card">
+
+          <h3>
+            6
+          </h3>
+
+          <span>
+            متبقية
+          </span>
+
+        </div>
+
+      </div>
+
+      <div className="task-list">
+
+        <div className="dashboard-task high">
+
+          <div>
+            <h4>
+              إكمال مشروع React
+            </h4>
+
+            <span>
+              أولوية عالية
+            </span>
+          </div>
+
+          <div className="status red-status">
+            عالية
+          </div>
+
+        </div>
+
+        <div className="dashboard-task">
+
+          <div>
+            <h4>
+              ممارسة الرياضة
+            </h4>
+
+            <span>
+              مكتملة
+            </span>
+          </div>
+
+          <div className="status green-status">
+            ✓
+          </div>
+
+        </div>
+
+        <div className="dashboard-task">
+
+          <div>
+            <h4>
+              قراءة كتاب
+            </h4>
+
+            <span>
+              قيد التنفيذ
+            </span>
+          </div>
+
+          <div className="status yellow-status">
+            متوسطة
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {/* بطاقات عائمة */}
+
+    <div className="floating-card progress-card">
+
+      <h2>
+        87%
+      </h2>
+
+      <span>
+        نسبة الإنجاز
+      </span>
+
+    </div>
+
+    <div className="floating-card productivity-card">
+
+      <h2>
+        A+
+      </h2>
+
+      <span>
+        مستوى الإنتاجية
+      </span>
+
+    </div>
+
+    <div className="floating-card streak-card">
+
+      <h2>
+        7
+      </h2>
+
+      <span>
+        أيام متتالية
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+
+{/* STATS */}
+
+<section className="stats-section">
+
+  <div className="stats-header">
+
+    <h2>
+      أرقام تعكس إنتاجيتك
+    </h2>
+
+    <p>
+      آلاف المهام تم إنجازها ومئات المستخدمين يثقون بالمنصة.
+    </p>
+
+  </div>
+
+  <div className="stats-cards">
+
+    <div className="big-stat">
+
+      <h1>10K+</h1>
+
+      <span>
+        مهمة منجزة
+      </span>
+
+    </div>
+
+    <div className="big-stat">
+
+      <h1>95%</h1>
+
+      <span>
+        معدل الإنجاز
+      </span>
+
+    </div>
+
+    <div className="big-stat">
+
+      <h1>500+</h1>
+
+      <span>
+        مستخدم
+      </span>
+
+    </div>
+
+    <div className="big-stat">
+
+      <h1>7</h1>
+
+      <span>
+        أيام متتالية
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+{/* CATEGORIES */}
+
+<section className="categories-preview">
+
+  <div className="categories-left">
+
+    <span>
+      الفئات الذكية
+    </span>
+
+    <h2>
+      نظم مهامك بالطريقة التي تناسبك
+    </h2>
+
+    <p>
+      أنشئ فئات مخصصة بألوان وأيقونات مختلفة
+      لتقسيم أعمالك اليومية بشكل أفضل.
+    </p>
+
+  </div>
+
+
+  <div className="categories-grid">
+
+    <div className="category-item home">
+      🏠 المنزل
+    </div>
+
+    <div className="category-item work">
+      💼 العمل
+    </div>
+
+    <div className="category-item study">
+      📚 الدراسة
+    </div>
+
+    <div className="category-item target">
+      🎯 الأهداف
+    </div>
+
+    <div className="category-item health">
+      ❤️ الصحة
+    </div>
+
+    <div className="category-item shopping">
+      🛒 التسوق
+    </div>
+
+  </div>
+
+</section>
+
+
+{/* PRODUCTIVITY */}
+
+<section className="productivity-section">
+
+  <div className="productivity-card">
+
+    <span className="small-title">
+      مستوى الإنتاجية
+    </span>
+
+    <h2>
+      أداء ممتاز هذا الأسبوع
+    </h2>
+
+    <p>
+      حافظ على تقدمك واستمر في تحقيق أهدافك
+      من خلال متابعة تركيزك وإنجازاتك اليومية.
+    </p>
+
+    <div className="score-circle">
+
+      <div>
+
+        <h1>A+</h1>
+
+        <span>
+          ممتاز
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div className="performance-bars">
+
+    <div className="bar-item">
+
+      <div className="bar-top">
+
+        <span>
+          التركيز
+        </span>
+
+        <strong>
+          92%
+        </strong>
+
+      </div>
+
+      <div className="progress-bar">
+
+        <div
+          className="fill"
+          style={{
+            width:"92%"
+          }}
+        />
+
+      </div>
+
+    </div>
+
+
+    <div className="bar-item">
+
+      <div className="bar-top">
+
+        <span>
+          الإنجاز
+        </span>
+
+        <strong>
+          84%
+        </strong>
+
+      </div>
+
+      <div className="progress-bar">
+
+        <div
+          className="fill"
+          style={{
+            width:"84%"
+          }}
+        />
+
+      </div>
+
+    </div>
+
+
+    <div className="bar-item">
+
+      <div className="bar-top">
+
+        <span>
+          الالتزام
+        </span>
+
+        <strong>
+          76%
+        </strong>
+
+      </div>
+
+      <div className="progress-bar">
+
+        <div
+          className="fill"
+          style={{
+            width:"76%"
+          }}
+        />
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+{/* TESTIMONIALS */}
+
+<section className="testimonials">
+
+  <div className="section-title">
+
+    <h2>
+      ماذا يقول مستخدمونا؟
+    </h2>
+
+    <p>
+      آلاف المستخدمين يعتمدون على المنصة لتنظيم حياتهم اليومية.
+    </p>
+
+  </div>
+
+  <div className="testimonials-grid">
+
+    <div className="testimonial-card">
+
+      <div className="stars">
+        ⭐⭐⭐⭐⭐
+      </div>
+
+      <p>
+        أفضل تطبيق استخدمته لتنظيم يومي،
+        الواجهة جميلة وسهلة جداً.
+      </p>
+
+      <div className="user">
+
+        <div className="avatar">
+          A
+        </div>
+
+        <div>
+
+          <h4>
+            أحمد
+          </h4>
+
+          <span>
+            مطور ويب
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div className="testimonial-card">
+
+      <div className="stars">
+        ⭐⭐⭐⭐⭐
+      </div>
+
+      <p>
+        الإحصائيات اليومية حفزتني كثيراً
+        وأصبحت أكثر إنتاجية.
+      </p>
+
+      <div className="user">
+
+        <div className="avatar">
+          M
+        </div>
+
+        <div>
+
+          <h4>
+            محمد
+          </h4>
+
+          <span>
+            طالب جامعي
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div className="testimonial-card">
+
+      <div className="stars">
+        ⭐⭐⭐⭐⭐
+      </div>
+
+      <p>
+        تصميم رائع وسرعة ممتازة،
+        أصبحت أتابع مهامي بسهولة.
+      </p>
+
+      <div className="user">
+
+        <div className="avatar">
+          S
+        </div>
+
+        <div>
+
+          <h4>
+            سارة
+          </h4>
+
+          <span>
+            مصممة UI
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+
+{/* FAQ */}
+
+<section className="faq-section">
+
+  <div className="section-title">
+
+    <h2>
+      الأسئلة الشائعة
+    </h2>
+
+    <p>
+      بعض الأسئلة التي يطرحها المستخدمون.
+    </p>
+
+  </div>
+
+  <div className="faq-list">
+
+    <div className="faq-item">
+
+      <h3>
+        هل التطبيق مجاني؟
+      </h3>
+
+      <p>
+        نعم، يمكنك البدء مجاناً والاستفادة من المميزات الأساسية.
+      </p>
+
+    </div>
+
+    <div className="faq-item">
+
+      <h3>
+        هل يمكن إنشاء فئات مخصصة؟
+      </h3>
+
+      <p>
+        نعم، يمكنك إنشاء عدد غير محدود من الفئات والألوان والأيقونات.
+      </p>
+
+    </div>
+
+    <div className="faq-item">
+
+      <h3>
+        هل توجد إحصائيات وتقارير؟
+      </h3>
+
+      <p>
+        توفر المنصة تقارير يومية وأسبوعية لمتابعة تقدمك.
+      </p>
+
+    </div>
+
+    <div className="faq-item">
+
+      <h3>
+        هل يدعم الهاتف؟
+      </h3>
+
+      <p>
+        نعم، التصميم متجاوب بالكامل مع جميع الأجهزة.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+{/* CTA */}
+
+<section className="cta-section">
+
+  <h2>
+    ابدأ رحلتك نحو إنتاجية أعلى
+  </h2>
+
+  <p>
+    نظم مهامك، تابع تقدمك، وحقق أهدافك بسهولة.
+  </p>
+
+  <button>
+    ابدأ مجاناً
+  </button>
+
+</section>
+
+
+
+
+
+
+<footer className="footer">
+
+  <div className="footer-grid">
+
+    <div>
+
+      <h3>
+        TaskFlow
+      </h3>
+
+      <p>
+        منصة ذكية لإدارة المهام وتحسين الإنتاجية.
+      </p>
+
+    </div>
+
+    <div>
+
+      <h4>
+        المنتج
+      </h4>
+
+      <ul>
+
+        <li>الرئيسية</li>
+
+        <li>المميزات</li>
+
+        <li>الأسعار</li>
+
+      </ul>
+
+    </div>
+
+    <div>
+
+      <h4>
+        الدعم
+      </h4>
+
+      <ul>
+
+        <li>الأسئلة الشائعة</li>
+
+        <li>تواصل معنا</li>
+
+        <li>المساعدة</li>
+
+      </ul>
+
+    </div>
+
+    <div>
+
+      <h4>
+        الحساب
+      </h4>
+
+      <ul>
+
+        <li>تسجيل الدخول</li>
+
+        <li>إنشاء حساب</li>
+
+      </ul>
+
+    </div>
+
+  </div>
+
+  <div className="copyright">
+
+    © 2026 TaskFlow. جميع الحقوق محفوظة.
+
+  </div>
+
+</footer>
+
+
+
+
+
+
+
+
+      <style>
+        {
+          `
+          .landing-page{
+background:#F8FAFC;
+padding:0 7%;
+direction:rtl;
+}
+
+.hero{
+min-height:100vh;
+display:grid;
+grid-template-columns:1fr 1fr;
+align-items:center;
+gap:80px;
+}
+
+.hero-badge{
+display:inline-block;
+padding:10px 18px;
+background:#EEF2FF;
+color:#6366F1;
+border-radius:999px;
+font-weight:700;
+margin-bottom:20px;
+}
+
+.hero h1{
+font-size:70px;
+line-height:1.2;
+font-weight:900;
+color:#0F172A;
+margin-bottom:25px;
+}
+
+.hero p{
+color:#64748B;
+font-size:18px;
+line-height:1.9;
+max-width:600px;
+}
+
+.hero-buttons{
+display:flex;
+gap:18px;
+margin-top:40px;
+}
+
+.primary-btn{
+height:58px;
+padding:0 32px;
+background:#6366F1;
+color:white;
+border:none;
+border-radius:18px;
+cursor:pointer;
+font-size:16px;
+font-weight:700;
+}
+
+.secondary-btn{
+height:58px;
+padding:0 32px;
+background:white;
+border:1px solid #E2E8F0;
+border-radius:18px;
+cursor:pointer;
+}
+
+.dashboard-card{
+background:white;
+padding:30px;
+border-radius:35px;
+box-shadow:
+0 30px 80px rgba(0,0,0,.08);
+}
+
+.dashboard-header{
+display:flex;
+gap:10px;
+margin-bottom:30px;
+}
+
+.dot{
+width:14px;
+height:14px;
+border-radius:50%;
+}
+
+.red{
+background:#EF4444;
+}
+
+.yellow{
+background:#F59E0B;
+}
+
+.green{
+background:#22C55E;
+}
+
+.stats-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:16px;
+margin-bottom:25px;
+}
+
+.stat-box{
+background:#F8FAFC;
+padding:20px;
+border-radius:20px;
+text-align:center;
+}
+
+.stat-box h2{
+font-size:32px;
+color:#0F172A;
+}
+
+.task-card{
+display:flex;
+gap:15px;
+padding:18px;
+border:1px solid #E2E8F0;
+border-radius:20px;
+margin-top:15px;
+}
+
+.task-dot{
+width:18px;
+height:18px;
+border-radius:50%;
+background:#EF4444;
+}
+
+.green-bg{
+background:#22C55E;
+}
+
+.features{
+padding:120px 0;
+}
+
+.section-title{
+text-align:center;
+margin-bottom:60px;
+}
+
+.section-title h2{
+font-size:50px;
+color:#0F172A;
+margin-bottom:15px;
+}
+
+.section-title p{
+color:#64748B;
+}
+
+.features-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:25px;
+}
+
+.feature-card{
+background:white;
+padding:35px;
+border-radius:30px;
+box-shadow:0 10px 40px rgba(0,0,0,.05);
+transition:.3s;
+}
+
+.feature-card:hover{
+transform:translateY(-8px);
+}
+
+.feature-card svg{
+font-size:40px;
+color:#6366F1;
+margin-bottom:20px;
+}
+
+.feature-card h3{
+margin-bottom:15px;
+color:#0F172A;
+}
+
+.feature-card p{
+color:#64748B;
+line-height:1.8;
+}
+
+@media(max-width:1000px){
+
+.hero{
+grid-template-columns:1fr;
+}
+
+.hero h1{
+font-size:48px;
+}
+
+.features-grid{
+grid-template-columns:1fr 1fr;
+}
+
+}
+
+@media(max-width:700px){
+
+.features-grid{
+grid-template-columns:1fr;
+}
+
+.hero-buttons{
+flex-direction:column;
+}
+
+.hero h1{
+font-size:38px;
+}
+
+.stats-grid{
+grid-template-columns:1fr;
+}
+
+}
+
+
+/* =====================
+SHOWCASE
+===================== */
+
+.showcase{
+padding:140px 0;
+}
+
+.showcase-header{
+text-align:center;
+max-width:850px;
+margin:auto;
+margin-bottom:80px;
+}
+
+.showcase-header span{
+color:#6366F1;
+font-weight:700;
+}
+
+.showcase-header h2{
+font-size:56px;
+margin-top:20px;
+margin-bottom:25px;
+color:#0F172A;
+}
+
+.showcase-header p{
+color:#64748B;
+font-size:18px;
+line-height:1.9;
+}
+
+.showcase-container{
+position:relative;
+max-width:1000px;
+margin:auto;
+}
+
+.main-dashboard{
+background:#0F172A;
+padding:40px;
+border-radius:40px;
+box-shadow:
+0 40px 100px rgba(15,23,42,.25);
+}
+
+.dashboard-top{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+margin-bottom:35px;
+}
+
+.small-card{
+background:#1E293B;
+padding:25px;
+border-radius:24px;
+text-align:center;
+}
+
+.small-card h3{
+font-size:40px;
+color:white;
+}
+
+.small-card span{
+color:#CBD5E1;
+}
+
+.task-list{
+display:flex;
+flex-direction:column;
+gap:20px;
+}
+
+.dashboard-task{
+background:#1E293B;
+padding:22px;
+border-radius:24px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.dashboard-task h4{
+color:white;
+margin-bottom:8px;
+}
+
+.dashboard-task span{
+color:#94A3B8;
+}
+
+.status{
+padding:10px 18px;
+border-radius:999px;
+font-size:14px;
+font-weight:700;
+}
+
+.red-status{
+background:#FEE2E2;
+color:#DC2626;
+}
+
+.green-status{
+background:#DCFCE7;
+color:#16A34A;
+}
+
+.yellow-status{
+background:#FEF3C7;
+color:#D97706;
+}
+
+.floating-card{
+position:absolute;
+background:white;
+padding:25px;
+border-radius:28px;
+box-shadow:
+0 20px 60px rgba(0,0,0,.1);
+text-align:center;
+}
+
+.floating-card h2{
+font-size:42px;
+color:#6366F1;
+margin-bottom:10px;
+}
+
+.floating-card span{
+color:#64748B;
+}
+
+.progress-card{
+top:-40px;
+left:-60px;
+}
+
+.productivity-card{
+bottom:-30px;
+left:-40px;
+}
+
+.streak-card{
+top:50%;
+right:-70px;
+transform:translateY(-50%);
+}
+
+@media(max-width:1100px){
+
+.progress-card,
+.productivity-card,
+.streak-card{
+position:static;
+transform:none;
+margin-top:20px;
+}
+
+.showcase-container{
+display:flex;
+flex-direction:column;
+gap:20px;
+}
+
+}
+
+@media(max-width:700px){
+
+.dashboard-top{
+grid-template-columns:1fr;
+}
+
+.showcase-header h2{
+font-size:40px;
+}
+
+}
+/*====================
+STATS
+====================*/
+
+.stats-section{
+padding:140px 0;
+}
+
+.stats-header{
+text-align:center;
+margin-bottom:60px;
+}
+
+.stats-header h2{
+font-size:52px;
+color:#0F172A;
+margin-bottom:20px;
+}
+
+.stats-header p{
+color:#64748B;
+font-size:18px;
+}
+
+.stats-cards{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:25px;
+}
+
+.big-stat{
+background:white;
+padding:45px;
+border-radius:30px;
+text-align:center;
+box-shadow:0 15px 50px rgba(0,0,0,.06);
+transition:.3s;
+}
+
+.big-stat:hover{
+transform:translateY(-8px);
+}
+
+.big-stat h1{
+font-size:60px;
+color:#6366F1;
+margin-bottom:15px;
+}
+
+.big-stat span{
+color:#64748B;
+}
+
+
+/*====================
+CATEGORIES
+====================*/
+
+.categories-preview{
+padding:140px 0;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:80px;
+align-items:center;
+}
+
+.categories-left span{
+color:#6366F1;
+font-weight:700;
+}
+
+.categories-left h2{
+font-size:55px;
+margin:20px 0;
+color:#0F172A;
+}
+
+.categories-left p{
+line-height:2;
+font-size:18px;
+color:#64748B;
+}
+
+.categories-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:25px;
+}
+
+.category-item{
+height:110px;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:20px;
+font-weight:700;
+border-radius:28px;
+transition:.3s;
+cursor:pointer;
+}
+
+.category-item:hover{
+transform:translateY(-8px);
+}
+
+.home{
+background:#EEF2FF;
+color:#4F46E5;
+}
+
+.work{
+background:#DBEAFE;
+color:#2563EB;
+}
+
+.study{
+background:#FEF3C7;
+color:#D97706;
+}
+
+.target{
+background:#FCE7F3;
+color:#DB2777;
+}
+
+.health{
+background:#FEE2E2;
+color:#DC2626;
+}
+
+.shopping{
+background:#DCFCE7;
+color:#16A34A;
+}
+
+
+/*====================
+RESPONSIVE
+====================*/
+
+@media(max-width:1000px){
+
+.stats-cards{
+grid-template-columns:repeat(2,1fr);
+}
+
+.categories-preview{
+grid-template-columns:1fr;
+}
+
+}
+
+@media(max-width:700px){
+
+.stats-cards{
+grid-template-columns:1fr;
+}
+
+.categories-grid{
+grid-template-columns:1fr;
+}
+
+.stats-header h2,
+.categories-left h2{
+font-size:40px;
+}
+
+}
+
+/*===================
+PRODUCTIVITY
+===================*/
+
+.productivity-section{
+padding:140px 0;
+display:grid;
+grid-template-columns:420px 1fr;
+gap:80px;
+align-items:center;
+}
+
+.productivity-card{
+background:#0F172A;
+padding:50px;
+border-radius:40px;
+color:white;
+box-shadow:
+0 30px 100px rgba(15,23,42,.2);
+}
+
+.small-title{
+color:#A5B4FC;
+font-weight:700;
+}
+
+.productivity-card h2{
+font-size:42px;
+margin-top:20px;
+margin-bottom:20px;
+}
+
+.productivity-card p{
+line-height:2;
+color:#CBD5E1;
+}
+
+.score-circle{
+width:220px;
+height:220px;
+border-radius:50%;
+margin:50px auto 0;
+background:
+linear-gradient(
+135deg,
+#6366F1,
+#4F46E5
+);
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.score-circle div{
+width:170px;
+height:170px;
+background:#0F172A;
+border-radius:50%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+
+.score-circle h1{
+font-size:60px;
+}
+
+.score-circle span{
+color:#CBD5E1;
+}
+
+
+.performance-bars{
+display:flex;
+flex-direction:column;
+gap:40px;
+}
+
+.bar-item{
+background:white;
+padding:30px;
+border-radius:30px;
+box-shadow:
+0 15px 40px rgba(0,0,0,.05);
+}
+
+.bar-top{
+display:flex;
+justify-content:space-between;
+margin-bottom:18px;
+font-size:18px;
+}
+
+.bar-top strong{
+color:#6366F1;
+}
+
+.progress-bar{
+height:16px;
+background:#E2E8F0;
+border-radius:999px;
+overflow:hidden;
+}
+
+.fill{
+height:100%;
+border-radius:999px;
+background:
+linear-gradient(
+90deg,
+#6366F1,
+#8B5CF6
+);
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+
+.productivity-section{
+grid-template-columns:1fr;
+}
+
+.productivity-card{
+max-width:600px;
+margin:auto;
+}
+
+}
+/*=====================
+TESTIMONIALS
+======================*/
+
+.testimonials{
+padding:140px 0;
+}
+
+.testimonials-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:30px;
+}
+
+.testimonial-card{
+background:rgba(255,255,255,.8);
+backdrop-filter:blur(20px);
+border:1px solid #E2E8F0;
+padding:35px;
+border-radius:35px;
+box-shadow:
+0 20px 50px rgba(0,0,0,.05);
+transition:.3s;
+}
+
+.testimonial-card:hover{
+transform:translateY(-10px);
+}
+
+.stars{
+font-size:22px;
+margin-bottom:20px;
+}
+
+.testimonial-card p{
+line-height:2;
+color:#64748B;
+margin-bottom:30px;
+}
+
+.user{
+display:flex;
+gap:15px;
+align-items:center;
+}
+
+.avatar{
+width:55px;
+height:55px;
+border-radius:50%;
+background:
+linear-gradient(
+135deg,
+#6366F1,
+#8B5CF6
+);
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+font-size:20px;
+font-weight:700;
+}
+
+.user h4{
+color:#0F172A;
+margin-bottom:4px;
+}
+
+.user span{
+color:#94A3B8;
+}
+
+
+/* Responsive */
+
+@media(max-width:1000px){
+
+.testimonials-grid{
+grid-template-columns:1fr;
+}
+
+}
+/*=================
+FAQ
+=================*/
+
+.faq-section{
+padding:140px 0;
+}
+
+.faq-list{
+display:flex;
+flex-direction:column;
+gap:25px;
+max-width:900px;
+margin:auto;
+}
+
+.faq-item{
+background:white;
+padding:35px;
+border-radius:30px;
+box-shadow:0 15px 40px rgba(0,0,0,.05);
+}
+
+.faq-item h3{
+margin-bottom:15px;
+color:#0F172A;
+}
+
+.faq-item p{
+line-height:1.9;
+color:#64748B;
+}
+
+/*=================
+CTA
+=================*/
+
+.cta-section{
+padding:100px 50px;
+border-radius:40px;
+text-align:center;
+
+background:
+linear-gradient(
+135deg,
+#6366F1,
+#4F46E5
+);
+
+color:white;
+
+margin-bottom:120px;
+}
+
+.cta-section h2{
+font-size:60px;
+margin-bottom:20px;
+}
+
+.cta-section p{
+font-size:18px;
+margin-bottom:40px;
+opacity:.9;
+}
+
+.cta-section button{
+height:60px;
+padding:0 35px;
+border:none;
+background:white;
+color:#4F46E5;
+border-radius:18px;
+font-size:17px;
+font-weight:700;
+cursor:pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*=================
+FOOTER
+=================*/
+
+.footer{
+padding-bottom:40px;
+}
+
+.footer-grid{
+display:grid;
+grid-template-columns:2fr 1fr 1fr 1fr;
+gap:50px;
+padding-bottom:50px;
+border-bottom:1px solid #E2E8F0;
+}
+
+.footer h3{
+font-size:32px;
+margin-bottom:20px;
+color:#0F172A;
+}
+
+.footer h4{
+margin-bottom:20px;
+color:#0F172A;
+}
+
+.footer p,
+.footer li{
+color:#64748B;
+line-height:2;
+list-style:none;
+cursor:pointer;
+}
+
+.footer li:hover{
+color:#6366F1;
+}
+
+.copyright{
+text-align:center;
+padding-top:40px;
+color:#94A3B8;
+}
+
+@media(max-width:900px){
+
+.footer-grid{
+grid-template-columns:1fr;
+}
+
+.cta-section h2{
+font-size:40px;
+}
+
+}`
+        }
+      </style>
 
     </div>
   );
 }
-
-
