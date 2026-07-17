@@ -4,6 +4,7 @@ import API_BASE from "../../config/api";
 
 export default function AddTaskModal({
   open,
+  editing,
   onClose,
   onCreated
 }) {
@@ -42,6 +43,79 @@ export default function AddTaskModal({
     preferredTime:""
 
   });
+
+
+useEffect(() => {
+
+  if (!open) return;
+
+  if (editing) {
+
+    setForm({
+
+      //category: editing.category?._id || "",
+      category:
+typeof editing.category === "object"
+? editing.category._id
+: editing.category || "",
+
+      title: editing.title || "",
+
+      description: editing.description || "",
+
+      priority: editing.priority || "medium",
+
+      frequencyType: editing.frequencyType || "daily",
+
+      everyXDays: editing.everyXDays || 2,
+
+      weekDays: editing.weekDays || [],
+
+      monthDay: editing.monthDay || 1,
+
+      targetValue: editing.targetValue || 1,
+
+      targetUnit: editing.targetUnit || "minutes",
+
+      weeklyTarget: editing.weeklyTarget || 1,
+
+      preferredTime: editing.preferredTime || ""
+
+    });
+
+  } else {
+
+    setForm({
+
+      category:"",
+
+      title:"",
+
+      description:"",
+
+      priority:"medium",
+
+      frequencyType:"daily",
+
+      everyXDays:2,
+
+      weekDays:[],
+
+      monthDay:1,
+
+      targetValue:1,
+
+      targetUnit:"minutes",
+
+      weeklyTarget:1,
+
+      preferredTime:""
+
+    });
+
+  }
+
+}, [editing, open]);
 
   useEffect(()=>{
 
@@ -104,7 +178,7 @@ export default function AddTaskModal({
     }
 
   };
-
+/*
   const createTask = async()=>{
 
     try{
@@ -139,6 +213,63 @@ export default function AddTaskModal({
     }
 
   };
+*/
+
+
+
+
+
+  const saveTask = async () => {
+
+  try {
+
+    setLoading(true);
+
+    if (editing) {
+
+      await axios.put(
+
+        `${API_BASE}/api/tasks/${editing._id}`,
+
+        form,
+
+        {
+          withCredentials: true
+        }
+
+      );
+
+    } else {
+
+      await axios.post(
+
+        `${API_BASE}/api/tasks`,
+
+        form,
+
+        {
+          withCredentials: true
+        }
+
+      );
+
+    }
+
+    onCreated?.();
+
+    onClose();
+
+  } catch (err) {
+
+    alert(err.response?.data?.error || "Error");
+
+  } finally {
+
+    setLoading(false);
+
+  }
+
+};
 
   if(!open) return null;
 
@@ -150,9 +281,16 @@ export default function AddTaskModal({
 
         <div className="modal-header">
 
+           
           <h2>
-            إضافة مهمة جديدة
-          </h2>
+{
+editing
+?
+"تعديل المهمة"
+:
+"إضافة مهمة جديدة"
+}
+</h2>
 
           <button
           onClick={onClose}
@@ -531,14 +669,18 @@ export default function AddTaskModal({
 
           <button
             className="save-btn"
-            onClick={createTask}
+           
+            onClick={saveTask}
             disabled={loading}
           >
             {
-              loading
-              ? "جاري الإنشاء..."
-              : "إنشاء المهمة"
-            }
+loading
+?
+(editing ? "جاري التعديل..." : "جاري الإنشاء...")
+:
+(editing ? "حفظ التعديلات" : "إنشاء المهمة")
+}
+            
           </button>
 
         </div>

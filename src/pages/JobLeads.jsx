@@ -1199,7 +1199,7 @@ font-weight:600;
   background:white;
   border-radius:20px;
   border:1px solid #E2E8F0;
-  overflow:hidden;
+  overflow-y: scroll;
 }
 
 .table-card table{

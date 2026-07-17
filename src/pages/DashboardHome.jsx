@@ -46,17 +46,7 @@ import {
   XAxis,
   Tooltip
 } from "recharts";
-/*
-const categoryIcons = {
-  folder: <FiFolder />,
-  briefcase: <FiBriefcase />,
-  book: <FiBook />,
-  heart: <FiHeart />,
-  home: <FiHome />,
-  target: <FiTarget />,
-  star: <FiStar />,
-  shopping: <FiShoppingBag />
-};*/
+ 
 
 import AddTaskModal from "../components/tasks/AddTaskModal";
 
@@ -73,6 +63,9 @@ export default function DashboardHome() {
 
   const [filter,setFilter] =
   useState("all");
+  const [search, setSearch] = useState("");
+
+  const [editing,setEditing]=useState(null);
 
   const loadDashboard = async()=>{
 
@@ -180,22 +173,107 @@ export default function DashboardHome() {
 
   };
 
+const filteredTasks = tasks
 
-  const filteredTasks =
+.filter(task => {
 
-  filter === "completed"
+    if (filter === "completed")
+        return task.completed;
 
-  ? tasks.filter(
-      task=>task.completed
-    )
+    if (filter === "pending")
+        return !task.completed;
 
-  : filter === "pending"
+    return true;
 
-  ? tasks.filter(
-      task=>!task.completed
-    )
+})
 
-  : tasks;
+.filter(task => {
+
+    const q = search.toLowerCase().trim();
+
+    if (!q) return true;
+
+    const priorityMap = {
+        "عالية": "high",
+        "متوسطة": "medium",
+        "منخفضة": "low"
+    };
+
+    const priority = priorityMap[q];
+
+    return (
+
+        task.title?.toLowerCase().includes(q) ||
+
+        task.categoryName?.toLowerCase().includes(q) ||
+
+        task.description?.toLowerCase().includes(q) ||
+
+        task.targetUnit?.toLowerCase().includes(q) ||
+
+        task.preferredTime?.toLowerCase().includes(q) ||
+
+        task.priority?.toLowerCase().includes(q) ||
+
+        (priority && task.priority === priority)
+
+    );
+
+});
+ 
+ 
+ 
+
+
+ 
+
+
+
+  const deleteTask = async (id) => {
+
+  if (!window.confirm("هل تريد حذف المهمة؟")) return;
+
+  try {
+
+    await axios.delete(`${API_BASE}/api/tasks/${id}`, {
+      withCredentials: true
+    });
+
+    setTasks(tasks.filter(task => task._id !== id));
+
+  } catch (err) {
+    alert("حدث خطأ");
+  }
+
+};
+
+const toggleTask = async (id) => {
+
+  try {
+
+    const { data } = await axios.patch(
+
+      `${API_BASE}/api/tasks/${id}/toggle`,
+
+      {},
+
+      {
+        withCredentials: true
+      }
+
+    );
+
+    setTasks(tasks.map(t =>
+      t._id === id ? data : t
+    ));
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
+};
 
   
 
@@ -204,16 +282,17 @@ export default function DashboardHome() {
   return(
 
     <>
+    <AddTaskModal
+  open={openModal}
+  editing={editing}
+  onClose={()=>{
+    setOpenModal(false);
+    setEditing(null);
+  }}
+  onCreated={loadDashboard}
+/>
 
-      <AddTaskModal
-        open={openModal}
-        onClose={()=>
-          setOpenModal(false)
-        }
-        onCreated={
-          loadDashboard
-        }
-      />
+    
 
       <div className="dashboard-home">
 
@@ -244,10 +323,13 @@ export default function DashboardHome() {
           <div className="search-box">
 
             <FiSearch />
-
             <input
-              placeholder="بحث عن مهمة..."
-            />
+    value={search}
+    onChange={(e)=>setSearch(e.target.value)}
+    placeholder="بحث عن مهمة..."
+/>
+
+           
 
           </div>
 
@@ -699,6 +781,37 @@ color:task.categoryColor
                         }
 
                       </div>
+
+                      <button
+  className="delete-btn"
+  onClick={() => deleteTask(task._id)}
+>
+🗑 حذف
+</button>
+<button
+onClick={() => toggleTask(task._id)}
+>
+{task.active ? "إيقاف" : "تشغيل"}
+</button>
+
+<button
+onClick={()=>{
+
+
+setEditing({
+  ...task,
+  _id: task.task
+});
+ 
+
+setOpenModal(true);
+
+}}
+>
+
+✏️
+
+</button>
 
                       
 
