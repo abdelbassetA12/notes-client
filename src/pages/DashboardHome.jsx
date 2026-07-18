@@ -21,6 +21,30 @@ import {
   FiTrendingUp,
   FiPlus,
   FiFilter,
+  FiFolder,
+  FiBriefcase,
+  FiTarget,
+  FiStar,
+  FiShoppingBag,
+  FiEdit3,
+  FiTrash2,
+  FiPause,
+  FiPlay,
+  FiCheck,
+  FiMoreVertical
+} from "react-icons/fi";
+/*
+import {
+  FiSearch,
+  FiBell,
+  FiMoon,
+  FiHome,
+  FiCheckCircle,
+  FiClock,
+  FiFlag,
+  FiTrendingUp,
+  FiPlus,
+  FiFilter,
 
 
 
@@ -36,6 +60,7 @@ import {
   FiStar,
   FiShoppingBag
 } from "react-icons/fi";
+ */
 
 
 
@@ -606,6 +631,287 @@ const toggleTask = async (id) => {
                   filteredTasks.map(task => (
 
                     <div
+  key={task._id}
+  className={
+    task.completed
+      ? "task-item completed"
+      : "task-item"
+  }
+>
+
+  {/* LEFT / MAIN CONTENT */}
+  <div className="task-main">
+
+    {/* CHECK */}
+    <button
+      className={
+        task.completed
+          ? "task-check checked"
+          : "task-check"
+      }
+      onClick={() => {
+        if (!task.completed) {
+          completeTask(task._id);
+        }
+      }}
+      title={
+        task.completed
+          ? "المهمة مكتملة"
+          : "تحديد كمكتملة"
+      }
+    >
+      {task.completed && <FiCheck />}
+    </button>
+
+
+    {/* TASK INFORMATION */}
+    <div className="task-content">
+
+      {/* TITLE ROW */}
+
+      <div className="task-top-row">
+
+        <h3
+          className={
+            task.completed
+              ? "task-title completed"
+              : "task-title"
+          }
+        >
+          {task.title}
+        </h3>
+
+        <span
+          className={`priority-badge ${getPriorityColor(
+            task.priority
+          )}`}
+        >
+          {getPriorityText(task.priority)}
+        </span>
+
+      </div>
+
+
+      {/* META */}
+
+      <div className="task-meta">
+
+        {/* CATEGORY */}
+
+        <span
+          className="task-meta-item category"
+          style={{
+            color: task.categoryColor
+          }}
+        >
+
+          <span className="meta-icon">
+            {categoryIcons[task.categoryIcon]}
+          </span>
+
+          {task.categoryName}
+
+        </span>
+
+
+        {/* TIME */}
+
+        {task.preferredTime && (
+
+          <span className="task-meta-item">
+
+            <FiClock />
+
+            {task.preferredTime}
+
+          </span>
+
+        )}
+
+
+        {/* PROGRESS */}
+
+        <span className="task-meta-item">
+
+          <FiTarget />
+
+          {task.progressValue}/{task.targetValue}
+
+          {task.targetUnit && (
+            <small>
+              {task.targetUnit}
+            </small>
+          )}
+
+        </span>
+
+      </div>
+
+
+      {/* PROGRESS BAR */}
+
+      {!task.completed && (
+
+        <div className="task-progress">
+
+          <div className="task-progress-info">
+
+            <span>
+              التقدم
+            </span>
+
+            <strong>
+
+              {task.targetValue > 0
+                ? Math.min(
+                    Math.round(
+                      (task.progressValue /
+                        task.targetValue) *
+                        100
+                    ),
+                    100
+                  )
+                : 0
+              }%
+
+            </strong>
+
+          </div>
+
+          <div className="task-progress-bar">
+
+            <div
+              style={{
+                width: `${
+                  task.targetValue > 0
+                    ? Math.min(
+                        (task.progressValue /
+                          task.targetValue) *
+                          100,
+                        100
+                      )
+                    : 0
+                }%`
+              }}
+            />
+
+          </div>
+
+        </div>
+
+      )}
+
+    </div>
+
+  </div>
+
+
+  {/* ACTIONS */}
+
+  <div className="task-actions">
+
+    {/* COMPLETE */}
+
+    {!task.completed && (
+
+      <button
+        className="complete-btn"
+        onClick={() =>
+          completeTask(task._id)
+        }
+        title="تم الإنجاز"
+      >
+        <FiCheck />
+
+        <span>
+          تم الإنجاز
+        </span>
+
+      </button>
+
+    )}
+
+
+    {/* COMPLETED */}
+
+    {task.completed && (
+
+      <span className="done-badge">
+
+        <FiCheck />
+
+        مكتملة
+
+      </span>
+
+    )}
+
+
+    {/* EDIT */}
+
+    <button
+      className="task-action-btn edit"
+      onClick={() => {
+
+        setEditing({
+          ...task,
+          _id: task.task
+        });
+
+        setOpenModal(true);
+
+      }}
+      title="تعديل المهمة"
+    >
+
+      <FiEdit3 />
+
+    </button>
+
+
+    {/* TOGGLE */}
+
+    <button
+      className="task-action-btn toggle"
+      onClick={() =>
+        toggleTask(task._id)
+      }
+      title={
+        task.active
+          ? "إيقاف المهمة"
+          : "تشغيل المهمة"
+      }
+    >
+
+      {task.active
+        ? <FiPause />
+        : <FiPlay />
+      }
+
+    </button>
+
+
+    {/* DELETE */}
+
+    <button
+      className="task-action-btn delete"
+      onClick={() =>
+        deleteTask(task._id)
+      }
+      title="حذف المهمة"
+    >
+
+      <FiTrash2 />
+
+    </button>
+
+  </div>
+
+</div>
+
+ 
+                   
+                      /**<div
                       key={task._id}
                       className={
                         task.completed
@@ -816,13 +1122,29 @@ setOpenModal(true);
                       
 
 
-                    </div>
+                    </div> */
+                   
+  
+
+                    
 
                   ))
 
                 }
 
               </div>
+
+
+
+
+
+
+
+
+
+
+
+             
 
             </div>
 
@@ -1505,110 +1827,655 @@ setOpenModal(true);
   gap:16px;
 }
 
-.task-item{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:18px;
-  border:1px solid #E2E8F0;
-  border-radius:18px;
-  transition:.25s;
-}
 
-.task-item:hover{
-  box-shadow:0 10px 25px rgba(0,0,0,.05);
-}
 
-.task-left{
-  display:flex;
-  gap:15px;
-  align-items:center;
-}
 
-.task-check{
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  border:2px solid #CBD5E1;
-}
 
-.task-check.checked{
-  background:#22C55E;
-  color:white;
-  border:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.task-content{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.task-top-row{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-
-.task-title.completed{
-  text-decoration:line-through;
-  color:#94A3B8;
-}
-
-.task-meta{
-  display:flex;
-  gap:20px;
-  color:#64748B;
-  font-size:13px;
-}
-
-.priority-badge{
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:700;
-}
-
-.priority-badge.high{
-  background:#FEE2E2;
-  color:#DC2626;
-}
-
-.priority-badge.medium{
-  background:#FEF3C7;
-  color:#D97706;
-}
-
-.priority-badge.low{
-  background:#DCFCE7;
-  color:#16A34A;
-}
-
-.complete-btn{
-  border:none;
-  background:#6366F1;
-  color:white;
-  padding:10px 18px;
-  border-radius:12px;
-  cursor:pointer;
-}
-
-.done-badge{
-  background:#DCFCE7;
-  color:#16A34A;
-  padding:8px 14px;
-  border-radius:999px;
-  font-weight:700;
-}
   .category {
 
  
 gap: 4px;
   
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+   TASK ITEM
+========================================= */
+
+.task-item{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+
+  padding:20px;
+
+  background:#FFFFFF;
+
+  border:1px solid #E2E8F0;
+
+  border-radius:20px;
+
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease,
+    border-color .25s ease;
+
+  overflow:hidden;
+}
+
+.task-item::before{
+  content:"";
+
+  position:absolute;
+
+  right:0;
+  top:0;
+  bottom:0;
+
+  width:4px;
+
+  background:#6366F1;
+
+  opacity:0;
+
+  transition:.25s;
+}
+
+.task-item:hover{
+
+  transform:translateY(-2px);
+
+  border-color:#CBD5E1;
+
+  box-shadow:
+    0 12px 30px
+    rgba(15,23,42,.07);
+
+}
+
+.task-item:hover::before{
+  opacity:1;
+}
+
+
+/* =========================================
+   COMPLETED TASK
+========================================= */
+
+.task-item.completed{
+  background:#FAFAFA;
+}
+
+.task-item.completed::before{
+  background:#22C55E;
+  opacity:1;
+}
+
+
+/* =========================================
+   MAIN
+========================================= */
+
+.task-main{
+
+  display:flex;
+
+  align-items:flex-start;
+
+  gap:15px;
+
+  flex:1;
+
+  min-width:0;
+
+}
+
+
+/* =========================================
+   CHECK BUTTON
+========================================= */
+
+.task-check{
+
+  flex-shrink:0;
+
+  width:34px;
+  height:34px;
+
+  border-radius:50%;
+
+  border:2px solid #CBD5E1;
+
+  background:#FFFFFF;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  color:#FFFFFF;
+
+  cursor:pointer;
+
+  transition:.25s;
+
+  padding:0;
+
+}
+
+.task-check:hover{
+
+  border-color:#6366F1;
+
+  background:#EEF2FF;
+
+  transform:scale(1.05);
+
+}
+
+.task-check.checked{
+
+  background:#22C55E;
+
+  border-color:#22C55E;
+
+  box-shadow:
+    0 5px 15px
+    rgba(34,197,94,.25);
+
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.task-content{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:10px;
+
+  min-width:0;
+
+  flex:1;
+
+}
+
+
+/* =========================================
+   TITLE
+========================================= */
+
+.task-top-row{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  flex-wrap:wrap;
+
+}
+
+.task-title{
+
+  margin:0;
+
+  font-size:16px;
+
+  font-weight:800;
+
+  color:#0F172A;
+
+  white-space:nowrap;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+
+  max-width:100%;
+
+}
+
+.task-title.completed{
+
+  text-decoration:line-through;
+
+  color:#94A3B8;
+
+}
+
+
+/* =========================================
+   PRIORITY
+========================================= */
+
+.priority-badge{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:5px 10px;
+
+  border-radius:999px;
+
+  font-size:11px;
+
+  font-weight:800;
+
+  white-space:nowrap;
+
+}
+
+.priority-badge.high{
+
+  background:#FEF2F2;
+
+  color:#DC2626;
+
+  border:1px solid #FECACA;
+
+}
+
+.priority-badge.medium{
+
+  background:#FFFBEB;
+
+  color:#D97706;
+
+  border:1px solid #FDE68A;
+
+}
+
+.priority-badge.low{
+
+  background:#F0FDF4;
+
+  color:#16A34A;
+
+  border:1px solid #BBF7D0;
+
+}
+
+
+/* =========================================
+   META
+========================================= */
+
+.task-meta{
+
+  display:flex;
+
+  align-items:center;
+
+  flex-wrap:wrap;
+
+  gap:8px;
+
+}
+
+.task-meta-item{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:6px;
+
+  padding:5px 9px;
+
+  background:#F8FAFC;
+
+  border:1px solid #E2E8F0;
+
+  border-radius:8px;
+
+  color:#64748B;
+
+  font-size:12px;
+
+  font-weight:600;
+
+}
+
+.task-meta-item svg{
+
+  font-size:14px;
+
+  flex-shrink:0;
+
+}
+
+.task-meta-item small{
+
+  font-size:11px;
+
+  color:#94A3B8;
+
+}
+
+.meta-icon{
+
+  display:flex;
+
+  align-items:center;
+
+  font-size:15px;
+
+}
+
+
+/* =========================================
+   PROGRESS
+========================================= */
+
+.task-progress{
+
+  width:100%;
+
+  max-width:400px;
+
+  margin-top:2px;
+
+}
+
+.task-progress-info{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:5px;
+
+  font-size:11px;
+
+  color:#94A3B8;
+
+}
+
+.task-progress-info strong{
+
+  color:#6366F1;
+
+  font-size:11px;
+
+}
+
+.task-progress-bar{
+
+  width:100%;
+
+  height:5px;
+
+  background:#E2E8F0;
+
+  border-radius:999px;
+
+  overflow:hidden;
+
+}
+
+.task-progress-bar div{
+
+  height:100%;
+
+  background:#6366F1;
+
+  border-radius:999px;
+
+  transition:width .4s ease;
+
+}
+
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.task-actions{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  flex-shrink:0;
+
+}
+
+
+/* =========================================
+   COMPLETE BUTTON
+========================================= */
+
+.complete-btn{
+
+  height:40px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:7px;
+
+  padding:0 15px;
+
+  border:none;
+
+  border-radius:11px;
+
+  background:#6366F1;
+
+  color:#FFFFFF;
+
+  font-size:13px;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:.25s;
+
+}
+
+.complete-btn:hover{
+
+  background:#4F46E5;
+
+  transform:translateY(-1px);
+
+  box-shadow:
+    0 7px 18px
+    rgba(99,102,241,.25);
+
+}
+
+.complete-btn svg{
+
+  font-size:16px;
+
+}
+
+
+/* =========================================
+   DONE
+========================================= */
+
+.done-badge{
+
+  height:38px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:6px;
+
+  padding:0 12px;
+
+  border-radius:10px;
+
+  background:#F0FDF4;
+
+  border:1px solid #BBF7D0;
+
+  color:#16A34A;
+
+  font-size:12px;
+
+  font-weight:800;
+
+}
+
+.done-badge svg{
+
+  font-size:15px;
+
+}
+
+
+/* =========================================
+   ICON ACTION BUTTONS
+========================================= */
+
+.task-action-btn{
+
+  width:38px;
+
+  height:38px;
+
+  border:none;
+
+  border-radius:10px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  cursor:pointer;
+
+  transition:.25s;
+
+  font-size:16px;
+
+}
+
+
+/* EDIT */
+
+.task-action-btn.edit{
+
+  background:#EEF2FF;
+
+  color:#6366F1;
+
+}
+
+.task-action-btn.edit:hover{
+
+  background:#6366F1;
+
+  color:#FFFFFF;
+
+  transform:translateY(-2px);
+
+}
+
+
+/* TOGGLE */
+
+.task-action-btn.toggle{
+
+  background:#F1F5F9;
+
+  color:#475569;
+
+}
+
+.task-action-btn.toggle:hover{
+
+  background:#E2E8F0;
+
+  color:#0F172A;
+
+  transform:translateY(-2px);
+
+}
+
+
+/* DELETE */
+
+.task-action-btn.delete{
+
+  background:#FEF2F2;
+
+  color:#EF4444;
+
+}
+
+.task-action-btn.delete:hover{
+
+  background:#EF4444;
+
+  color:#FFFFFF;
+
+  transform:translateY(-2px);
+
+}
+
+
+
+
+
+
+
+
+
 
 /* =========================
    CARDS
