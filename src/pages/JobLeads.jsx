@@ -59,8 +59,23 @@ export default function JobLeads() {
   const [status, setStatus] =
     useState("");
 
-  const [country, setCountry] =
-    useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+
+  const [countries,setCountries]=useState([]);
+
+const [cities,setCities]=useState({});
+
+const [emailCount, setEmailCount] = useState(0);
+//const allCities = [...new Set(Object.values(cities).flat())];
+const allCities = Object.entries(cities).flatMap(
+  ([country, cityList]) =>
+    cityList.map(city => ({
+      city,
+      country
+    }))
+);
+
 
   // =====================================
   // PAGINATION
@@ -103,6 +118,7 @@ export default function JobLeads() {
             type,
             status,
             country,
+            city,
             page
           },
           withCredentials: true
@@ -149,6 +165,28 @@ export default function JobLeads() {
 
   };
 
+  const fetchFilters = async () => {
+
+    try {
+
+        const res = await axios.get(
+            `${API_BASE}/api/job-leads/filters`,
+            {
+                withCredentials: true
+            }
+        );
+
+        setCountries(res.data.countries);
+        setCities(res.data.cities);
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+};
+
   // =====================================
   // EFFECT
   // =====================================
@@ -156,20 +194,22 @@ export default function JobLeads() {
   useEffect(() => {
 
     fetchLeads();
+     fetchEmailCount();
 
   }, [
     search,
     type,
     status,
     country,
+    city,
     page
   ]);
+useEffect(() => {
 
-  useEffect(() => {
+  fetchStats();
+  fetchFilters();
 
-    fetchStats();
-
-  }, []);
+}, []);
 
   // =====================================
   // STATUS BADGE
@@ -420,6 +460,146 @@ const importExcel = async (e) => {
 
 };
 
+ 
+/*
+const openGmail = () => {
+
+    const emails = leads
+        .filter(
+            lead =>
+                lead.email &&
+                lead.email.trim() !== ""
+        )
+        .map(
+            lead =>
+                lead.email.trim()
+        );
+
+    if(!emails.length){
+
+        alert("No emails found");
+
+        return;
+    }
+
+    const subject =
+        "Job Application";
+
+    const body = `
+
+Dear Hiring Manager,
+
+I hope you are doing well.
+
+Please find attached my CV.
+
+I would appreciate the opportunity to join your team.
+
+Kind regards
+
+`;
+
+    const url =
+
+`https://mail.google.com/mail/?view=cm&fs=1&bcc=${encodeURIComponent(
+emails.join(",")
+)}&su=${encodeURIComponent(subject)}
+&body=${encodeURIComponent(body)}`;
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+};
+*/
+
+
+const fetchEmailCount = async () => {
+
+  const res = await axios.get(
+    `${API_BASE}/api/job-leads/emails`,
+    {
+      params: {
+        search,
+        type,
+        status,
+        country,
+        city
+      },
+      withCredentials: true
+    }
+  );
+
+  setEmailCount(res.data.count);
+};
+
+const openGmail = async () => {
+
+  try {
+
+    const res = await axios.get(
+      `${API_BASE}/api/job-leads/emails`,
+      {
+        params: {
+          search,
+          type,
+          status,
+          country,
+          city
+        },
+        withCredentials: true
+      }
+    );
+
+    const emails = res.data.emails;
+
+    if (!emails.length) {
+      alert("No emails found");
+      return;
+    }
+
+    const subject = "Job Application";
+
+    const body = `
+
+Dear Hiring Manager,
+
+I hope you are doing well.
+
+Please find attached my CV.
+
+I would appreciate the opportunity to join your team.
+
+Kind regards
+
+`;
+
+    const url =
+      `https://mail.google.com/mail/?view=cm&fs=1&bcc=${encodeURIComponent(
+        emails.join(",")
+      )}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.open(url, "_blank");
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
+};
+
+
+const handleCountry = (e) => {
+
+  setCountry(e.target.value);
+
+  setCity("");
+
+  setPage(1);
+
+};
 
 if (loading) return <LoadingScreen />;
   return (
@@ -479,6 +659,18 @@ if (loading) return <LoadingScreen />;
           <FiPlus />
           Add Lead
         </button>
+     
+ 
+<button
+    className="add-btn"
+    onClick={openGmail}
+>
+    <FiMail />
+    Open Gmail ({emailCount})
+
+     
+
+</button>
 
       </div>
 
@@ -652,15 +844,69 @@ if (loading) return <LoadingScreen />;
           </option>
 
         </select>
+        <select
+  value={country}
+  onChange={handleCountry}
+>
 
-        <input
-          type="text"
-          placeholder="Country"
-          value={country}
-          onChange={(e) =>
-            setCountry(e.target.value)
-          }
-        />
+  <option value="">
+    All Countries
+  </option>
+
+  {countries.map((item) => (
+
+    <option
+      key={item}
+      value={item}
+    >
+      {item}
+    </option>
+
+  ))}
+
+</select>
+
+
+
+
+
+<select
+    value={city}
+    onChange={(e) => {
+        setCity(e.target.value);
+        setPage(1);
+    }}
+>
+    <option value="">
+        All Cities
+    </option>
+
+    {country
+  ? (cities[country] || []).map(city => (
+      <option
+        key={city}
+        value={city}
+      >
+        {city}
+      </option>
+    ))
+  : allCities.map(item => (
+      <option
+        key={`${item.country}-${item.city}`}
+        value={item.city}
+      >
+        {item.city} - {item.country}
+      </option>
+    ))
+}
+
+   
+
+</select>
+
+
+
+        
 
       </div>
 
