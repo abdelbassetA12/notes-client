@@ -16,6 +16,8 @@ import { Toaster } from "react-hot-toast";
 
 import Verified from "./pages/Verified";
 import ForgotPassword from "./pages/ForgotPassword";
+import EmailTemplate from "./pages/EmailTemplate";
+import EmailTemplates from "./pages/EmailTemplates";
 
 
  
@@ -28,6 +30,12 @@ import Categories from "./pages/Categories";
 
 
 import JobLeads from "./pages/JobLeads";
+
+
+ 
+
+
+
 
 
 
@@ -51,8 +59,22 @@ export default function App() {
             )
           }
         />
+     
+
+      
 
           <Route path="/auth" element={ <Auth  />} />
+          <Route path="/EmailTemplate" element={ <EmailTemplate  />} />
+          <Route
+    path="/email-template/new"
+    element={<EmailTemplate />}
+/>
+
+<Route
+    path="/email-template/:id"
+    element={<EmailTemplate />}
+/>
+          <Route path="/EmailTemplates" element={ <EmailTemplates  />} />
              <Route
   path="/verify"
   element={<Verified/>}

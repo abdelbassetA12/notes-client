@@ -79,6 +79,14 @@ return(
           <FiClock />
            jobLeads
           </Link>
+          <Link className={isActive("/EmailTemplate") ? "active" : ""} to="/EmailTemplate">
+          <FiClock />
+          Email Template
+          </Link>
+          <Link className={isActive("/EmailTemplates") ? "active" : ""} to="/EmailTemplates">
+          <FiClock />
+          Email Templates
+          </Link>
            <Link className={isActive("/FiHome") ? "active" : ""} to="/FiHome">
           <FiClock />
             المهام اليومية
