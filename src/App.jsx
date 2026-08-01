@@ -64,21 +64,15 @@ export default function App() {
       
 
           <Route path="/auth" element={ <Auth  />} />
-          <Route path="/EmailTemplate" element={ <EmailTemplate  />} />
+          <Route path="/EmailTemplate" element={<EmailTemplate  /> }></Route>
           <Route
     path="/email-template/new"
     element={<EmailTemplate />}
 />
 
-<Route
-    path="/email-template/:id"
-    element={<EmailTemplate />}
-/>
-          <Route path="/EmailTemplates" element={ <EmailTemplates  />} />
-             <Route
-  path="/verify"
-  element={<Verified/>}
-/>
+<Route path="/email-template/:id" element={<EmailTemplate />}/>
+          <Route path="/EmailTemplates" element={<SystemLayout> <EmailTemplates/></SystemLayout>} />
+             <Route path="/verify" element={<Verified/>}/>
 
 <Route
   path="/forgot-password"

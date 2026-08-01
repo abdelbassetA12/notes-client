@@ -1,537 +1,792 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+
+import {
+    FiSave,
+    FiCheckCircle,
+    FiAlertCircle
+} from "react-icons/fi";
+
 import VariablePanel from "../components/email/VariablePanel";
 import SubjectEditor from "../components/email/SubjectEditor";
 import TemplateEditor from "../components/email/TemplateEditor";
 import TemplatePreview from "../components/email/TemplatePreview";
- 
 
-import axios from "axios";
 import API_BASE from "../config/api";
 
 export default function EmailTemplate() {
-    const editorRef = useRef();
+
     const { id } = useParams();
+
+    const editorRef = useRef(null);
+
+    const [name, setName] = useState(
+        "Job Application Template"
+    );
 
     const [subject, setSubject] = useState(
         "Job Application - {{desiredJob}}"
     );
-    const [name, setName] = useState("");
 
-    const [body, setBody] = useState(`Dear {{companyName}} Recruitment Team,
+    const [body, setBody] = useState(`
+<p>Dear {{companyName}} Recruitment Team,</p>
 
-I hope you are doing well.
+<p>I hope you are doing well.</p>
 
-I would like to apply for the position of {{desiredJob}} in your company.
+<p>
+I would like to apply for the position of
+<strong>{{desiredJob}}</strong>
+in your company.
+</p>
 
-Kind regards,
+<p>
+Kind regards,<br/>
+{{yourName}}<br/>
+{{yourPhone}}<br/>
+{{yourEmail}}
+</p>
+`);
 
-{{yourName}}
-{{yourPhone}}
-{{yourEmail}}`);
-useEffect(() => {
+    const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(false);
+    const [error, setError] = useState("");
 
-    if (!id || id === "new") return;
+    useEffect(() => {
 
-    loadTemplate();
+        if (!id || id === "new") {
+            return;
+        }
 
-}, [id]);
+        loadTemplate();
 
-const loadTemplate = async () => {
+    }, [id]);
 
-    try {
 
-        const res = await axios.get(
+    const loadTemplate = async () => {
 
-            `${API_BASE}/api/email-templates/${id}`,
+        try {
 
-            {
+            setError("");
 
-                withCredentials: true
+            const res = await axios.get(
 
-            }
+                `${API_BASE}/api/email-templates/${id}`,
 
+                {
+                    withCredentials: true
+                }
+
+            );
+
+            setName(
+                res.data.name || "Email Template"
+            );
+
+            setSubject(
+                res.data.subject || ""
+            );
+
+            setBody(
+                res.data.body || ""
+            );
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                "Unable to load this template."
+            );
+
+        }
+
+    };
+
+
+    const insertVariable = (variable) => {
+
+        const editor =
+            editorRef.current?.getEditor();
+
+        if (!editor) {
+
+            setBody(prev =>
+                `${prev}${variable}`
+            );
+
+            return;
+        }
+
+        editor.focus();
+
+        const range =
+            editor.getSelection(true);
+
+        if (!range) {
+
+            editor.insertText(
+                editor.getLength() - 1,
+                variable
+            );
+
+            return;
+        }
+
+        editor.insertText(
+            range.index,
+            variable,
+            "user"
         );
 
-        setSubject(res.data.subject);
-        setBody(res.data.body);
+        editor.setSelection(
+            range.index + variable.length,
+            0,
+            "silent"
+        );
 
-    } catch (err) {
+    };
 
-        console.log(err);
 
-    }
+    const saveTemplate = async () => {
 
-};
-/*
-const insertVariable = (variable) => {
+        if (!name.trim()) {
 
-    setBody(prev => prev + variable);
+            setError(
+                "Please enter a template name."
+            );
 
-};*/
-const insertVariable = (variable) => {
-
-    const editor =
-        editorRef.current?.getEditor();
-
-    if (!editor) {
-
-        setBody(prev => prev + variable);
-
-        return;
-
-    }
-
-    const range = editor.getSelection(true);
-
-    editor.insertText(
-        range.index,
-        variable
-    );
-
-    editor.setSelection(
-        range.index + variable.length
-    );
-
-};
-
-const saveTemplate = async () => {
-
-    try{
-
-       if (id && id !== "new") {
-
-    await axios.put(
-
-        `${API_BASE}/api/email-templates/${id}`,
-
-        {
-
-            subject,
-
-            body
-
-        },
-
-        {
-
-            withCredentials: true
-
+            return;
         }
 
-    );
+        if (!subject.trim()) {
 
-} else {
+            setError(
+                "Please enter an email subject."
+            );
 
-    await axios.post(
-
-        `${API_BASE}/api/email-templates`,
-
-        {
-
-            //name: "New Template",
-            name,
-
-            subject,
-
-            body
-
-        },
-
-        {
-
-            withCredentials: true
-
+            return;
         }
 
-    );
+        setSaving(true);
+        setSaved(false);
+        setError("");
 
-}
+        try {
 
-        alert("Template Saved");
+            const payload = {
 
-    }catch(err){
-
-        console.log(err);
-
-    }
-
-};
-/*
-const saveTemplate = async () => {
-
-    try{
-
-        await axios.post(
-
-            `${API_BASE}/api/job-leads/template`,
-
-            {
+                name: name.trim(),
 
                 subject,
 
                 body
 
-            },
+            };
 
-            {
 
-                withCredentials:true
+            if (id && id !== "new") {
+
+                await axios.put(
+
+                    `${API_BASE}/api/email-templates/${id}`,
+
+                    payload,
+
+                    {
+                        withCredentials: true
+                    }
+
+                );
+
+            } else {
+
+                await axios.post(
+
+                    `${API_BASE}/api/email-templates`,
+
+                    payload,
+
+                    {
+                        withCredentials: true
+                    }
+
+                );
 
             }
 
-        );
+            setSaved(true);
 
-        alert("Template Saved");
+            setTimeout(() => {
 
-    }catch(err){
+                setSaved(false);
 
-        console.log(err);
+            }, 3000);
 
-    }
+        } catch (err) {
 
-};*/
+            console.error(err);
+
+            setError(
+                err.response?.data?.message ||
+                "Unable to save template."
+            );
+
+        } finally {
+
+            setSaving(false);
+
+        }
+
+    };
+
+
     return (
 
         <div className="template-page">
 
-            <div className="template-header">
+            {/* PAGE HEADER */}
 
-                <h1>Email Template Builder</h1>
+            <header className="template-header">
 
-                <p>Create one email that works with every company.</p>
+                <div>
 
-            </div>
+                    <span className="template-eyebrow">
+                        EMAIL WORKSPACE
+                    </span>
 
-            <SubjectEditor
-                subject={subject}
-                setSubject={setSubject}
-                name={name}
-                setName={setName}
-            />
+                    <h1>
+                        Email Template Builder
+                    </h1>
 
-            <div className="template-content">
+                    <p>
+                        Create reusable and professional
+                        emails for your job applications.
+                    </p>
 
-                <VariablePanel
-    onInsert={insertVariable}
-/>
+                </div>
 
-                <TemplateEditor
-    ref={editorRef}
-    body={body}
-    setBody={setBody}
-/>
- {
-     
-      <TemplatePreview
-                    subject={subject}
-                    body={body}
-                />
-     
- }
-                
-
- 
-                
-
-            </div>
-
-            <div className="template-footer">
 
                 <button
-    className="save-btn"
-    onClick={saveTemplate}
->
-    Save Template
-</button>
+                    className="save-btn"
+                    onClick={saveTemplate}
+                    disabled={saving}
+                >
 
-            </div>
+                    {saving ? (
 
+                        <>
+                            <span className="save-spinner" />
+                            Saving...
+                        </>
 
+                    ) : (
 
-            <style>
-                {`
-                .template-page{
+                        <>
+                            <FiSave />
+                            Save Template
+                        </>
 
-max-width:1700px;
-margin:auto;
-padding:35px;
-background:#f5f7fb;
-min-height:100vh;
+                    )}
 
-}
+                </button>
 
-.template-header{
+            </header>
 
-margin-bottom:25px;
 
-}
+            {/* STATUS */}
 
-.template-header h1{
+            {(saved || error) && (
 
-font-size:34px;
-font-weight:700;
-color:#1d2939;
+                <div
+                    className={
+                        saved
+                            ? "template-status success"
+                            : "template-status error"
+                    }
+                >
 
-}
+                    {saved ? (
+                        <>
+                            <FiCheckCircle />
+                            Template saved successfully.
+                        </>
+                    ) : (
+                        <>
+                            <FiAlertCircle />
+                            {error}
+                        </>
+                    )}
 
-.template-header p{
+                </div>
 
-margin-top:8px;
-color:#667085;
-font-size:15px;
+            )}
 
-}
 
-.subject-card{
+            {/* SUBJECT */}
 
-background:#fff;
-padding:22px;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.06);
-margin-bottom:25px;
+            <SubjectEditor
 
-}
+                name={name}
+                setName={setName}
 
-.subject-card label{
+                subject={subject}
+                setSubject={setSubject}
 
-display:block;
-font-weight:600;
-margin-bottom:10px;
+            />
 
-}
 
-.subject-card input{
+            {/* MAIN WORKSPACE */}
 
-width:100%;
-height:52px;
-padding:0 18px;
-border:1px solid #d0d5dd;
-border-radius:12px;
-font-size:16px;
-outline:none;
-transition:.25s;
+            <main className="template-content">
 
-}
+                <VariablePanel
+                    onInsert={insertVariable}
+                />
 
-.subject-card input:focus{
 
-border-color:#4f46e5;
-box-shadow:0 0 0 4px rgba(79,70,229,.12);
+                <TemplateEditor
 
-}
+                    ref={editorRef}
 
-.template-content{
+                    body={body}
 
-display:grid;
-grid-template-columns:280px 1fr 450px;
-gap:25px;
-align-items:start;
+                    setBody={setBody}
 
-}
+                />
 
-.variable-panel{
 
-background:white;
-border-radius:20px;
-padding:20px;
-box-shadow:0 10px 30px rgba(0,0,0,.05);
-position:sticky;
-top:20px;
-max-height:85vh;
-overflow:auto;
+                <TemplatePreview
 
-}
+                    subject={subject}
 
-.variable-section{
+                    body={body}
 
-margin-bottom:25px;
+                />
 
-}
+            </main>
 
-.variable-section h3{
 
-font-size:14px;
-text-transform:uppercase;
-letter-spacing:1px;
-color:#98a2b3;
-margin-bottom:12px;
+            {/* FOOTER */}
 
-}
+            <footer className="template-footer">
 
-.variable-item{
+                <div className="footer-info">
 
-width:100%;
-display:flex;
-gap:14px;
-align-items:center;
-padding:13px;
-border:none;
-background:#f8fafc;
-border-radius:12px;
-cursor:pointer;
-margin-bottom:10px;
-transition:.25s;
+                    <span>
+                        Your changes are saved only when
+                        you click Save Template.
+                    </span>
 
-}
+                </div>
 
-.variable-item:hover{
 
-background:#eef2ff;
-transform:translateY(-2px);
+                <button
+                    className="save-btn footer-save"
+                    onClick={saveTemplate}
+                    disabled={saving}
+                >
 
-}
+                    <FiSave />
 
-.variable-item span{
+                    {saving
+                        ? "Saving..."
+                        : "Save Template"
+                    }
 
-width:40px;
-height:40px;
-border-radius:10px;
-display:flex;
-align-items:center;
-justify-content:center;
-background:white;
-font-size:20px;
-color:#4f46e5;
+                </button>
 
-}
+            </footer>
 
-.variable-item strong{
 
-display:block;
-font-size:14px;
+            <style>{`
 
-}
+                * {
+                    box-sizing: border-box;
+                }
 
-.variable-item small{
 
-color:#667085;
+                .template-page {
 
-}
+                    min-height: 100vh;
 
-.editor-card{
+                    padding:
+                        34px
+                        38px
+                        50px;
 
-background:white;
-border-radius:20px;
-padding:25px;
-box-shadow:0 10px 30px rgba(0,0,0,.05);
+                    background:
+                        #f6f8fc;
 
-}
+                    color: #101828;
 
-.editor-card h3{
+                }
 
-margin-bottom:18px;
 
-}
+                /* HEADER */
 
-.email-editor{
+                .template-header {
 
-width:100%;
-min-height:650px;
-resize:none;
-border:1px solid #d0d5dd;
-border-radius:14px;
-padding:20px;
-font-size:15px;
-line-height:1.8;
-outline:none;
-font-family:inherit;
-transition:.25s;
+                    max-width: 1800px;
 
-}
+                    margin:
+                        0 auto
+                        25px;
 
-.email-editor:focus{
+                    display: flex;
 
-border-color:#4f46e5;
-box-shadow:0 0 0 4px rgba(79,70,229,.10);
+                    align-items: center;
 
-}
+                    justify-content: space-between;
 
-.preview-card{
+                    gap: 30px;
 
-background:white;
-border-radius:20px;
-padding:25px;
-box-shadow:0 10px 30px rgba(0,0,0,.05);
-position:sticky;
-top:20px;
+                }
 
-}
 
-.preview-header{
+                .template-eyebrow {
 
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
+                    display: inline-block;
 
-}
+                    margin-bottom: 8px;
 
-.preview-header select{
+                    font-size: 11px;
 
-height:42px;
-padding:0 15px;
-border-radius:10px;
-border:1px solid #d0d5dd;
-outline:none;
+                    font-weight: 800;
 
-}
+                    letter-spacing: 1.5px;
 
-.preview-subject{
+                    color: #667085;
 
-padding-bottom:15px;
-margin-bottom:18px;
-border-bottom:1px solid #eee;
+                }
 
-}
 
-.preview-subject strong{
+                .template-header h1 {
 
-display:block;
-margin-bottom:8px;
+                    margin: 0;
 
-}
+                    font-size: 31px;
 
-.preview-body{
+                    font-weight: 750;
 
-line-height:1.8;
-white-space:pre-wrap;
-font-size:15px;
-color:#344054;
+                    letter-spacing: -.6px;
 
-}
+                }
 
-.template-footer{
 
-margin-top:30px;
-display:flex;
-justify-content:flex-end;
+                .template-header p {
 
-}
+                    margin:
+                        8px
+                        0
+                        0;
 
-.save-btn{
+                    color: #667085;
 
-height:55px;
-padding:0 35px;
-border:none;
-border-radius:14px;
-background:#4f46e5;
-color:white;
-font-size:16px;
-font-weight:600;
-cursor:pointer;
-transition:.25s;
+                    font-size: 14px;
 
-}
+                }
 
-.save-btn:hover{
 
-transform:translateY(-2px);
+                /* SAVE */
 
-background:#4338ca;
+                .save-btn {
 
-}`}
-            </style>
+                    min-height: 48px;
+
+                    padding:
+                        0
+                        21px;
+
+                    border: none;
+
+                    border-radius: 12px;
+
+                    display: inline-flex;
+
+                    align-items: center;
+
+                    justify-content: center;
+
+                    gap: 9px;
+
+                    background:
+                        #4f46e5;
+
+                    color: #fff;
+
+                    font-size: 14px;
+
+                    font-weight: 700;
+
+                    cursor: pointer;
+
+                    transition:
+                        .2s ease;
+
+                    white-space: nowrap;
+
+                }
+
+
+                .save-btn:hover {
+
+                    background:
+                        #4338ca;
+
+                    transform:
+                        translateY(-1px);
+
+                }
+
+
+                .save-btn:disabled {
+
+                    opacity: .65;
+
+                    cursor: not-allowed;
+
+                    transform: none;
+
+                }
+
+
+                .save-spinner {
+
+                    width: 15px;
+
+                    height: 15px;
+
+                    border:
+                        2px solid
+                        rgba(255,255,255,.35);
+
+                    border-top-color:
+                        #fff;
+
+                    border-radius: 50%;
+
+                    animation:
+                        spin .7s linear infinite;
+
+                }
+
+
+                @keyframes spin {
+
+                    to {
+                        transform: rotate(360deg);
+                    }
+
+                }
+
+
+                /* STATUS */
+
+                .template-status {
+
+                    max-width: 1800px;
+
+                    margin:
+                        0 auto
+                        18px;
+
+                    padding:
+                        12px
+                        15px;
+
+                    border-radius: 10px;
+
+                    display: flex;
+
+                    align-items: center;
+
+                    gap: 9px;
+
+                    font-size: 13px;
+
+                    font-weight: 600;
+
+                }
+
+
+                .template-status.success {
+
+                    background: #ecfdf3;
+
+                    color: #027a48;
+
+                    border:
+                        1px solid
+                        #abefc6;
+
+                }
+
+
+                .template-status.error {
+
+                    background: #fef3f2;
+
+                    color: #b42318;
+
+                    border:
+                        1px solid
+                        #fecdca;
+
+                }
+
+
+                /* WORKSPACE */
+
+                .template-content {
+
+                    max-width: 1800px;
+
+                    margin: 0 auto;
+
+                    display: grid;
+
+                    grid-template-columns:
+                        270px
+                        minmax(480px, 1fr)
+                        440px;
+
+                    gap: 20px;
+
+                    align-items: start;
+
+                }
+
+
+                /* FOOTER */
+
+                .template-footer {
+
+                    max-width: 1800px;
+
+                    margin:
+                        22px auto
+                        0;
+
+                    padding:
+                        16px
+                        18px;
+
+                    background: #fff;
+
+                    border:
+                        1px solid
+                        #eaecf0;
+
+                    border-radius: 14px;
+
+                    display: flex;
+
+                    align-items: center;
+
+                    justify-content: space-between;
+
+                    gap: 20px;
+
+                }
+
+
+                .footer-info {
+
+                    color: #98a2b3;
+
+                    font-size: 12px;
+
+                }
+
+
+                @media(max-width: 1250px) {
+
+                    .template-content {
+
+                        grid-template-columns:
+                            230px
+                            minmax(400px, 1fr);
+
+                    }
+
+                    .preview-card {
+
+                        grid-column:
+                            1 / -1;
+
+                        position: relative !important;
+
+                    }
+
+                }
+
+
+                @media(max-width: 850px) {
+
+                    .template-page {
+
+                        padding: 20px 15px 35px;
+
+                    }
+
+                    .template-header {
+
+                        align-items: flex-start;
+
+                        flex-direction: column;
+
+                    }
+
+                    .template-header h1 {
+
+                        font-size: 25px;
+
+                    }
+
+                    .template-header .save-btn {
+
+                        width: 100%;
+
+                    }
+
+                    .template-content {
+
+                        grid-template-columns: 1fr;
+
+                    }
+
+                    .variable-panel {
+
+                        position: relative !important;
+
+                        max-height: none !important;
+
+                    }
+
+                    .preview-card {
+
+                        grid-column: auto;
+
+                    }
+
+                    .template-footer {
+
+                        flex-direction: column;
+
+                        align-items: stretch;
+
+                    }
+
+                    .footer-save {
+
+                        width: 100%;
+
+                    }
+
+                }
+
+            `}</style>
 
         </div>
 

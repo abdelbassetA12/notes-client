@@ -688,7 +688,49 @@ const openGmail = async () => {
 
     const subject = template.subject || "";
 
-    const body = template.body || "";
+   
+
+const htmlToPlainText = (html) => {
+
+    return html
+
+        // paragraphs
+        .replace(/<\/p>\s*<p>/gi, "\n\n")
+
+        // paragraph closing
+        .replace(/<\/p>/gi, "\n\n")
+
+        // line breaks
+        .replace(/<br\s*\/?>/gi, "\n")
+
+        // list items
+        .replace(/<li>/gi, "• ")
+        .replace(/<\/li>/gi, "\n")
+
+        // remove remaining HTML tags
+        .replace(/<[^>]+>/g, "")
+
+        // HTML spaces
+        .replace(/&nbsp;/gi, " ")
+
+        // decode common entities
+        .replace(/&amp;/gi, "&")
+        .replace(/&lt;/gi, "<")
+        .replace(/&gt;/gi, ">")
+
+        // clean excessive spaces
+        .replace(/[ \t]+\n/g, "\n")
+
+        .replace(/\n{3,}/g, "\n\n")
+
+        .trim();
+};
+
+const body = htmlToPlainText(
+    template.body || ""
+);
+    //const body = template.body || "";
+
 
 
     // =========================================
@@ -903,8 +945,46 @@ const openLeadEmail = (lead) => {
   const subject =
     replaceVariables(template.subject);
 
-  const body =
-    replaceVariables(template.body);
+
+    const htmlToPlainText = (html) => {
+
+    return html
+        // paragraphs
+        .replace(/<\/p>\s*<p>/gi, "\n\n")
+
+        // end paragraph
+        .replace(/<\/p>/gi, "\n\n")
+
+        // line breaks
+        .replace(/<br\s*\/?>/gi, "\n")
+
+        // list items
+        .replace(/<li>/gi, "• ")
+        .replace(/<\/li>/gi, "\n")
+
+        // remove HTML tags
+        .replace(/<[^>]+>/g, "")
+
+        // HTML spaces
+        .replace(/&nbsp;/gi, " ")
+
+        // entities
+        .replace(/&amp;/gi, "&")
+        .replace(/&lt;/gi, "<")
+        .replace(/&gt;/gi, ">")
+
+        // clean
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+};
+
+
+const body = htmlToPlainText(
+    replaceVariables(template.body)
+);
+
+  //const body =  replaceVariables(template.body);
 
   // ============================
   // Open Gmail
