@@ -21,31 +21,10 @@ export default function SystemSidebar(){
   
      
      const isActive = (path) => location.pathname === path;
-     const [stats,setStats] = useState(null);
+   
 
 
-
-
-const loadStats = async()=>{
-
-const res = await axios.get(
-
-`${API_BASE}/api/dashboard/today`,
-
-{
-withCredentials:true
-}
-
-);
-
-setStats(res.data.stats);
-
-};
-useEffect(()=>{
-
-loadStats();
-
-},[]);
+ 
 
 return(
 
@@ -68,18 +47,12 @@ return(
           
           <Link className={isActive("/") ? "active" : ""} to="/">
           <FiHome />
-             Dashboard
+             jobLeads
           </Link>
-          <Link className={isActive("/Categories") ? "active" : ""} to="/Categories">
-          <FiHome />
-             Categories
-          </Link>
+           
 
-          <Link className={isActive("/jobLeads") ? "active" : ""} to="/jobLeads">
-          <FiClock />
-           jobLeads
-          </Link>
-          <Link className={isActive("/EmailTemplate") ? "active" : ""} to="/EmailTemplate">
+          
+          <Link className={isActive("/email-template/new") ? "active" : ""} to="/email-template/new">
           <FiClock />
           Email Template
           </Link>
@@ -87,35 +60,17 @@ return(
           <FiClock />
           Email Templates
           </Link>
-           <Link className={isActive("/FiHome") ? "active" : ""} to="/FiHome">
-          <FiClock />
-            المهام اليومية
-          </Link>
+           
 
-          <Link className={isActive("/FiCalendar") ? "active" : ""} to="/FiCalendar">
-          <FiCalendar />
-             اليوم
-          </Link>
-
-          <Link className={isActive("/FiClock") ? "active" : ""} to="/FiClock">
-          <FiClock />
-             المهام القادمة
-          </Link>
-
-          <Link className={isActive("/FiFolder") ? "active" : ""} to="/FiFolder">
-          <FiFolder />
-             المشاريع
-          </Link>
-
-          <Link className={isActive("/FiBarChart2") ? "active" : ""} to="/FiBarChart2">
-          <FiBarChart2 />
-             الإحصائيات
-          </Link>
+         
+  
+ 
 
           <Link className={isActive("/settings") ? "active" : ""} to="/settings">
           <FiSettings />
              الإعدادات
           </Link>
+           
         
 
 
@@ -125,34 +80,6 @@ return(
 
 
 
-<div className="sidebar-progress">
-
-<h4>
-تقدم اليوم
-</h4>
-<div
-  className="circle"
-  style={{
-    background: `conic-gradient(
-      #6366F1 ${stats?.percent || 0}%,
-      #E5E7EB ${stats?.percent || 0}%
-    )`
-  }}
->
-  {stats?.percent || 0}%
-</div>
-
-
-
-<p>
-
-{stats?.completed || 0}
-من
-{stats?.total || 0}
-مهام مكتملة
-</p>
-
-</div>
 
  {/* LOGOUT */}
         <button className="logout" onClick={logout}>
@@ -175,6 +102,9 @@ display:flex;
 flex-direction:column;
 z-index:1000;
 overflow-y: scroll;
+display:flex;
+flex-direction:column;
+justify-content: space-between;
 }
 
 .logo{

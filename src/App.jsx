@@ -22,11 +22,7 @@ import EmailTemplates from "./pages/EmailTemplates";
 
  
 
-
-
-
-import DashboardHome from "./pages/DashboardHome";
-import Categories from "./pages/Categories";
+ 
 
 
 import JobLeads from "./pages/JobLeads";
@@ -52,26 +48,34 @@ export default function App() {
         <Route path="/" element={
             user ? (
               <SystemLayout>
-                <DashboardHome />
+                <JobLeads />
               </SystemLayout>
             ) : (
               <Home /> // أو Login
             )
           }
         />
+
+       
      
 
       
 
           <Route path="/auth" element={ <Auth  />} />
-          <Route path="/EmailTemplate" element={<EmailTemplate  /> }></Route>
+        
           <Route
     path="/email-template/new"
-    element={<EmailTemplate />}
+    element={user ? (<EmailTemplate />) : (
+              <Auth /> // أو Login
+            )}
 />
 
-<Route path="/email-template/:id" element={<EmailTemplate />}/>
-          <Route path="/EmailTemplates" element={<SystemLayout> <EmailTemplates/></SystemLayout>} />
+<Route path="/email-template/:id" element={user ? (<EmailTemplate />) : (
+              <Auth /> // أو Login
+            )}/>
+          <Route path="/EmailTemplates" element={user ? (<SystemLayout> <EmailTemplates/></SystemLayout>) : (
+              <Auth /> // أو Login
+            )} />
              <Route path="/verify" element={<Verified/>}/>
 
 <Route
@@ -103,44 +107,9 @@ export default function App() {
            
 
          
-       <Route
-         path="/jobLeads"
-         element={
-           user ? (
-             <SystemLayout>
-               <JobLeads />
-             </SystemLayout>
-           ) : (
-             <Home />
-           )
-         }
-       />
-       <Route
-         path="/"
-         element={
-           user ? (
-             <SystemLayout>
-               <DashboardHome />
-             </SystemLayout>
-           ) : (
-             <Home />
-           )
-         }
-       />
-       <Route
-         path="/Categories"
-         element={
-           user ? (
-             <SystemLayout>
-               <Categories />
-             </SystemLayout>
-           ) : (
-             <Home />
-           )
-         }
-       />
+        
            
-            <Route path="/" element={ user ? ( <DashboardHome />  ) : (  <Home />  ) }/>
+             
            
       
        
