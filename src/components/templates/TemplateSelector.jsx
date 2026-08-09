@@ -2,7 +2,7 @@ import { useResume } from "../context/ResumeContext";
 import Button from "../common/Button";
 import ModernTemplate from "./ModernTemplate";
 import ClassicTemplate from "./ClassicTemplate";
-import TemplateCard from "./Templates/TemplateCard";
+import TemplateCard from "./templates/TemplateCard";
 import ModernThumbnail from "./ModernThumbnail";
 import ClassicThumbnail from "./ClassicThumbnail";
 
