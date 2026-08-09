@@ -19,6 +19,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import EmailTemplate from "./pages/EmailTemplate";
 import EmailTemplates from "./pages/EmailTemplates";
 
+import ResumeEditor from "./pages/ResumeEditor";
+
 
  
 
@@ -62,6 +64,7 @@ export default function App() {
       
 
           <Route path="/auth" element={ <Auth  />} />
+          <Route path="/ResumeEditor" element={ <ResumeEditor  />} />
         
           <Route
     path="/email-template/new"

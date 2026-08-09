@@ -70,6 +70,10 @@ return(
           <FiSettings />
              الإعدادات
           </Link>
+          <Link className={isActive("/ResumeEditor") ? "active" : ""} to="/ResumeEditor">
+          <FiSettings />
+            Resume 
+          </Link>
            
         
 

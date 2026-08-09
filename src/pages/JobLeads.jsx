@@ -2199,7 +2199,7 @@ return (
         border-radius:18px;
         padding:14px;
         margin-bottom:28px;
-
+ 
         display:flex;
         align-items:center;
         justify-content:space-between;
