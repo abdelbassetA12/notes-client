@@ -22,7 +22,7 @@ export default function Navbar() {
 
                     <span className="jr-logo-text">
                        
-                       Avertools
+                       AverTools
                     </span>
 
                 </a>

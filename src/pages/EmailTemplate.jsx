@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+ 
 import axios from "axios";
 
 import {
@@ -17,6 +18,7 @@ import API_BASE from "../config/api";
 
 export default function EmailTemplate() {
 
+    const navigate = useNavigate();
     const { id } = useParams();
 
     const editorRef = useRef(null);
@@ -248,6 +250,14 @@ Kind regards,<br/>
             {/* PAGE HEADER */}
 
             <header className="template-header">
+                <button
+                    className="back-btn"
+                    onClick={() => navigate(-1)}
+                    title="Back to CVs"
+                >
+                    <span className="back-icon">←</span>
+                    <span className="back-text">Back</span>
+                </button>
 
                 <div>
 
@@ -441,6 +451,44 @@ Kind regards,<br/>
 
                     gap: 30px;
 
+                }
+
+                .back-btn {
+                    height: 38px;
+                    padding: 0 11px;
+
+                    display: flex;
+                    align-items: center;
+                    gap: 7px;
+
+                    border: 0;
+                    background: transparent;
+                    border-radius: 8px;
+
+                    color: #374151;
+
+                    font-size: 14px;
+                    font-weight: 600;
+
+                    cursor: pointer;
+
+                    transition:
+                        background .18s ease,
+                        color .18s ease;
+                }
+
+                .back-btn:hover {
+                    background: #f3f4f6;
+                    color: #111827;
+                }
+
+                .back-icon {
+                    font-size: 20px;
+                    line-height: 1;
+                }
+
+                .back-text {
+                    font-size: 14px;
                 }
 
 

@@ -18,7 +18,7 @@ export default function Topbar() {
                     title="Back to CVs"
                 >
                     <span className="back-icon">←</span>
-                    <span className="back-text">CVs</span>
+                    <span className="back-text">Back</span>
                 </button>
 
                 <div className="divider" />

@@ -25,7 +25,7 @@ export default function Footer() {
                         </span>
 
                         <span className="jr-logo-text">
-                            JobReach
+                            AverTools
                         </span>
 
                     </a>
