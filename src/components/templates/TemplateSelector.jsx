@@ -6,6 +6,9 @@ import TemplateCard from "./templates/TemplateCard";
 import ModernThumbnail from "./ModernThumbnail";
 import ClassicThumbnail from "./ClassicThumbnail";
 
+import EuropeanTemplate from "./EuropeanTemplate";
+import EuropeanThumbnail from "./EuropeanThumbnail";
+
  
 
 export default function TemplateSelector() {
@@ -44,6 +47,20 @@ export default function TemplateSelector() {
     component: ClassicTemplate,
 
     thumbnail: ClassicThumbnail
+}
+
+,
+
+   {
+    id: "european",
+
+    name: "European",
+
+    description: "Traditional resume",
+
+    component: EuropeanTemplate,
+
+    thumbnail: EuropeanThumbnail
 }
 
 ];

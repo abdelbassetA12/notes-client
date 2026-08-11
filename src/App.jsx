@@ -41,8 +41,8 @@ export default function App() {
    const { user } = useAuth();
   return (
     <BrowserRouter>
-    {!user && <Navbar />}
-         
+    
+    {/*{!user && <Navbar />} */}
     
         <Routes>
               {/*<Route path="/" element={<Home />} />*/}

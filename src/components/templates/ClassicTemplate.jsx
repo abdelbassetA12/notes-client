@@ -1186,6 +1186,7 @@ p{
 }
 
 
+
 /*
 export default function ClassicTemplate({ resume  }) {
 
