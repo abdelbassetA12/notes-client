@@ -9,6 +9,24 @@ export function ResumeProvider({ children }) {
     const [selectedTemplate, setSelectedTemplate] = useState("modern");
 const [design, setDesign] = useState({
 
+     // COLORS
+    // =========================
+
+    sidebarBackground: "#1f2937",
+    mainBackground: "#ffffff",
+
+    headerBackground: "#ffffff",
+
+    primaryColor: "#2563eb",
+
+    nameColor: "#111827",
+    headingColor: "#111827",
+    subheadingColor: "#374151",
+    textColor: "#4b5563",
+
+    linkColor: "#2563eb",
+    dividerColor: "#d1d5db",
+
   // Colors
   primaryColor:"#2563eb",
   textColor:"#374151",

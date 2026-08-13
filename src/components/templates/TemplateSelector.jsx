@@ -9,6 +9,11 @@ import ClassicThumbnail from "./ClassicThumbnail";
 import EuropeanTemplate from "./EuropeanTemplate";
 import EuropeanThumbnail from "./EuropeanThumbnail";
 
+import ProTemplate from "./ProTemplate";
+import ProThumbnail from "./ProThumbnail";
+import ModernGreenTemplate from "./ModernGreenTemplate";
+import ModernGreenThumbnail from "./ModernGreenThumbnail";
+
  
 
 export default function TemplateSelector() {
@@ -61,6 +66,30 @@ export default function TemplateSelector() {
     component: EuropeanTemplate,
 
     thumbnail: EuropeanThumbnail
+},
+
+{
+    id: "pro",
+
+    name: "Pro",
+
+    description: "Traditional resume",
+
+    component: ProTemplate,
+
+    thumbnail: ProThumbnail
+},
+
+{
+    id: "modernGreen",
+
+    name: "ModernGreen",
+
+    description: "Traditional resume",
+
+    component: ModernGreenTemplate,
+
+    thumbnail: ModernGreenThumbnail
 }
 
 ];

@@ -50,43 +50,7 @@ export default function EditorSidebar(){
 
 </div>
 
-{/*
-
-{activeTab === "content" && (
-    <>
-        <PersonalSection />
-
-        <ProfileSection />
-
-        <EducationSection />
-
-        <ExperienceSection />
-
-        <SkillsSection />
-
-        <LanguagesSection />
-
-        <ProjectsSection />
-
-        <CertificatesSection />
-
-        <CoursesSection />
-
-        <VolunteerSection />
-
-        <AwardsSection />
-
-        <PublicationsSection />
-
-        <OrganizationsSection />
-
-        <InterestsSection />
-
-        <ReferencesSection />
-
-        <CustomSections />
-    </>
-)}*/}
+ 
 
 {activeTab === "content" && (
     <>
