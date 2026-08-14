@@ -1,6 +1,7 @@
 import { useResume } from "../context/ResumeContext";
 
 export default function ProTemplate({ resume }) {
+
     const { design } = useResume();
 
     /* =========================================================
@@ -15,13 +16,14 @@ export default function ProTemplate({ resume }) {
         String(value).trim() !== "";
 
     const hasArray = (value) =>
-        Array.isArray(value) && value.length > 0;
+        Array.isArray(value) &&
+        value.length > 0;
 
-    const personal = resume?.personal || {};
+    const personal =
+        resume?.personal || {};
 
     /* =========================================================
-       DESIGN SYSTEM
-       Same design system used by ClassicTemplate
+       COLORS
     ========================================================= */
 
     const sidebarBackground =
@@ -65,22 +67,75 @@ export default function ProTemplate({ resume }) {
         design?.dividerColor ||
         "#d1d5db";
 
-    const font =
-        design?.fontFamily ||
-        "Arial, sans-serif";
-
-    const fontSize =
-        Number(design?.fontSize) || 13;
-
     const sidebarText =
         design?.sidebarTextColor ||
-        "#FFFFFF";
+        "#ffffff";
+
+    /* =========================================================
+       TYPOGRAPHY
+    ========================================================= */
+
+    const font =
+        design?.fontFamily ||
+        "Arial";
+
+    const baseFontSize =
+        Number(design?.baseFontSize) || 10;
+
+    const nameFontSize =
+        Number(design?.nameFontSize) || 32;
+
+    const jobTitleFontSize =
+        Number(design?.jobTitleFontSize) || 10;
+
+    const sectionTitleFontSize =
+        Number(design?.sectionTitleFontSize) || 12;
+
+    const headingFontSize =
+        Number(design?.headingFontSize) || 11.5;
+
+    const subheadingFontSize =
+        Number(design?.subheadingFontSize) || 9.5;
+
+    const textFontSize =
+        Number(design?.textFontSize) || 9.3;
+
+    const dateFontSize =
+        Number(design?.dateFontSize) || 8.5;
+
+    const locationFontSize =
+        Number(design?.locationFontSize) || 8.5;
+
+    const linkFontSize =
+        Number(design?.linkFontSize) || 8.5;
+
+    const profileFontSize =
+        Number(design?.profileFontSize) || 10.5;
+
+    const contactFontSize =
+        Number(design?.contactFontSize) || 10;
+
+    const languageFontSize =
+        Number(design?.languageFontSize) || 10.5;
+
+    const interestFontSize =
+        Number(design?.interestFontSize) || 10.5;
+
+    const skillFontSize =
+        Number(design?.skillFontSize) || 9.5;
+
+    const skillPercentageFontSize =
+        Number(design?.skillPercentageFontSize) || 8;
 
     /* =========================================================
        SECTION TITLE
     ========================================================= */
 
-    const sectionTitle = (textValue, dark = false) => (
+    const sectionTitle = (
+        textValue,
+        dark = false
+    ) => (
+
         <h2
             className={`eu2-section-title ${
                 dark
@@ -89,34 +144,50 @@ export default function ProTemplate({ resume }) {
             }`}
             style={{
                 textAlign:
-                    design?.sectionTitleAlign || "left",
+                    design?.sectionTitleAlign ||
+                    "left",
 
                 textTransform:
                     design?.uppercaseTitles
                         ? "uppercase"
-                        : "none",
+                        : "none"
             }}
         >
-            <span>{textValue}</span>
+            <span>
+                {textValue}
+            </span>
         </h2>
     );
 
     /* =========================================================
-       CONTACT ITEM
+       CONTACT
     ========================================================= */
 
-    const contactItem = (icon, value) => {
-        if (!hasValue(value)) return null;
+    const contactItem = (
+        icon,
+        value
+    ) => {
+
+        if (!hasValue(value)) {
+            return null;
+        }
 
         return (
+
             <div className="eu2-contact-item">
-                <span className="eu2-contact-icon">
-                    {icon}
-                </span>
+
+                {design?.showIcons && (
+
+                    <span className="eu2-contact-icon">
+                        {icon}
+                    </span>
+
+                )}
 
                 <span className="eu2-contact-value">
                     {value}
                 </span>
+
             </div>
         );
     };
@@ -130,30 +201,51 @@ export default function ProTemplate({ resume }) {
         end,
         present = false
     ) => {
+
         return (
-            <div className={`eu2-date ${
-                !hasValue(start) && !hasValue(end)
-                    ? "eu2-date--empty"
-                    : ""
-            }`}>
+
+            <div
+                className={`eu2-date ${
+                    !hasValue(start) &&
+                    !hasValue(end)
+                        ? "eu2-date--empty"
+                        : ""
+                }`}
+            >
+
                 {hasValue(start) && (
-                    <span>{start}</span>
+
+                    <span>
+                        {start}
+                    </span>
+
                 )}
 
                 {hasValue(start) &&
                     hasValue(end) && (
-                        <span className="eu2-date-dash">
-                            —
-                        </span>
-                    )}
+
+                    <span className="eu2-date-dash">
+                        —
+                    </span>
+
+                )}
 
                 {hasValue(end) ? (
-                    <span>{end}</span>
+
+                    <span>
+                        {end}
+                    </span>
+
                 ) : (
+
                     present && (
-                        <span>Present</span>
+                        <span>
+                            Present
+                        </span>
                     )
+
                 )}
+
             </div>
         );
     };
@@ -163,7 +255,9 @@ export default function ProTemplate({ resume }) {
     ========================================================= */
 
     const skillLevel = (level) => {
-        const number = Number(level);
+
+        const number =
+            Number(level);
 
         if (Number.isNaN(number)) {
             return 0;
@@ -180,30 +274,109 @@ export default function ProTemplate({ resume }) {
     ========================================================= */
 
     return (
+
         <div
             className="eu2-paper"
+
             style={{
-                "--eu2-sidebar-background": sidebarBackground,
-                "--eu2-background": mainBackground,
-                "--eu2-header-background": headerBackground,
-                "--eu2-primary": primaryColor,
-                "--eu2-name": nameColor,
-                "--eu2-heading": headingColor,
-                "--eu2-subheading": subheadingColor,
-                "--eu2-text": textColor,
-                "--eu2-link": linkColor,
-                "--eu2-divider": dividerColor,
-                "--eu2-font": font,
-                "--eu2-font-size": `${fontSize}px`,
-                "--eu2-secondary": textColor,
-                "--eu2-border": dividerColor,
-                "--eu2-surface": mainBackground,
-                "--eu2-sidebar-text": sidebarText,
+
+                "--eu2-sidebar-background":
+                    sidebarBackground,
+
+                "--eu2-background":
+                    mainBackground,
+
+                "--eu2-header-background":
+                    headerBackground,
+
+                "--eu2-primary":
+                    primaryColor,
+
+                "--eu2-name":
+                    nameColor,
+
+                "--eu2-heading":
+                    headingColor,
+
+                "--eu2-subheading":
+                    subheadingColor,
+
+                "--eu2-text":
+                    textColor,
+
+                "--eu2-link":
+                    linkColor,
+
+                "--eu2-divider":
+                    dividerColor,
+
+                "--eu2-font":
+                    font,
+
+                "--eu2-base-size":
+                    `${baseFontSize}px`,
+
+                "--eu2-name-size":
+                    `${nameFontSize}px`,
+
+                "--eu2-job-size":
+                    `${jobTitleFontSize}px`,
+
+                "--eu2-section-size":
+                    `${sectionTitleFontSize}px`,
+
+                "--eu2-heading-size":
+                    `${headingFontSize}px`,
+
+                "--eu2-subheading-size":
+                    `${subheadingFontSize}px`,
+
+                "--eu2-text-size":
+                    `${textFontSize}px`,
+
+                "--eu2-date-size":
+                    `${dateFontSize}px`,
+
+                "--eu2-location-size":
+                    `${locationFontSize}px`,
+
+                "--eu2-link-size":
+                    `${linkFontSize}px`,
+
+                "--eu2-profile-size":
+                    `${profileFontSize}px`,
+
+                "--eu2-contact-size":
+                    `${contactFontSize}px`,
+
+                "--eu2-language-size":
+                    `${languageFontSize}px`,
+
+                "--eu2-interest-size":
+                    `${interestFontSize}px`,
+
+                "--eu2-skill-size":
+                    `${skillFontSize}px`,
+
+                "--eu2-skill-percent-size":
+                    `${skillPercentageFontSize}px`,
+
+                "--eu2-secondary":
+                    textColor,
+
+                "--eu2-border":
+                    dividerColor,
+
+                "--eu2-surface":
+                    mainBackground,
+
+                "--eu2-sidebar-text":
+                    sidebarText
             }}
         >
 
             {/* =================================================
-                LEFT SIDEBAR
+                SIDEBAR
             ================================================= */}
 
             <aside className="eu2-sidebar">
@@ -220,7 +393,7 @@ export default function ProTemplate({ resume }) {
                             alt=""
                             className={`eu2-photo ${
                                 design?.photoStyle ||
-                                "square"
+                                "circle"
                             }`}
                         />
 
@@ -229,6 +402,7 @@ export default function ProTemplate({ resume }) {
                         <div className="eu2-photo-placeholder">
 
                             <span>
+
                                 {safe(
                                     personal.firstName
                                 )
@@ -240,6 +414,7 @@ export default function ProTemplate({ resume }) {
                                 )
                                     .charAt(0)
                                     .toUpperCase()}
+
                             </span>
 
                         </div>
@@ -252,8 +427,13 @@ export default function ProTemplate({ resume }) {
 
                     {/* PROFILE */}
 
-                    {hasValue(resume?.profile) && (
-                        <section className="eu2-side-section">
+                    {hasValue(
+                        resume?.profile
+                    ) && (
+
+                        <section
+                            className="eu2-side-section"
+                        >
 
                             {sectionTitle(
                                 "Profile",
@@ -265,12 +445,15 @@ export default function ProTemplate({ resume }) {
                             </p>
 
                         </section>
+
                     )}
 
 
                     {/* CONTACT */}
 
-                    <section className="eu2-side-section">
+                    <section
+                        className="eu2-side-section"
+                    >
 
                         {sectionTitle(
                             "Contact",
@@ -310,7 +493,9 @@ export default function ProTemplate({ resume }) {
                         resume?.languages
                     ) && (
 
-                        <section className="eu2-side-section">
+                        <section
+                            className="eu2-side-section"
+                        >
 
                             {sectionTitle(
                                 "Languages",
@@ -320,7 +505,7 @@ export default function ProTemplate({ resume }) {
                             <div className="eu2-languages">
 
                                 {resume.languages.map(
-                                    (language) => (
+                                    language => (
 
                                         <div
                                             className="eu2-language"
@@ -349,6 +534,7 @@ export default function ProTemplate({ resume }) {
                             </div>
 
                         </section>
+
                     )}
 
 
@@ -358,7 +544,9 @@ export default function ProTemplate({ resume }) {
                         resume?.interests
                     ) && (
 
-                        <section className="eu2-side-section">
+                        <section
+                            className="eu2-side-section"
+                        >
 
                             {sectionTitle(
                                 "Interests",
@@ -369,7 +557,7 @@ export default function ProTemplate({ resume }) {
 
                                 {resume.interests
                                     .map(
-                                        (item) =>
+                                        item =>
                                             item?.name
                                     )
                                     .filter(Boolean)
@@ -381,7 +569,9 @@ export default function ProTemplate({ resume }) {
 
                                             <div
                                                 className="eu2-interest"
-                                                key={`${interest}-${index}`}
+                                                key={
+                                                    `${interest}-${index}`
+                                                }
                                             >
 
                                                 <span className="eu2-interest-dot" />
@@ -405,7 +595,7 @@ export default function ProTemplate({ resume }) {
 
 
             {/* =================================================
-                RIGHT CONTENT
+                MAIN
             ================================================= */}
 
             <main className="eu2-main">
@@ -417,7 +607,7 @@ export default function ProTemplate({ resume }) {
                     style={{
                         textAlign:
                             design?.headerAlign ||
-                            "left",
+                            "left"
                     }}
                 >
 
@@ -475,7 +665,7 @@ export default function ProTemplate({ resume }) {
                         <div className="eu2-timeline">
 
                             {resume.education.map(
-                                (education) => (
+                                education => (
 
                                     <article
                                         className="eu2-entry"
@@ -543,7 +733,6 @@ export default function ProTemplate({ resume }) {
                                         </div>
 
                                     </article>
-
                                 )
                             )}
 
@@ -570,7 +759,7 @@ export default function ProTemplate({ resume }) {
                         <div className="eu2-timeline">
 
                             {resume.experience.map(
-                                (exp) => (
+                                exp => (
 
                                     <article
                                         className="eu2-entry"
@@ -636,7 +825,6 @@ export default function ProTemplate({ resume }) {
                                         </div>
 
                                     </article>
-
                                 )
                             )}
 
@@ -663,7 +851,7 @@ export default function ProTemplate({ resume }) {
                         <div className="eu2-skills">
 
                             {resume.skills.map(
-                                (skill) => {
+                                skill => {
 
                                     const level =
                                         skillLevel(
@@ -699,7 +887,6 @@ export default function ProTemplate({ resume }) {
 
                                             </div>
 
-
                                             {design?.skillStyle ===
                                                 "dots" ? (
 
@@ -710,11 +897,9 @@ export default function ProTemplate({ resume }) {
                                                         40,
                                                         60,
                                                         80,
-                                                        100,
+                                                        100
                                                     ].map(
-                                                        (
-                                                            value
-                                                        ) => (
+                                                        value => (
 
                                                             <span
                                                                 key={
@@ -739,7 +924,8 @@ export default function ProTemplate({ resume }) {
 
                                                     <span
                                                         style={{
-                                                            width: `${level}%`,
+                                                            width:
+                                                                `${level}%`
                                                         }}
                                                     />
 
@@ -748,7 +934,6 @@ export default function ProTemplate({ resume }) {
                                             )}
 
                                         </div>
-
                                     );
                                 }
                             )}
@@ -774,7 +959,7 @@ export default function ProTemplate({ resume }) {
                         )}
 
                         {resume.projects.map(
-                            (project) => (
+                            project => (
 
                                 <article
                                     className="eu2-simple-entry"
@@ -786,31 +971,37 @@ export default function ProTemplate({ resume }) {
                                         {hasValue(
                                             project.name
                                         ) && (
+
                                             <h3>
                                                 {
                                                     project.name
                                                 }
                                             </h3>
+
                                         )}
 
                                         {hasValue(
                                             project.role
                                         ) && (
+
                                             <strong>
                                                 {
                                                     project.role
                                                 }
                                             </strong>
+
                                         )}
 
                                         {hasValue(
                                             project.description
                                         ) && (
+
                                             <p>
                                                 {
                                                     project.description
                                                 }
                                             </p>
+
                                         )}
 
                                         {hasValue(
@@ -841,7 +1032,6 @@ export default function ProTemplate({ resume }) {
                                     )}
 
                                 </article>
-
                             )
                         )}
 
@@ -864,7 +1054,7 @@ export default function ProTemplate({ resume }) {
                         )}
 
                         {resume.certificates.map(
-                            (item) => (
+                            item => (
 
                                 <article
                                     className="eu2-simple-entry"
@@ -882,11 +1072,13 @@ export default function ProTemplate({ resume }) {
                                         {hasValue(
                                             item.issuer
                                         ) && (
+
                                             <strong>
                                                 {
                                                     item.issuer
                                                 }
                                             </strong>
+
                                         )}
 
                                         {hasValue(
@@ -913,15 +1105,16 @@ export default function ProTemplate({ resume }) {
                                     {hasValue(
                                         item.date
                                     ) && (
+
                                         <span className="eu2-simple-date">
                                             {
                                                 item.date
                                             }
                                         </span>
+
                                     )}
 
                                 </article>
-
                             )
                         )}
 
@@ -944,7 +1137,7 @@ export default function ProTemplate({ resume }) {
                         )}
 
                         {resume.courses.map(
-                            (item) => (
+                            item => (
 
                                 <article
                                     className="eu2-simple-entry"
@@ -962,11 +1155,13 @@ export default function ProTemplate({ resume }) {
                                         {hasValue(
                                             item.provider
                                         ) && (
+
                                             <strong>
                                                 {
                                                     item.provider
                                                 }
                                             </strong>
+
                                         )}
 
                                         {hasValue(
@@ -993,15 +1188,16 @@ export default function ProTemplate({ resume }) {
                                     {hasValue(
                                         item.date
                                     ) && (
+
                                         <span className="eu2-simple-date">
                                             {
                                                 item.date
                                             }
                                         </span>
+
                                     )}
 
                                 </article>
-
                             )
                         )}
 
@@ -1026,7 +1222,7 @@ export default function ProTemplate({ resume }) {
                         <div className="eu2-timeline">
 
                             {resume.volunteer.map(
-                                (item) => (
+                                item => (
 
                                     <article
                                         className="eu2-entry"
@@ -1050,37 +1246,42 @@ export default function ProTemplate({ resume }) {
                                             {hasValue(
                                                 item.organization
                                             ) && (
+
                                                 <strong>
                                                     {
                                                         item.organization
                                                     }
                                                 </strong>
+
                                             )}
 
                                             {hasValue(
                                                 item.city
                                             ) && (
+
                                                 <div className="eu2-location">
                                                     {
                                                         item.city
                                                     }
                                                 </div>
+
                                             )}
 
                                             {hasValue(
                                                 item.description
                                             ) && (
+
                                                 <p>
                                                     {
                                                         item.description
                                                     }
                                                 </p>
+
                                             )}
 
                                         </div>
 
                                     </article>
-
                                 )
                             )}
 
@@ -1105,7 +1306,7 @@ export default function ProTemplate({ resume }) {
                         )}
 
                         {resume.awards.map(
-                            (item) => (
+                            item => (
 
                                 <article
                                     className="eu2-simple-entry"
@@ -1123,21 +1324,25 @@ export default function ProTemplate({ resume }) {
                                         {hasValue(
                                             item.issuer
                                         ) && (
+
                                             <strong>
                                                 {
                                                     item.issuer
                                                 }
                                             </strong>
+
                                         )}
 
                                         {hasValue(
                                             item.description
                                         ) && (
+
                                             <p>
                                                 {
                                                     item.description
                                                 }
                                             </p>
+
                                         )}
 
                                     </div>
@@ -1145,15 +1350,16 @@ export default function ProTemplate({ resume }) {
                                     {hasValue(
                                         item.date
                                     ) && (
+
                                         <span className="eu2-simple-date">
                                             {
                                                 item.date
                                             }
                                         </span>
+
                                     )}
 
                                 </article>
-
                             )
                         )}
 
@@ -1176,7 +1382,7 @@ export default function ProTemplate({ resume }) {
                         )}
 
                         {resume.publications.map(
-                            (item) => (
+                            item => (
 
                                 <article
                                     className="eu2-simple-entry"
@@ -1194,21 +1400,25 @@ export default function ProTemplate({ resume }) {
                                         {hasValue(
                                             item.publisher
                                         ) && (
+
                                             <strong>
                                                 {
                                                     item.publisher
                                                 }
                                             </strong>
+
                                         )}
 
                                         {hasValue(
                                             item.description
                                         ) && (
+
                                             <p>
                                                 {
                                                     item.description
                                                 }
                                             </p>
+
                                         )}
 
                                         {hasValue(
@@ -1235,15 +1445,16 @@ export default function ProTemplate({ resume }) {
                                     {hasValue(
                                         item.date
                                     ) && (
+
                                         <span className="eu2-simple-date">
                                             {
                                                 item.date
                                             }
                                         </span>
+
                                     )}
 
                                 </article>
-
                             )
                         )}
 
@@ -1268,7 +1479,7 @@ export default function ProTemplate({ resume }) {
                         <div className="eu2-timeline">
 
                             {resume.organizations.map(
-                                (item) => (
+                                item => (
 
                                     <article
                                         className="eu2-entry"
@@ -1292,27 +1503,30 @@ export default function ProTemplate({ resume }) {
                                             {hasValue(
                                                 item.role
                                             ) && (
+
                                                 <strong>
                                                     {
                                                         item.role
                                                     }
                                                 </strong>
+
                                             )}
 
                                             {hasValue(
                                                 item.description
                                             ) && (
+
                                                 <p>
                                                     {
                                                         item.description
                                                     }
                                                 </p>
+
                                             )}
 
                                         </div>
 
                                     </article>
-
                                 )
                             )}
 
@@ -1339,7 +1553,7 @@ export default function ProTemplate({ resume }) {
                         <div className="eu2-references">
 
                             {resume.references.map(
-                                (item) => (
+                                item => (
 
                                     <article
                                         className="eu2-reference"
@@ -1355,45 +1569,52 @@ export default function ProTemplate({ resume }) {
                                         {hasValue(
                                             item.position
                                         ) && (
+
                                             <strong>
                                                 {
                                                     item.position
                                                 }
                                             </strong>
+
                                         )}
 
                                         {hasValue(
                                             item.company
                                         ) && (
+
                                             <p>
                                                 {
                                                     item.company
                                                 }
                                             </p>
+
                                         )}
 
                                         {hasValue(
                                             item.email
                                         ) && (
+
                                             <p>
                                                 {
                                                     item.email
                                                 }
                                             </p>
+
                                         )}
 
                                         {hasValue(
                                             item.phone
                                         ) && (
+
                                             <p>
                                                 {
                                                     item.phone
                                                 }
                                             </p>
+
                                         )}
 
                                     </article>
-
                                 )
                             )}
 
@@ -1411,7 +1632,7 @@ export default function ProTemplate({ resume }) {
                     resume?.customSections
                 ) &&
                     resume.customSections.map(
-                        (section) => (
+                        section => (
 
                             <section
                                 className="eu2-section"
@@ -1474,17 +1695,19 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-font);
 
                     font-size:
-                        var(--eu2-font-size);
+                        var(--eu2-base-size);
 
                     line-height: 1.48;
 
-                    box-sizing: border-box;
+                    box-sizing:
+                        border-box;
 
-                    overflow: hidden;
+                    overflow:
+                        hidden;
 
                     box-shadow:
                         0 12px 38px
-                        rgba(15, 23, 42, .14);
+                        rgba(15,23,42,.14);
 
                     -webkit-print-color-adjust:
                         exact;
@@ -1506,83 +1729,103 @@ export default function ProTemplate({ resume }) {
                     color:
                         var(--eu2-sidebar-text);
 
-                    min-height: 1123px;
-
-                    position: relative;
+                    min-height:
+                        1123px;
                 }
 
 
                 .eu2-photo-wrap {
 
-                    width: 100%;
+                    width:
+                        100%;
 
                     background:
                         var(--eu2-sidebar-background);
 
-                    overflow: hidden;
+                    overflow:
+                        hidden;
                 }
 
 
                 .eu2-photo,
                 .eu2-photo-placeholder {
 
-                    display: block;
+                    display:
+                        block;
 
-                    width: 100%;
+                    width:
+                        100%;
 
-                    height: 245px;
+                    height:
+                        245px;
 
-                    object-fit: cover;
+                    object-fit:
+                        cover;
 
-                    margin: 0;
+                    margin:
+                        0;
 
-                    box-sizing: border-box;
+                    box-sizing:
+                        border-box;
                 }
 
 
                 .eu2-photo.circle {
 
-                    border-radius: 50%;
-                    width: 145px;
-                    height: 145px;
-                    margin: 25px auto;
-                    border: 3px solid
+                    width:
+                        145px;
+
+                    height:
+                        145px;
+
+                    margin:
+                        25px auto;
+
+                    border-radius:
+                        50%;
+
+                    border:
+                        3px solid
                         rgba(255,255,255,.18);
                 }
 
 
                 .eu2-photo.square {
 
-                    border-radius: 0;
+                    border-radius:
+                        0;
                 }
 
 
                 .eu2-photo.rounded {
 
-                    border-radius: 18px;
+                    width:
+                        calc(100% - 30px);
 
-                    width: calc(100% - 30px);
+                    height:
+                        190px;
 
-                    height: 190px;
+                    margin:
+                        15px auto;
 
-                    margin: 15px auto;
+                    border-radius:
+                        18px;
                 }
 
 
                 .eu2-photo-placeholder {
 
-                    display: flex;
+                    display:
+                        flex;
 
-                    align-items: center;
+                    align-items:
+                        center;
 
-                    justify-content: center;
+                    justify-content:
+                        center;
 
                     background:
-                        color-mix(
-                            in srgb,
-                            var(--eu2-sidebar-background) 82%,
-                            #ffffff
-                        );
+                        rgba(255,255,255,.08);
 
                     color:
                         rgba(255,255,255,.9);
@@ -1614,17 +1857,19 @@ export default function ProTemplate({ resume }) {
 
                 .eu2-side-section:last-child {
 
-                    margin-bottom: 0;
+                    margin-bottom:
+                        0;
                 }
 
 
                 /* =================================================
-                   TITLES
+                   SECTION TITLES
                 ================================================= */
 
                 .eu2-section-title {
 
-                    position: relative;
+                    position:
+                        relative;
 
                     margin:
                         0 0 17px;
@@ -1636,7 +1881,7 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-heading);
 
                     font-size:
-                        clamp(12px, calc(var(--eu2-font-size) + 1px), 18px);
+                        var(--eu2-section-size);
 
                     line-height:
                         1.2;
@@ -1646,25 +1891,34 @@ export default function ProTemplate({ resume }) {
 
                     letter-spacing:
                         1.8px;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
                 .eu2-section-title::after {
 
-                    content: "";
+                    content:
+                        "";
 
-                    position: absolute;
+                    position:
+                        absolute;
 
-                    left: 0;
+                    left:
+                        0;
 
-                    bottom: 0;
+                    bottom:
+                        0;
 
-                    width: 40px;
+                    width:
+                        40px;
 
-                    height: 2px;
+                    height:
+                        2px;
 
                     background:
-                        var(--eu2-sidebar-background);
+                        var(--eu2-primary);
                 }
 
 
@@ -1674,10 +1928,10 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-sidebar-text);
 
                     font-size:
-                        12px;
+                        var(--eu2-section-size);
 
                     letter-spacing:
-                        2px;
+                        1.7px;
                 }
 
 
@@ -1686,29 +1940,34 @@ export default function ProTemplate({ resume }) {
                     background:
                         rgba(255,255,255,.9);
 
-                    width: 30px;
+                    width:
+                        30px;
                 }
 
 
                 /* =================================================
-                   SIDEBAR PROFILE
+                   PROFILE
                 ================================================= */
 
                 .eu2-profile {
 
-                    margin: 0;
+                    margin:
+                        0;
 
                     color:
                         rgba(255,255,255,.84);
 
                     font-size:
-                        10.5px;
+                        var(--eu2-profile-size);
 
                     line-height:
-                        1.65;
+                        1.6;
 
                     text-align:
                         left;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -1735,7 +1994,7 @@ export default function ProTemplate({ resume }) {
                         grid;
 
                     grid-template-columns:
-                        20px minmax(0, 1fr);
+                        20px minmax(0,1fr);
 
                     align-items:
                         start;
@@ -1747,7 +2006,7 @@ export default function ProTemplate({ resume }) {
                         rgba(255,255,255,.88);
 
                     font-size:
-                        10px;
+                        var(--eu2-contact-size);
 
                     line-height:
                         1.45;
@@ -1772,10 +2031,10 @@ export default function ProTemplate({ resume }) {
                         center;
 
                     color:
-                        #fff;
+                        #ffffff;
 
                     font-size:
-                        12px;
+                        var(--eu2-contact-size);
 
                     font-weight:
                         700;
@@ -1783,6 +2042,9 @@ export default function ProTemplate({ resume }) {
 
 
                 .eu2-contact-value {
+
+                    min-width:
+                        0;
 
                     overflow-wrap:
                         anywhere;
@@ -1824,7 +2086,7 @@ export default function ProTemplate({ resume }) {
                         rgba(255,255,255,.9);
 
                     font-size:
-                        10.5px;
+                        var(--eu2-language-size);
 
                     border-bottom:
                         1px solid
@@ -1848,7 +2110,7 @@ export default function ProTemplate({ resume }) {
                 .eu2-language strong {
 
                     font-size:
-                        9px;
+                        calc(var(--eu2-language-size) - 1px);
 
                     font-weight:
                         600;
@@ -1896,7 +2158,10 @@ export default function ProTemplate({ resume }) {
                         rgba(255,255,255,.84);
 
                     font-size:
-                        10.5px;
+                        var(--eu2-interest-size);
+
+                    line-height:
+                        1.4;
                 }
 
 
@@ -1918,7 +2183,7 @@ export default function ProTemplate({ resume }) {
                         50%;
 
                     background:
-                        #fff;
+                        #ffffff;
                 }
 
 
@@ -1930,6 +2195,9 @@ export default function ProTemplate({ resume }) {
 
                     min-width:
                         0;
+
+                    width:
+                        100%;
 
                     padding:
                         45px 38px 50px;
@@ -1948,6 +2216,9 @@ export default function ProTemplate({ resume }) {
 
                 .eu2-header {
 
+                    width:
+                        100%;
+
                     padding:
                         0 0 27px;
 
@@ -1963,6 +2234,16 @@ export default function ProTemplate({ resume }) {
                 }
 
 
+                .eu2-name {
+
+                    min-width:
+                        0;
+
+                    width:
+                        100%;
+                }
+
+
                 .eu2-name h1 {
 
                     margin:
@@ -1972,11 +2253,7 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-name);
 
                     font-size:
-                        clamp(
-                            28px,
-                            calc(var(--eu2-font-size) * 2.4),
-                            42px
-                        );
+                        var(--eu2-name-size);
 
                     line-height:
                         1.08;
@@ -1986,6 +2263,9 @@ export default function ProTemplate({ resume }) {
 
                     letter-spacing:
                         1px;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2005,7 +2285,10 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-primary);
 
                     font-size:
-                        10px;
+                        var(--eu2-job-size);
+
+                    line-height:
+                        1.35;
 
                     font-weight:
                         600;
@@ -2014,7 +2297,10 @@ export default function ProTemplate({ resume }) {
                         uppercase;
 
                     letter-spacing:
-                        2.2px;
+                        2px;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2024,9 +2310,11 @@ export default function ProTemplate({ resume }) {
 
                 .eu2-section {
 
-                    width: 100%;
+                    width:
+                        100%;
 
-                    min-width: 0;
+                    min-width:
+                        0;
 
                     margin-top:
                         29px;
@@ -2050,9 +2338,11 @@ export default function ProTemplate({ resume }) {
 
                 .eu2-timeline {
 
-                    width: 100%;
+                    width:
+                        100%;
 
-                    min-width: 0;
+                    min-width:
+                        0;
 
                     display:
                         flex;
@@ -2070,12 +2360,14 @@ export default function ProTemplate({ resume }) {
                     display:
                         grid;
 
-                    width: 100%;
+                    width:
+                        100%;
 
-                    min-width: 0;
+                    min-width:
+                        0;
 
                     grid-template-columns:
-                        70px minmax(0, 1fr);
+                        70px minmax(0,1fr);
 
                     gap:
                         17px;
@@ -2094,7 +2386,7 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-secondary);
 
                     font-size:
-                        8.5px;
+                        var(--eu2-date-size);
 
                     line-height:
                         1.35;
@@ -2113,12 +2405,19 @@ export default function ProTemplate({ resume }) {
 
                     gap:
                         1px;
+
+                    min-width:
+                        0;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
                 .eu2-date--empty {
 
-                    min-height: 1px;
+                    min-height:
+                        1px;
                 }
 
 
@@ -2134,7 +2433,8 @@ export default function ProTemplate({ resume }) {
 
                 .eu2-entry-content {
 
-                    width: 100%;
+                    width:
+                        100%;
 
                     min-width:
                         0;
@@ -2153,7 +2453,8 @@ export default function ProTemplate({ resume }) {
 
                 .eu2-entry-content::before {
 
-                    content: "";
+                    content:
+                        "";
 
                     position:
                         absolute;
@@ -2187,13 +2488,16 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-text);
 
                     font-size:
-                        11.5px;
+                        var(--eu2-heading-size);
 
                     line-height:
                         1.35;
 
                     font-weight:
                         700;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2209,13 +2513,16 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-subheading);
 
                     font-size:
-                        9.5px;
+                        var(--eu2-subheading-size);
 
                     line-height:
                         1.35;
 
                     font-weight:
                         600;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2228,7 +2535,13 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-secondary);
 
                     font-size:
-                        8.5px;
+                        var(--eu2-location-size);
+
+                    line-height:
+                        1.35;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2243,10 +2556,13 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-secondary);
 
                     font-size:
-                        9.3px;
+                        var(--eu2-text-size);
 
                     line-height:
                         1.55;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2260,7 +2576,7 @@ export default function ProTemplate({ resume }) {
                         grid;
 
                     grid-template-columns:
-                        repeat(2, minmax(0, 1fr));
+                        repeat(2,minmax(0,1fr));
 
                     column-gap:
                         25px;
@@ -2298,10 +2614,20 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-text);
 
                     font-size:
-                        9.5px;
+                        var(--eu2-skill-size);
 
                     font-weight:
                         600;
+                }
+
+
+                .eu2-skill-top span {
+
+                    min-width:
+                        0;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2311,7 +2637,7 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-secondary);
 
                     font-size:
-                        8px;
+                        var(--eu2-skill-percent-size);
 
                     font-weight:
                         500;
@@ -2399,7 +2725,7 @@ export default function ProTemplate({ resume }) {
                         grid;
 
                     grid-template-columns:
-                        minmax(0, 1fr) auto;
+                        minmax(0,1fr) auto;
 
                     gap:
                         20px;
@@ -2435,10 +2761,13 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-text);
 
                     font-size:
-                        11px;
+                        var(--eu2-heading-size);
 
                     line-height:
                         1.35;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2454,7 +2783,13 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-subheading);
 
                     font-size:
-                        9px;
+                        var(--eu2-subheading-size);
+
+                    line-height:
+                        1.35;
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2464,7 +2799,7 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-secondary);
 
                     font-size:
-                        8.5px;
+                        var(--eu2-date-size);
 
                     white-space:
                         nowrap;
@@ -2487,13 +2822,23 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-link);
 
                     font-size:
-                        8.5px;
+                        var(--eu2-link-size);
+
+                    line-height:
+                        1.35;
 
                     text-decoration:
                         none;
 
                     overflow-wrap:
                         anywhere;
+                }
+
+
+                .eu2-link:hover {
+
+                    text-decoration:
+                        underline;
                 }
 
 
@@ -2507,7 +2852,7 @@ export default function ProTemplate({ resume }) {
                         grid;
 
                     grid-template-columns:
-                        repeat(2, minmax(0, 1fr));
+                        repeat(2,minmax(0,1fr));
 
                     gap:
                         20px;
@@ -2525,6 +2870,9 @@ export default function ProTemplate({ resume }) {
 
                     page-break-inside:
                         avoid;
+
+                    min-width:
+                        0;
                 }
 
 
@@ -2534,10 +2882,13 @@ export default function ProTemplate({ resume }) {
                         0;
 
                     font-size:
-                        10.5px;
+                        var(--eu2-heading-size);
 
                     color:
                         var(--eu2-text);
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2553,7 +2904,7 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-primary);
 
                     font-size:
-                        8.8px;
+                        var(--eu2-subheading-size);
                 }
 
 
@@ -2566,7 +2917,10 @@ export default function ProTemplate({ resume }) {
                         var(--eu2-secondary);
 
                     font-size:
-                        8.5px;
+                        var(--eu2-text-size);
+
+                    overflow-wrap:
+                        anywhere;
                 }
 
 
@@ -2692,7 +3046,7 @@ export default function ProTemplate({ resume }) {
         </div>
     );
 }
-
+ 
 
 
 
