@@ -127,6 +127,47 @@ export default function ProTemplate({ resume }) {
     const skillPercentageFontSize =
         Number(design?.skillPercentageFontSize) || 8;
 
+
+        /* =========================================================
+   PHOTO SETTINGS
+========================================================= */
+
+const showPhoto =
+    design?.showPhoto !== false;
+
+const photoStyle =
+    design?.photoStyle || "circle";
+
+const photoSize =
+    Number(design?.photoSize) || 145;
+
+const photoBorderWidth =
+    Number(design?.photoBorderWidth) || 0;
+
+const photoBorderStyle =
+    design?.photoBorderStyle || "solid";
+
+const photoBorderColor =
+    design?.photoBorderColor || "#ffffff";
+
+const photoObjectFit =
+    design?.photoObjectFit || "cover";
+
+const photoScale =
+    Number(design?.photoScale) || 100;
+
+const photoRotation =
+    Number(design?.photoRotation) || 0;
+
+const photoOpacity =
+    Number(design?.photoOpacity) || 100;
+
+const photoShadow =
+    design?.photoShadow || "none";
+
+const photoMargin =
+    Number(design?.photoMargin) || 25;
+
     /* =========================================================
        SECTION TITLE
     ========================================================= */
@@ -382,45 +423,67 @@ export default function ProTemplate({ resume }) {
             <aside className="eu2-sidebar">
 
                 {/* PHOTO */}
-
-                <div className="eu2-photo-wrap">
-
-                    {design?.showPhoto &&
-                    hasValue(personal.photo) ? (
-
-                        <img
-                            src={personal.photo}
+               {/*
+               <div className="eu2-photo-wrap">
+                     <img
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTy0kRPah-wj6NkcDY28AaLSbo9_skjIS9uOPjiqUzx9w&s=10"    
                             alt=""
                             className={`eu2-photo ${
                                 design?.photoStyle ||
                                 "circle"
                             }`}
+
+                             
                         />
 
-                    ) : (
-
-                        <div className="eu2-photo-placeholder">
-
-                            <span>
-
-                                {safe(
-                                    personal.firstName
-                                )
-                                    .charAt(0)
-                                    .toUpperCase()}
-
-                                {safe(
-                                    personal.lastName
-                                )
-                                    .charAt(0)
-                                    .toUpperCase()}
-
-                            </span>
-
-                        </div>
-                    )}
+                   
 
                 </div>
+                */}
+                
+                {showPhoto && (
+
+    <div className="eu2-photo-wrap">
+
+        <img
+            src={
+                personal.photo ||
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTy0kRPah-wj6NkcDY28AaLSbo9_skjIS9uOPjiqUzx9w&s=10"
+            }
+
+            alt="Profile"
+
+            className={`eu2-photo ${photoStyle}`}
+
+            style={{
+                width: `${photoSize}px`,
+                height: `${photoSize}px`,
+
+                objectFit: photoObjectFit,
+
+                borderWidth: `${photoBorderWidth}px`,
+                borderStyle: photoBorderStyle,
+                borderColor: photoBorderColor,
+
+                transform: `
+                    scale(${photoScale / 100})
+                    rotate(${photoRotation}deg)
+                `,
+
+                opacity: photoOpacity / 100,
+
+                boxShadow:
+                    photoShadow === "none"
+                        ? "none"
+                        : photoShadow,
+
+                margin: `${photoMargin}px auto`
+            }}
+        />
+
+    </div>
+
+)}
 
 
                 <div className="eu2-sidebar-body">
@@ -1746,99 +1809,97 @@ export default function ProTemplate({ resume }) {
                         hidden;
                 }
 
+           
+                /* =================================================
+   PHOTO
+================================================= */
 
-                .eu2-photo,
-                .eu2-photo-placeholder {
+.eu2-photo-wrap {
 
-                    display:
-                        block;
+    width: 100%;
 
-                    width:
-                        100%;
+    display: flex;
 
-                    height:
-                        245px;
+    justify-content: center;
 
-                    object-fit:
-                        cover;
+    align-items: center;
 
-                    margin:
-                        0;
+    background: var(--eu2-sidebar-background);
 
-                    box-sizing:
-                        border-box;
-                }
+    overflow: visible;
 
-
-                .eu2-photo.circle {
-
-                    width:
-                        145px;
-
-                    height:
-                        145px;
-
-                    margin:
-                        25px auto;
-
-                    border-radius:
-                        50%;
-
-                    border:
-                        3px solid
-                        rgba(255,255,255,.18);
-                }
+    box-sizing: border-box;
+}
 
 
-                .eu2-photo.square {
+.eu2-photo {
 
-                    border-radius:
-                        0;
-                }
+    display: block;
 
+    max-width: 100%;
 
-                .eu2-photo.rounded {
+    box-sizing: border-box;
 
-                    width:
-                        calc(100% - 30px);
-
-                    height:
-                        190px;
-
-                    margin:
-                        15px auto;
-
-                    border-radius:
-                        18px;
-                }
+    transition:
+        transform .2s ease,
+        opacity .2s ease,
+        box-shadow .2s ease;
+}
 
 
-                .eu2-photo-placeholder {
+/* CIRCLE */
 
-                    display:
-                        flex;
+.eu2-photo.circle {
 
-                    align-items:
-                        center;
+    border-radius: 50%;
+}
 
-                    justify-content:
-                        center;
 
-                    background:
-                        rgba(255,255,255,.08);
+/* ROUNDED */
 
-                    color:
-                        rgba(255,255,255,.9);
+.eu2-photo.rounded {
 
-                    font-size:
-                        46px;
+    border-radius: 18px;
+}
 
-                    font-weight:
-                        700;
+/* SOFT */
 
-                    letter-spacing:
-                        2px;
-                }
+.eu2-photo.soft {
+    border-radius: 28px;
+}
+
+
+/* SQUARE */
+
+.eu2-photo.square {
+
+    border-radius: 0;
+}
+
+/* PILL */
+
+.eu2-photo.pill {
+    border-radius: 999px;
+}
+
+/* TOP ROUNDED */
+
+.eu2-photo.top-rounded {
+    border-radius: 28px 28px 0 0;
+}
+
+
+/* BOTTOM ROUNDED */
+
+.eu2-photo.bottom-rounded {
+    border-radius: 0 0 28px 28px;
+}
+
+ 
+ 
+
+
+   
 
 
                 .eu2-sidebar-body {

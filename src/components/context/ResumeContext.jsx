@@ -86,12 +86,33 @@ const defaultDesign = {
 
     skillStyle: "bars",
 
-    // =========================================================
-    // PHOTO
-    // =========================================================
+   // =========================================================
+// PHOTO
+// =========================================================
 
-    showPhoto: true,
-    photoStyle: "circle",
+showPhoto: true,
+
+photoStyle: "circle",
+
+photoSize: 145,
+
+photoBorderWidth: 3,
+
+photoBorderStyle: "solid",
+
+photoBorderColor: "#ffffff",
+
+photoObjectFit: "cover",
+
+photoScale: 100,
+
+photoRotation: 0,
+
+photoOpacity: 100,
+
+photoShadow: "none",
+
+photoMargin: 25,
 
     // =========================================================
     // ICONS

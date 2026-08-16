@@ -3,13 +3,49 @@ import Section from "../common/Section";
 import SectionHeader from "../common/SectionHeader";
 
 const fonts = [
-    "Arial",
-    "Georgia",
-    "Times New Roman",
-    "Calibri",
-    "Verdana",
-    "Poppins"
+  // Classic
+  "Arial",
+  "Georgia",
+  "Times New Roman",
+  "Calibri",
+  "Verdana",
+
+  // Sans Serif
+  "Inter",
+  "Roboto",
+  "Poppins",
+  "Montserrat",
+  "Lato",
+  "Open Sans",
+  "Manrope",
+  "Nunito",
+
+  // Serif
+  "Playfair Display",
+  "Merriweather",
+  "Lora",
+  "Cormorant Garamond",
+  "Libre Baskerville",
+
+  // Slab Serif
+  "Roboto Slab",
+  "Bitter",
+
+  // Monospace
+  "JetBrains Mono",
+  "Fira Code",
+
+  // Display / Condensed
+  "Bebas Neue",
+  "Oswald",
+  "Abril Fatface",
+
+  // Handwriting / Script
+  "Dancing Script",
+  "Caveat"
 ];
+
+ 
 
 const typographyGroups = [
     {
