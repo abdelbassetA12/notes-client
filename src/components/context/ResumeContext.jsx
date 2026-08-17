@@ -66,13 +66,39 @@ const defaultDesign = {
     pageSize: "A4",
     layout: "single",
 
-    // =========================================================
-    // SECTIONS
-    // =========================================================
+   
 
-    showDividers: true,
-    uppercaseTitles: true,
-    sectionTitleAlign: "left",
+
+    // =========================================================
+// SECTIONS
+// =========================================================
+
+showDividers: true,
+
+uppercaseTitles: true,
+
+sectionTitleAlign: "left",
+
+// Title appearance
+sectionTitleStyle: "accent",
+sectionTitleWeight: 700,
+sectionTitleLetterSpacing: 1.8,
+
+// Divider
+sectionDividerWidth: 40,
+sectionDividerThickness: 2,
+
+// Spacing
+sectionSpacing: 29,
+sectionTitleSpacing: 19,
+entrySpacing: 20,
+
+// Timeline
+showTimeline: true,
+showTimelineDots: true,
+
+// Item dividers
+showItemDividers: true,
 
     // =========================================================
     // HEADER

@@ -152,6 +152,8 @@ const photoBorderColor =
 
 const photoObjectFit =
     design?.photoObjectFit || "cover";
+    const photoObjectPosition =
+    design?.photoObjectPosition || "center center";
 
 const photoScale =
     Number(design?.photoScale) || 100;
@@ -171,7 +173,48 @@ const photoMargin =
     /* =========================================================
        SECTION TITLE
     ========================================================= */
+    const sectionTitle = (
+    textValue,
+    dark = false
+) => (
 
+    <h2
+        className={`
+            eu2-section-title
+            ${dark ? "eu2-section-title--dark" : ""}
+            ${
+                design?.sectionTitleStyle === "minimal"
+                    ? "eu2-section-title--minimal"
+                    : ""
+            }
+            ${
+                design?.sectionTitleStyle === "plain"
+                    ? "eu2-section-title--plain"
+                    : ""
+            }
+        `}
+        style={{
+            textAlign:
+                design?.sectionTitleAlign || "left",
+
+            textTransform:
+                design?.uppercaseTitles
+                    ? "uppercase"
+                    : "none",
+
+            fontWeight:
+                design?.sectionTitleWeight ?? 700,
+
+            letterSpacing:
+                `${design?.sectionTitleLetterSpacing ?? 1.8}px`
+        }}
+    >
+        <span>
+            {textValue}
+        </span>
+    </h2>
+);
+    /*
     const sectionTitle = (
         textValue,
         dark = false
@@ -198,7 +241,7 @@ const photoMargin =
                 {textValue}
             </span>
         </h2>
-    );
+    );*/
 
     /* =========================================================
        CONTACT
@@ -318,6 +361,20 @@ const photoMargin =
 
         <div
             className="eu2-paper"
+            data-show-dividers={
+        design?.showDividers ? "true" : "false"
+    }
+    data-show-timeline={
+    design?.showTimeline ? "true" : "false"
+}
+
+data-show-timeline-dots={
+    design?.showTimelineDots ? "true" : "false"
+}
+
+data-show-item-dividers={
+    design?.showItemDividers ? "true" : "false"
+}
 
             style={{
 
@@ -412,7 +469,22 @@ const photoMargin =
                     mainBackground,
 
                 "--eu2-sidebar-text":
-                    sidebarText
+                    sidebarText,
+
+                "--eu2-section-spacing":
+    `${design?.sectionSpacing ?? 29}px`,
+
+"--eu2-section-title-spacing":
+    `${design?.sectionTitleSpacing ?? 19}px`,
+
+"--eu2-entry-spacing":
+    `${design?.entrySpacing ?? 20}px`,
+
+"--eu2-divider-width":
+    `${design?.sectionDividerWidth ?? 40}px`,
+
+"--eu2-divider-thickness":
+    `${design?.sectionDividerThickness ?? 2}px`
             }}
         >
 
@@ -460,6 +532,7 @@ const photoMargin =
                 height: `${photoSize}px`,
 
                 objectFit: photoObjectFit,
+                objectPosition: photoObjectPosition,
 
                 borderWidth: `${photoBorderWidth}px`,
                 borderStyle: photoBorderStyle,
@@ -1927,61 +2000,110 @@ const photoMargin =
                    SECTION TITLES
                 ================================================= */
 
+               
+
+
                 .eu2-section-title {
 
-                    position:
-                        relative;
+    position: relative;
 
-                    margin:
-                        0 0 17px;
+    margin: 0 0 var(--eu2-section-title-spacing);
 
-                    padding:
-                        0 0 9px;
+    padding: 0 0 9px;
 
-                    color:
-                        var(--eu2-heading);
+    color: var(--eu2-heading);
 
-                    font-size:
-                        var(--eu2-section-size);
+    font-size: var(--eu2-section-size);
 
-                    line-height:
-                        1.2;
+    line-height: 1.2;
 
-                    font-weight:
-                        700;
+    font-weight: 700;
 
-                    letter-spacing:
-                        1.8px;
+    letter-spacing: 1.8px;
 
-                    overflow-wrap:
-                        anywhere;
-                }
+    overflow-wrap: anywhere;
+}
+
+.eu2-section-title::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    bottom: 0;
+
+    width: var(--eu2-divider-width);
+
+    height: var(--eu2-divider-thickness);
+
+    background: var(--eu2-primary);
+
+    transition:
+        width .2s ease,
+        height .2s ease;
+}
 
 
-                .eu2-section-title::after {
+.eu2-section-title--plain {
+    padding-bottom: 0;
+}
 
-                    content:
-                        "";
+.eu2-section-title--plain::after {
+    display: none;
+}
 
-                    position:
-                        absolute;
+.eu2-section-title--minimal::after {
+    width: 100%;
+    height: 1px;
+    opacity: .45;
+}
 
-                    left:
-                        0;
+.eu2-section-title--minimal {
+    padding-bottom: 7px;
+}
 
-                    bottom:
-                        0;
+.eu2-paper[data-show-dividers="false"]
+.eu2-section-title::after {
+    display: none;
+}
 
-                    width:
-                        40px;
+.eu2-paper[data-show-dividers="false"]
+.eu2-section-title {
+    padding-bottom: 0;
+}
 
-                    height:
-                        2px;
+.eu2-paper[data-show-timeline="false"]
+.eu2-entry-content {
+    border-left: none;
+    padding-left: 0;
+}
 
-                    background:
-                        var(--eu2-primary);
-                }
+.eu2-paper[data-show-timeline="false"]
+.eu2-entry-content::before {
+    display: none;
+}
 
+.eu2-paper[data-show-timeline="false"]
+.eu2-entry {
+    grid-template-columns: 70px minmax(0, 1fr);
+}
+
+.eu2-paper[data-show-timeline="true"]
+.eu2-entry-content::before {
+    display: block;
+}
+
+.eu2-paper[data-show-timeline-dots="false"]
+.eu2-entry-content::before {
+    display: none;
+}
+.eu2-paper[data-show-item-dividers="false"]
+.eu2-simple-entry {
+    border-bottom: none;
+    padding-bottom: 0;
+}
 
                 .eu2-section-title--dark {
 
@@ -2377,43 +2499,41 @@ const photoMargin =
                     min-width:
                         0;
 
-                    margin-top:
-                        29px;
+                    
+                        margin-top: var(--eu2-section-spacing);
 
                     page-break-inside:
                         avoid;
                 }
 
 
-                .eu2-section >
-                .eu2-section-title {
+              
 
-                    margin-bottom:
-                        19px;
-                }
+                .eu2-section >
+.eu2-section-title {
+
+    margin-bottom:
+        var(--eu2-section-title-spacing);
+}
 
 
                 /* =================================================
                    TIMELINE
                 ================================================= */
 
+               
                 .eu2-timeline {
 
-                    width:
-                        100%;
+    width: 100%;
 
-                    min-width:
-                        0;
+    min-width: 0;
 
-                    display:
-                        flex;
+    display: flex;
 
-                    flex-direction:
-                        column;
+    flex-direction: column;
 
-                    gap:
-                        20px;
-                }
+    gap: var(--eu2-entry-spacing);
+}
 
 
                 .eu2-entry {
@@ -2780,30 +2900,27 @@ const photoMargin =
                    SIMPLE ENTRIES
                 ================================================= */
 
+                
+
                 .eu2-simple-entry {
 
-                    display:
-                        grid;
+    display: grid;
 
-                    grid-template-columns:
-                        minmax(0,1fr) auto;
+    grid-template-columns:
+        minmax(0,1fr) auto;
 
-                    gap:
-                        20px;
+    gap: 20px;
 
-                    padding-bottom:
-                        14px;
+    padding-bottom: 14px;
 
-                    margin-bottom:
-                        14px;
+    margin-bottom: 14px;
 
-                    border-bottom:
-                        1px solid
-                        var(--eu2-border);
+    border-bottom:
+        1px solid
+        var(--eu2-border);
 
-                    page-break-inside:
-                        avoid;
-                }
+    page-break-inside: avoid;
+}
 
 
                 .eu2-simple-entry:last-child {

@@ -1,6 +1,11 @@
 import { useResume } from "../context/ResumeContext";
 import Section from "../common/Section";
 import SectionHeader from "../common/SectionHeader";
+
+/* =========================================================
+   PHOTO SHAPES
+========================================================= */
+
 const photoShapes = [
     {
         id: "circle",
@@ -10,12 +15,12 @@ const photoShapes = [
     {
         id: "rounded",
         label: "Rounded",
-        radius: "18px",
+        radius: "12px",
     },
     {
         id: "soft",
         label: "Soft",
-        radius: "28px",
+        radius: "20px",
     },
     {
         id: "square",
@@ -30,15 +35,18 @@ const photoShapes = [
     {
         id: "top-rounded",
         label: "Top Rounded",
-        radius: "28px 28px 0 0",
+        radius: "18px 18px 0 0",
     },
     {
         id: "bottom-rounded",
         label: "Bottom Rounded",
-        radius: "0 0 28px 28px",
+        radius: "0 0 18px 18px",
     },
 ];
- 
+
+/* =========================================================
+   OBJECT FIT
+========================================================= */
 
 const objectFits = [
     {
@@ -52,6 +60,21 @@ const objectFits = [
         description: "Show full image",
     },
 ];
+const objectPositions = [
+    { id: "center", label: "Center", position: "center center" },
+    { id: "top", label: "Top", position: "center top" },
+    { id: "bottom", label: "Bottom", position: "center bottom" },
+    { id: "left", label: "Left", position: "left center" },
+    { id: "right", label: "Right", position: "right center" },
+    { id: "top-left", label: "Top Left", position: "left top" },
+    { id: "top-right", label: "Top Right", position: "right top" },
+    { id: "bottom-left", label: "Bottom Left", position: "left bottom" },
+    { id: "bottom-right", label: "Bottom Right", position: "right bottom" },
+];
+
+/* =========================================================
+   BORDER STYLES
+========================================================= */
 
 const borderStyles = [
     {
@@ -68,25 +91,93 @@ const borderStyles = [
     },
 ];
 
+/* =========================================================
+   SHADOWS
+========================================================= */
+
+const shadowOptions = [
+    {
+        id: "none",
+        label: "None",
+    },
+    {
+        id: "soft",
+        label: "Soft",
+    },
+    {
+        id: "medium",
+        label: "Medium",
+    },
+    {
+        id: "strong",
+        label: "Strong",
+    },
+];
+
+/* =========================================================
+   COMPONENT
+========================================================= */
+
 export default function PhotoSettings() {
     const { design, updateDesign } = useResume();
+
+    /* =====================================================
+       SAFE VALUES
+    ===================================================== */
+
+    const showPhoto = design?.showPhoto !== false;
+
+    const photoSize = Number(design?.photoSize ?? 145);
+
+    const borderWidth = Number(
+        design?.photoBorderWidth ?? 0
+    );
+
+    const photoOpacity = Number(
+        design?.photoOpacity ?? 100
+    );
+
+    const photoScale = Number(
+        design?.photoScale ?? 100
+    );
+
+    const photoRotation = Number(
+        design?.photoRotation ?? 0
+    );
+
+    const photoMargin = Number(
+        design?.photoMargin ?? 25
+    );
+
+    const photoShape =
+        design?.photoStyle || "circle";
+
+    const objectFit =
+        design?.photoObjectFit || "cover";
+
+        const objectPosition =
+    design.photoObjectPosition || "center center";
+
+    const borderStyle =
+        design?.photoBorderStyle || "solid";
+
+    const borderColor =
+        design?.photoBorderColor || "#ffffff";
+
+    const photoShadow =
+        design?.photoShadow || "none";
+
+    /* =====================================================
+       UPDATE
+    ===================================================== */
 
     const update = (field, value) => {
         updateDesign(field, value);
     };
 
-    const photoSize = Number(design.photoSize ?? 145);
-    const borderWidth = Number(design.photoBorderWidth ?? 0);
-    const photoOpacity = Number(design.photoOpacity ?? 100);
-    const photoScale = Number(design.photoScale ?? 100);
-    const photoRotation = Number(design.photoRotation ?? 0);
-    const photoMargin = Number(design.photoMargin ?? 25);
-
-    const photoShape = design.photoStyle || "circle";
-    const objectFit = design.photoObjectFit || "cover";
-    const borderStyle = design.photoBorderStyle || "solid";
-    const borderColor = design.photoBorderColor || "#ffffff";
-    const photoShadow = design.photoShadow || "none";
+    /* =====================================================
+       GET RADIUS
+    ===================================================== */
 
     const getShapeRadius = (shape) => {
         const selected = photoShapes.find(
@@ -94,6 +185,107 @@ export default function PhotoSettings() {
         );
 
         return selected?.radius || "50%";
+    };
+
+    /* =====================================================
+       SHADOW
+    ===================================================== */
+
+    const getShadow = () => {
+        switch (photoShadow) {
+            case "soft":
+                return "0 4px 14px rgba(15, 23, 42, 0.15)";
+
+            case "medium":
+                return "0 8px 22px rgba(15, 23, 42, 0.22)";
+
+            case "strong":
+                return "0 12px 30px rgba(15, 23, 42, 0.32)";
+
+            default:
+                return "none";
+        }
+    };
+
+    /* =====================================================
+       PREVIEW SHAPE STYLE
+
+       IMPORTANT:
+       We don't rely only on border-radius CSS classes.
+       Each shape gets an explicit visual size.
+    ===================================================== */
+
+    const getShapePreviewStyle = (shape) => {
+        const common = {
+            background: "#cbd5e1",
+            flexShrink: 0,
+        };
+
+        switch (shape) {
+            case "circle":
+                return {
+                    ...common,
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                };
+
+            case "rounded":
+                return {
+                    ...common,
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "10px",
+                };
+
+            case "soft":
+                return {
+                    ...common,
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "16px",
+                };
+
+            case "square":
+                return {
+                    ...common,
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "0",
+                };
+
+            case "pill":
+                return {
+                    ...common,
+                    width: "52px",
+                    height: "28px",
+                    borderRadius: "999px",
+                };
+
+            case "top-rounded":
+                return {
+                    ...common,
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "16px 16px 0 0",
+                };
+
+            case "bottom-rounded":
+                return {
+                    ...common,
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "0 0 16px 16px",
+                };
+
+            default:
+                return {
+                    ...common,
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                };
+        }
     };
 
     return (
@@ -110,26 +302,31 @@ export default function PhotoSettings() {
 
             <div className="photo-toggle">
 
-                <div>
-                    <strong>Show Photo</strong>
+                <div className="photo-toggle-content">
+
+                    <strong>
+                        Show Photo
+                    </strong>
 
                     <small>
                         Display your profile photo in the resume
                     </small>
+
                 </div>
 
                 <button
                     type="button"
                     aria-label="Toggle photo"
+                    aria-pressed={showPhoto}
                     className={
-                        design.showPhoto
+                        showPhoto
                             ? "photo-switch active"
                             : "photo-switch"
                     }
                     onClick={() =>
                         update(
                             "showPhoto",
-                            !design.showPhoto
+                            !showPhoto
                         )
                     }
                 >
@@ -138,20 +335,35 @@ export default function PhotoSettings() {
 
             </div>
 
-            {!design.showPhoto && (
+            {/* =====================================================
+                PHOTO DISABLED
+            ===================================================== */}
+
+            {!showPhoto && (
                 <div className="photo-disabled">
-                    <span>◉</span>
+
+                    <div className="photo-disabled-icon">
+                        ◉
+                    </div>
 
                     <div>
-                        <strong>Photo hidden</strong>
+                        <strong>
+                            Photo hidden
+                        </strong>
+
                         <small>
                             Enable Show Photo to customize the image.
                         </small>
                     </div>
+
                 </div>
             )}
 
-            {design.showPhoto && (
+            {/* =====================================================
+                SETTINGS
+            ===================================================== */}
+
+            {showPhoto && (
                 <div className="photo-settings">
 
                     {/* =================================================
@@ -161,47 +373,60 @@ export default function PhotoSettings() {
                     <div className="setting-group">
 
                         <div className="setting-heading">
+
                             <div>
-                                <h4>Photo Shape</h4>
+
+                                <h4>
+                                    Photo Shape
+                                </h4>
+
                                 <small>
                                     Choose the shape of your profile image
                                 </small>
+
                             </div>
+
                         </div>
 
                         <div className="shape-grid">
 
-                            {photoShapes.map((shape) => (
+                            {photoShapes.map((shape) => {
 
-                                <button
-                                    type="button"
-                                    key={shape.id}
-                                    className={
-                                        photoShape === shape.id
-                                            ? "shape-card active"
-                                            : "shape-card"
-                                    }
-                                    onClick={() =>
-                                        update(
-                                            "photoStyle",
-                                            shape.id
-                                        )
-                                    }
-                                >
-                                    <span
-    className={`shape-preview shape-preview-${shape.id}`}
-/>
+                                const isActive =
+                                    photoShape === shape.id;
 
-                                   
-                     
+                                return (
+                                    <button
+                                        key={shape.id}
+                                        type="button"
+                                        className={
+                                            isActive
+                                                ? "shape-card active"
+                                                : "shape-card"
+                                        }
+                                        onClick={() =>
+                                            update(
+                                                "photoStyle",
+                                                shape.id
+                                            )
+                                        }
+                                        aria-pressed={isActive}
+                                    >
 
-                                    <span className="shape-label">
-                                        {shape.label}
-                                    </span>
+                                        <span
+                                            className="shape-preview"
+                                            style={getShapePreviewStyle(
+                                                shape.id
+                                            )}
+                                        />
 
-                                </button>
+                                        <span className="shape-label">
+                                            {shape.label}
+                                        </span>
 
-                            ))}
+                                    </button>
+                                );
+                            })}
 
                         </div>
 
@@ -216,7 +441,10 @@ export default function PhotoSettings() {
                         <div className="setting-row">
 
                             <div>
-                                <h4>Photo Size</h4>
+                                <h4>
+                                    Photo Size
+                                </h4>
+
                                 <small>
                                     Adjust the image dimensions
                                 </small>
@@ -244,8 +472,13 @@ export default function PhotoSettings() {
                         />
 
                         <div className="range-labels">
-                            <span>Small</span>
-                            <span>Large</span>
+                            <span>
+                                Small
+                            </span>
+
+                            <span>
+                                Large
+                            </span>
                         </div>
 
                     </div>
@@ -259,10 +492,15 @@ export default function PhotoSettings() {
                         <div className="setting-row">
 
                             <div>
-                                <h4>Border</h4>
+
+                                <h4>
+                                    Border
+                                </h4>
+
                                 <small>
                                     Control the photo border
                                 </small>
+
                             </div>
 
                             <strong>
@@ -288,33 +526,39 @@ export default function PhotoSettings() {
 
                         <div className="border-options">
 
-                            {borderStyles.map((style) => (
+                            {borderStyles.map((style) => {
 
-                                <button
-                                    type="button"
-                                    key={style.id}
-                                    className={
-                                        borderStyle === style.id
-                                            ? "mini-option active"
-                                            : "mini-option"
-                                    }
-                                    onClick={() =>
-                                        update(
-                                            "photoBorderStyle",
-                                            style.id
-                                        )
-                                    }
-                                >
-                                    {style.label}
-                                </button>
+                                const isActive =
+                                    borderStyle === style.id;
 
-                            ))}
+                                return (
+                                    <button
+                                        key={style.id}
+                                        type="button"
+                                        className={
+                                            isActive
+                                                ? "mini-option active"
+                                                : "mini-option"
+                                        }
+                                        onClick={() =>
+                                            update(
+                                                "photoBorderStyle",
+                                                style.id
+                                            )
+                                        }
+                                    >
+                                        {style.label}
+                                    </button>
+                                );
+                            })}
 
                         </div>
 
                         <div className="color-control">
 
-                            <span>Border Color</span>
+                            <span>
+                                Border Color
+                            </span>
 
                             <label className="color-picker">
 
@@ -340,68 +584,144 @@ export default function PhotoSettings() {
                     </div>
 
                     {/* =================================================
-                        OBJECT FIT
+                        IMAGE FIT
                     ================================================= */}
 
-                    <div className="setting-group">
+                   
 
-                        <div className="setting-heading">
-
-                            <div>
-                                <h4>Image Fit</h4>
-                                <small>
-                                    Choose how the image fits inside the frame
-                                </small>
-                            </div>
-
-                        </div>
-
-                        <div className="fit-grid">
-
-                            {objectFits.map((fit) => (
-
-                                <button
-                                    type="button"
-                                    key={fit.id}
-                                    className={
-                                        objectFit === fit.id
-                                            ? "fit-card active"
-                                            : "fit-card"
-                                    }
-                                    onClick={() =>
-                                        update(
-                                            "photoObjectFit",
-                                            fit.id
-                                        )
-                                    }
-                                >
-
-                                    <span className="fit-icon">
-                                        {fit.id === "cover"
-                                            ? "▣"
-                                            : "□"}
-                                    </span>
-
-                                    <span>
-                                        <strong>
-                                            {fit.label}
-                                        </strong>
-
-                                        <small>
-                                            {fit.description}
-                                        </small>
-                                    </span>
-
-                                </button>
-
-                            ))}
-
-                        </div>
-
-                    </div>
 
                     {/* =================================================
-                        SCALE
+    IMAGE FIT
+================================================= */}
+
+<div className="setting-group">
+
+    <div className="setting-heading">
+
+        <div>
+            <h4>Image Fit</h4>
+
+            <small>
+                Choose how the image fits inside the frame
+            </small>
+        </div>
+
+    </div>
+
+    {/* FIT OPTIONS */}
+
+    <div className="fit-grid">
+
+        {objectFits.map((fit) => (
+
+            <button
+                type="button"
+                key={fit.id}
+                className={
+                    objectFit === fit.id
+                        ? "fit-card active"
+                        : "fit-card"
+                }
+                onClick={() =>
+                    update(
+                        "photoObjectFit",
+                        fit.id
+                    )
+                }
+            >
+
+                <span className="fit-icon">
+
+                    {fit.id === "cover"
+                        ? "▣"
+                        : "□"}
+
+                </span>
+
+                <span>
+
+                    <strong>
+                        {fit.label}
+                    </strong>
+
+                    <small>
+                        {fit.description}
+                    </small>
+
+                </span>
+
+            </button>
+
+        ))}
+
+    </div>
+
+
+    {/* =================================================
+        IMAGE POSITION
+    ================================================= */}
+
+    {objectFit === "cover" && (
+
+        <div className="position-control">
+
+            <div className="position-heading">
+
+                <div>
+                    <h4>Image Position</h4>
+
+                    <small>
+                        Choose which part of the image remains visible
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div className="position-grid">
+
+                {objectPositions.map((item) => (
+
+                    <button
+                        type="button"
+                        key={item.id}
+                        className={
+                            objectPosition === item.position
+                                ? "position-card active"
+                                : "position-card"
+                        }
+                        onClick={() =>
+                            update(
+                                "photoObjectPosition",
+                                item.position
+                            )
+                        }
+                    >
+
+                        <span
+                            className={`position-preview position-${item.id}`}
+                        >
+                            <span />
+                        </span>
+
+                        <span className="position-label">
+                            {item.label}
+                        </span>
+
+                    </button>
+
+                ))}
+
+            </div>
+
+        </div>
+
+    )}
+
+</div>
+
+                    {/* =================================================
+                        IMAGE ZOOM
                     ================================================= */}
 
                     <div className="setting-group">
@@ -409,10 +729,15 @@ export default function PhotoSettings() {
                         <div className="setting-row">
 
                             <div>
-                                <h4>Image Zoom</h4>
+
+                                <h4>
+                                    Image Zoom
+                                </h4>
+
                                 <small>
                                     Zoom the image without changing its frame
                                 </small>
+
                             </div>
 
                             <strong>
@@ -447,10 +772,15 @@ export default function PhotoSettings() {
                         <div className="setting-row">
 
                             <div>
-                                <h4>Rotation</h4>
+
+                                <h4>
+                                    Rotation
+                                </h4>
+
                                 <small>
                                     Rotate the photo inside the frame
                                 </small>
+
                             </div>
 
                             <strong>
@@ -485,10 +815,15 @@ export default function PhotoSettings() {
                         <div className="setting-row">
 
                             <div>
-                                <h4>Opacity</h4>
+
+                                <h4>
+                                    Opacity
+                                </h4>
+
                                 <small>
                                     Adjust the image transparency
                                 </small>
+
                             </div>
 
                             <strong>
@@ -523,50 +858,54 @@ export default function PhotoSettings() {
                         <div className="setting-heading">
 
                             <div>
-                                <h4>Shadow</h4>
+
+                                <h4>
+                                    Shadow
+                                </h4>
+
                                 <small>
                                     Add depth around the profile photo
                                 </small>
+
                             </div>
 
                         </div>
 
                         <div className="shadow-grid">
 
-                            {[
-                                ["none", "None"],
-                                ["soft", "Soft"],
-                                ["medium", "Medium"],
-                                ["strong", "Strong"],
-                            ].map(([id, label]) => (
+                            {shadowOptions.map((shadow) => {
 
-                                <button
-                                    type="button"
-                                    key={id}
-                                    className={
-                                        photoShadow === id
-                                            ? "shadow-card active"
-                                            : "shadow-card"
-                                    }
-                                    onClick={() =>
-                                        update(
-                                            "photoShadow",
-                                            id
-                                        )
-                                    }
-                                >
+                                const isActive =
+                                    photoShadow === shadow.id;
 
-                                    <span
-                                        className={`shadow-preview ${id}`}
-                                    />
+                                return (
+                                    <button
+                                        key={shadow.id}
+                                        type="button"
+                                        className={
+                                            isActive
+                                                ? "shadow-card active"
+                                                : "shadow-card"
+                                        }
+                                        onClick={() =>
+                                            update(
+                                                "photoShadow",
+                                                shadow.id
+                                            )
+                                        }
+                                    >
 
-                                    <span>
-                                        {label}
-                                    </span>
+                                        <span
+                                            className={`shadow-preview ${shadow.id}`}
+                                        />
 
-                                </button>
+                                        <span>
+                                            {shadow.label}
+                                        </span>
 
-                            ))}
+                                    </button>
+                                );
+                            })}
 
                         </div>
 
@@ -581,10 +920,15 @@ export default function PhotoSettings() {
                         <div className="setting-row">
 
                             <div>
-                                <h4>Photo Spacing</h4>
+
+                                <h4>
+                                    Photo Spacing
+                                </h4>
+
                                 <small>
                                     Space around the photo
                                 </small>
+
                             </div>
 
                             <strong>
@@ -617,10 +961,15 @@ export default function PhotoSettings() {
                     <div className="photo-preview-box">
 
                         <div className="preview-title">
-                            <strong>Preview</strong>
+
+                            <strong>
+                                Preview
+                            </strong>
+
                             <small>
                                 Live photo appearance
                             </small>
+
                         </div>
 
                         <div className="preview-stage">
@@ -662,20 +1011,10 @@ export default function PhotoSettings() {
                                         `rotate(${photoRotation}deg) scale(${photoScale / 100})`,
 
                                     boxShadow:
-                                        photoShadow === "soft"
-                                            ? "0 4px 14px rgba(0,0,0,.15)"
-                                            : photoShadow === "medium"
-                                                ? "0 8px 22px rgba(0,0,0,.22)"
-                                                : photoShadow === "strong"
-                                                    ? "0 12px 30px rgba(0,0,0,.32)"
-                                                    : "none",
+                                        getShadow(),
                                 }}
                             >
-
-                                <span>
-                                    PHOTO
-                                </span>
-
+                                PHOTO
                             </div>
 
                         </div>
@@ -685,41 +1024,64 @@ export default function PhotoSettings() {
                 </div>
             )}
 
+            {/* =========================================================
+                STYLES
+            ========================================================= */}
+
             <style>{`
 
                 /* =====================================================
-                   ROOT
+                   MAIN
                 ===================================================== */
 
                 .photo-settings {
                     display: flex;
                     flex-direction: column;
-                    gap: 22px;
+                    gap: 20px;
                 }
+
+                /* =====================================================
+                   TOGGLE
+                ===================================================== */
 
                 .photo-toggle {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
                     gap: 20px;
+
                     padding: 15px 16px;
-                    margin-bottom: 22px;
+                    margin-bottom: 20px;
+
                     border: 1px solid #e5e7eb;
                     border-radius: 14px;
+
                     background: #ffffff;
+                    box-sizing: border-box;
+                }
+
+                .photo-toggle-content {
+                    min-width: 0;
                 }
 
                 .photo-toggle strong {
                     display: block;
+
                     color: #111827;
+
                     font-size: 14px;
+                    font-weight: 700;
                 }
 
                 .photo-toggle small {
                     display: block;
+
                     margin-top: 4px;
+
                     color: #6b7280;
+
                     font-size: 11px;
+                    line-height: 1.4;
                 }
 
                 /* =====================================================
@@ -727,28 +1089,45 @@ export default function PhotoSettings() {
                 ===================================================== */
 
                 .photo-switch {
+                    position: relative;
+
                     width: 50px;
                     height: 28px;
+
                     padding: 0;
-                    border: none;
-                    border-radius: 999px;
-                    background: #d1d5db;
-                    position: relative;
-                    cursor: pointer;
+
                     flex-shrink: 0;
-                    transition: .25s ease;
+
+                    border: 0;
+                    border-radius: 999px;
+
+                    background: #d1d5db;
+
+                    cursor: pointer;
+
+                    transition:
+                        background .2s ease,
+                        box-shadow .2s ease;
                 }
 
                 .photo-switch span {
                     position: absolute;
+
                     top: 4px;
                     left: 4px;
+
                     width: 20px;
                     height: 20px;
+
                     border-radius: 50%;
+
                     background: #ffffff;
-                    box-shadow: 0 1px 4px rgba(0,0,0,.15);
-                    transition: .25s ease;
+
+                    box-shadow:
+                        0 1px 4px rgba(0, 0, 0, .15);
+
+                    transition:
+                        transform .2s ease;
                 }
 
                 .photo-switch.active {
@@ -759,6 +1138,11 @@ export default function PhotoSettings() {
                     transform: translateX(22px);
                 }
 
+                .photo-switch:focus-visible {
+                    outline: 3px solid rgba(37, 99, 235, .2);
+                    outline-offset: 2px;
+                }
+
                 /* =====================================================
                    DISABLED
                 ===================================================== */
@@ -767,47 +1151,64 @@ export default function PhotoSettings() {
                     display: flex;
                     align-items: center;
                     gap: 12px;
+
                     padding: 16px;
-                    border-radius: 14px;
-                    background: #f8fafc;
+
                     border: 1px solid #e5e7eb;
+                    border-radius: 14px;
+
+                    background: #f8fafc;
+
                     color: #64748b;
                 }
 
-                .photo-disabled > span {
+                .photo-disabled-icon {
                     width: 36px;
                     height: 36px;
+
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    border-radius: 10px;
-                    background: #e2e8f0;
-                }
 
-                .photo-disabled strong,
-                .photo-disabled small {
-                    display: block;
+                    flex-shrink: 0;
+
+                    border-radius: 10px;
+
+                    background: #e2e8f0;
+
+                    color: #64748b;
                 }
 
                 .photo-disabled strong {
+                    display: block;
+
                     color: #334155;
+
                     font-size: 13px;
                 }
 
                 .photo-disabled small {
+                    display: block;
+
                     margin-top: 3px;
+
                     font-size: 11px;
+                    line-height: 1.4;
                 }
 
                 /* =====================================================
-                   GROUP
+                   SETTING GROUP
                 ===================================================== */
 
                 .setting-group {
                     padding: 18px;
+
                     border: 1px solid #e5e7eb;
                     border-radius: 16px;
+
                     background: #ffffff;
+
+                    box-sizing: border-box;
                 }
 
                 .setting-heading,
@@ -815,218 +1216,173 @@ export default function PhotoSettings() {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
+
                     gap: 15px;
                 }
 
                 .setting-group h4 {
                     margin: 0;
+
                     color: #111827;
+
                     font-size: 13px;
                     font-weight: 700;
+                    line-height: 1.3;
                 }
 
                 .setting-group small {
                     display: block;
+
                     margin-top: 4px;
+
                     color: #64748b;
+
                     font-size: 10.5px;
                     line-height: 1.4;
                 }
 
                 .setting-row > strong {
+                    flex-shrink: 0;
+
                     color: #2563eb;
+
                     font-size: 12px;
+                    font-weight: 700;
+
                     white-space: nowrap;
                 }
 
                 /* =====================================================
-                   SHAPES
+                   PHOTO SHAPE GRID
                 ===================================================== */
 
-               
+                .shape-grid {
+                    display: grid;
 
-               /* =====================================================
-   PHOTO SHAPE SELECTOR
-===================================================== */
+                    grid-template-columns:
+                        repeat(4, minmax(0, 1fr));
 
-.shape-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-top: 15px;
-}
+                    gap: 9px;
 
-/* CARD */
+                    margin-top: 15px;
+                }
 
-.shape-card {
-    min-height: 82px;
-    padding: 10px 6px;
+                /* =====================================================
+                   SHAPE CARD
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
+                   Important:
+                   Fixed layout prevents the preview from
+                   changing shape because of flex sizing.
+                ===================================================== */
 
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
+                .shape-card {
+                    min-width: 0;
+                    height: 82px;
 
-    background: #ffffff;
-    cursor: pointer;
+                    padding: 8px 5px;
 
-    transition:
-        border-color .2s ease,
-        background .2s ease,
-        transform .2s ease;
+                    display: flex;
+                    flex-direction: column;
 
-    overflow: hidden;
-    box-sizing: border-box;
-}
+                    align-items: center;
+                    justify-content: center;
 
-.shape-card:hover {
-    border-color: #93c5fd;
-    transform: translateY(-1px);
-}
+                    gap: 7px;
 
-.shape-card.active {
-    border: 2px solid #2563eb;
-    background: #eff6ff;
-}
+                    border: 1px solid #e5e7eb;
+                    border-radius: 12px;
 
+                    background: #ffffff;
 
-/* =====================================================
-   SHAPE PREVIEW BASE
-===================================================== */
+                    color: #334155;
 
-.shape-preview {
-    display: block;
+                    cursor: pointer;
 
-    width: 38px;
-    height: 38px;
+                    box-sizing: border-box;
 
-    flex: 0 0 38px;
+                    transition:
+                        border-color .18s ease,
+                        background .18s ease,
+                        box-shadow .18s ease,
+                        transform .18s ease;
+                }
 
-    margin: 0 auto 8px;
+                .shape-card:hover {
+                    border-color: #93c5fd;
 
-    background: #cbd5e1;
+                    background: #f8fbff;
 
-    box-sizing: border-box;
+                    transform: translateY(-1px);
+                }
 
-    transition:
-        border-radius .2s ease,
-        width .2s ease,
-        height .2s ease;
-}
+                .shape-card.active {
+                    border: 2px solid #2563eb;
 
+                    background: #eff6ff;
 
-/* =====================================================
-   CIRCLE
-===================================================== */
+                    box-shadow:
+                        0 0 0 1px rgba(37, 99, 235, .04);
+                }
 
-.shape-preview-circle {
-    width: 38px;
-    height: 38px;
+                .shape-card:focus-visible {
+                    outline: 3px solid rgba(37, 99, 235, .18);
+                    outline-offset: 1px;
+                }
 
-    border-radius: 50%;
-}
+                /* =====================================================
+                   SHAPE PREVIEW
 
+                   NO fixed border-radius here.
+                   The React inline style controls every shape.
+                ===================================================== */
 
-/* =====================================================
-   ROUNDED
-===================================================== */
+                .shape-preview {
+                    display: block;
 
-.shape-preview-rounded {
-    width: 38px;
-    height: 38px;
+                    position: relative;
 
-    border-radius: 18px;
-}
+                    flex: 0 0 auto;
 
+                    background: #cbd5e1;
 
-/* =====================================================
-   SOFT
-===================================================== */
+                    box-sizing: border-box;
 
-.shape-preview-soft {
-    width: 38px;
-    height: 38px;
+                    transition:
+                        transform .18s ease,
+                        border-radius .18s ease;
+                }
 
-    border-radius: 28px;
-}
+                .shape-card:hover .shape-preview {
+                    transform: scale(1.03);
+                }
 
+                /* =====================================================
+                   LABEL
+                ===================================================== */
 
-/* =====================================================
-   SQUARE
-===================================================== */
+                .shape-label {
+                    display: block;
 
-.shape-preview-square {
-    width: 38px;
-    height: 38px;
+                    width: 100%;
+                    min-width: 0;
 
-    border-radius: 0;
-}
+                    overflow: hidden;
 
+                    text-align: center;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
 
-/* =====================================================
-   PILL
-===================================================== */
+                    color: #334155;
 
-.shape-preview-pill {
-    width: 44px;
-    height: 26px;
+                    font-size: 9px;
+                    font-weight: 600;
 
-    margin-top: 6px;
-    margin-bottom: 14px;
+                    line-height: 1.2;
+                }
 
-    border-radius: 999px;
-}
-
-
-/* =====================================================
-   TOP ROUNDED
-===================================================== */
-
-.shape-preview-top-rounded {
-    width: 38px;
-    height: 38px;
-
-    border-radius: 18px 18px 0 0;
-}
-
-
-/* =====================================================
-   BOTTOM ROUNDED
-===================================================== */
-
-.shape-preview-bottom-rounded {
-    width: 38px;
-    height: 38px;
-
-    border-radius: 0 0 18px 18px;
-}
-
-
-/* =====================================================
-   LABEL
-===================================================== */
-
-.shape-label {
-    display: block;
-
-    width: 100%;
-
-    text-align: center;
-
-    color: #475569;
-
-    font-size: 9px;
-    font-weight: 600;
-
-    line-height: 1.2;
-}
-
-.shape-card.active .shape-label {
-    color: #2563eb;
-}
+                .shape-card.active .shape-label {
+                    color: #2563eb;
+                }
 
                 /* =====================================================
                    RANGE
@@ -1034,17 +1390,25 @@ export default function PhotoSettings() {
 
                 .range {
                     display: block;
+
                     width: 100%;
-                    margin-top: 18px;
+
+                    margin-top: 17px;
+
                     accent-color: #2563eb;
+
                     cursor: pointer;
                 }
 
                 .range-labels {
                     display: flex;
+                    align-items: center;
                     justify-content: space-between;
+
                     margin-top: 5px;
+
                     color: #94a3b8;
+
                     font-size: 9px;
                 }
 
@@ -1054,58 +1418,99 @@ export default function PhotoSettings() {
 
                 .border-options {
                     display: grid;
-                    grid-template-columns: repeat(3, 1fr);
+
+                    grid-template-columns:
+                        repeat(3, minmax(0, 1fr));
+
                     gap: 8px;
+
                     margin-top: 14px;
                 }
 
                 .mini-option {
+                    min-width: 0;
+
                     padding: 9px 5px;
+
                     border: 1px solid #e2e8f0;
                     border-radius: 9px;
+
                     background: #ffffff;
+
                     color: #475569;
+
                     font-size: 10px;
+                    font-weight: 600;
+
                     cursor: pointer;
+
+                    transition:
+                        border-color .18s ease,
+                        background .18s ease,
+                        color .18s ease;
+                }
+
+                .mini-option:hover {
+                    border-color: #93c5fd;
                 }
 
                 .mini-option.active {
                     border-color: #2563eb;
-                    color: #2563eb;
+
                     background: #eff6ff;
+
+                    color: #2563eb;
                 }
+
+                /* =====================================================
+                   COLOR
+                ===================================================== */
 
                 .color-control {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
+
+                    gap: 12px;
+
                     margin-top: 16px;
                     padding-top: 15px;
+
                     border-top: 1px solid #f1f5f9;
+
                     color: #475569;
+
                     font-size: 11px;
                 }
 
                 .color-picker {
                     display: flex;
                     align-items: center;
+
                     gap: 8px;
+
                     cursor: pointer;
                 }
 
                 .color-picker input {
                     width: 30px;
                     height: 30px;
+
                     padding: 2px;
+
                     border: 1px solid #e2e8f0;
                     border-radius: 8px;
+
                     background: #ffffff;
+
                     cursor: pointer;
                 }
 
                 .color-picker span {
                     color: #64748b;
+
                     font-size: 10px;
+
                     font-family: monospace;
                 }
 
@@ -1115,67 +1520,148 @@ export default function PhotoSettings() {
 
                 .fit-grid {
                     display: grid;
-                    grid-template-columns: repeat(2, 1fr);
+
+                    grid-template-columns:
+                        repeat(2, minmax(0, 1fr));
+
                     gap: 10px;
+
                     margin-top: 15px;
                 }
 
                 .fit-card {
+                    min-width: 0;
+
                     display: flex;
                     align-items: center;
+
                     gap: 10px;
-                    text-align: left;
+
                     padding: 12px;
+
                     border: 1px solid #e5e7eb;
                     border-radius: 11px;
+
                     background: #ffffff;
+
+                    text-align: left;
+
                     cursor: pointer;
+
+                    transition:
+                        border-color .18s ease,
+                        background .18s ease;
+                }
+
+                .fit-card:hover {
+                    border-color: #93c5fd;
                 }
 
                 .fit-card.active {
                     border-color: #2563eb;
+
                     background: #eff6ff;
                 }
 
                 .fit-icon {
                     width: 34px;
                     height: 34px;
+
                     display: flex;
                     align-items: center;
                     justify-content: center;
+
+                    flex-shrink: 0;
+
                     border-radius: 9px;
+
                     background: #f1f5f9;
+
                     color: #475569;
+
                     font-size: 17px;
                 }
 
-                .fit-card strong,
-                .fit-card small {
-                    display: block;
-                }
-
                 .fit-card strong {
+                    display: block;
+
                     color: #334155;
+
                     font-size: 11px;
                 }
 
                 .fit-card small {
+                    display: block;
+
                     margin-top: 3px;
+
                     font-size: 9px;
                 }
 
+
+
                 /* =====================================================
-                   SHADOW
-                ===================================================== */
+   IMAGE POSITION
+===================================================== */
+
+.position-control {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.position-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.position-heading h4 {
+    margin: 0;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.position-heading small {
+    display: block;
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 10.5px;
+    line-height: 1.4;
+}
 
 
-                .shape-card {
-    min-height: 82px;
+/* =====================================================
+   POSITION GRID
+===================================================== */
 
-    padding: 10px 6px;
+.position-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+}
+
+
+/* =====================================================
+   POSITION CARD
+===================================================== */
+
+.position-card {
+    min-height: 66px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 8px 5px;
 
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    border-radius: 10px;
 
     background: #ffffff;
 
@@ -1185,116 +1671,274 @@ export default function PhotoSettings() {
         border-color .2s ease,
         background .2s ease,
         transform .2s ease;
-
-    overflow: hidden;
 }
 
-.shape-card:hover {
+.position-card:hover {
     border-color: #93c5fd;
     transform: translateY(-1px);
 }
 
-.shape-card.active {
+.position-card.active {
     border: 2px solid #2563eb;
     background: #eff6ff;
 }
 
-                
 
-                
+/* =====================================================
+   POSITION PREVIEW
+===================================================== */
 
-
-
-
-
-                .shape-preview {
+.position-preview {
     position: relative;
-    display: block;
 
     width: 38px;
-    height: 38px;
+    height: 30px;
 
-    margin: 0 auto 8px;
+    overflow: hidden;
 
-    background: #cbd5e1;
+    border-radius: 6px;
 
-    box-sizing: border-box;
+    background: #e2e8f0;
 
-    transition:
-        transform .2s ease,
-        border-radius .2s ease;
+    display: block;
 }
 
 
-/* =========================
-   CIRCLE
-========================= */
+/*
+   Fake image inside the frame.
+   The white/light shape represents
+   the visible subject position.
+*/
 
-.shape-preview-circle {
+.position-preview span {
+    position: absolute;
+
+    width: 18px;
+    height: 25px;
+
     border-radius: 50%;
+
+    background: #94a3b8;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    transition: .2s ease;
 }
 
 
-/* =========================
-   ROUNDED
-========================= */
+/* =====================================================
+   CENTER
+===================================================== */
 
-.shape-preview-rounded {
-    border-radius: 18px;
+.position-center span {
+    left: 50%;
+    top: 50%;
 }
 
 
-/* =========================
-   SOFT
-========================= */
+/* =====================================================
+   TOP
+===================================================== */
 
-.shape-preview-soft {
-    border-radius: 28px;
+.position-top span {
+    left: 50%;
+    top: 20%;
 }
 
 
-/* =========================
-   SQUARE
-========================= */
+/* =====================================================
+   BOTTOM
+===================================================== */
 
-.shape-preview-square {
-    border-radius: 0;
+.position-bottom span {
+    left: 50%;
+    top: 80%;
 }
 
 
-/* =========================
-   PILL
-========================= */
+/* =====================================================
+   LEFT
+===================================================== */
 
-.shape-preview-pill {
-    width: 42px;
-    height: 28px;
-
-    margin-top: 5px;
-    margin-bottom: 13px;
-
-    border-radius: 999px;
+.position-left span {
+    left: 20%;
+    top: 50%;
 }
 
 
-/* =========================
-   TOP ROUNDED
-========================= */
+/* =====================================================
+   RIGHT
+===================================================== */
 
-.shape-preview-top-rounded {
-    border-radius: 28px 28px 0 0;
+.position-right span {
+    left: 80%;
+    top: 50%;
 }
 
 
-/* =========================
-   BOTTOM ROUNDED
-========================= */
+/* =====================================================
+   TOP LEFT
+===================================================== */
 
-.shape-preview-bottom-rounded {
-    border-radius: 0 0 28px 28px;
+.position-top-left span {
+    left: 20%;
+    top: 20%;
 }
 
- 
+
+/* =====================================================
+   TOP RIGHT
+===================================================== */
+
+.position-top-right span {
+    left: 80%;
+    top: 20%;
+}
+
+
+/* =====================================================
+   BOTTOM LEFT
+===================================================== */
+
+.position-bottom-left span {
+    left: 20%;
+    top: 80%;
+}
+
+
+/* =====================================================
+   BOTTOM RIGHT
+===================================================== */
+
+.position-bottom-right span {
+    left: 80%;
+    top: 80%;
+}
+
+
+/* =====================================================
+   LABEL
+===================================================== */
+
+.position-label {
+    color: #475569;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    line-height: 1.1;
+
+    text-align: center;
+}
+
+.position-card.active .position-label {
+    color: #2563eb;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 500px) {
+
+    .position-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
+                /* =====================================================
+                   SHADOW
+                ===================================================== */
+
+                .shadow-grid {
+                    display: grid;
+
+                    grid-template-columns:
+                        repeat(4, minmax(0, 1fr));
+
+                    gap: 8px;
+
+                    margin-top: 15px;
+                }
+
+                .shadow-card {
+                    min-width: 0;
+
+                    min-height: 72px;
+
+                    padding: 8px 5px;
+
+                    display: flex;
+                    flex-direction: column;
+
+                    align-items: center;
+                    justify-content: center;
+
+                    gap: 7px;
+
+                    border: 1px solid #e5e7eb;
+                    border-radius: 11px;
+
+                    background: #ffffff;
+
+                    color: #475569;
+
+                    font-size: 9px;
+                    font-weight: 600;
+
+                    cursor: pointer;
+
+                    transition:
+                        border-color .18s ease,
+                        background .18s ease;
+                }
+
+                .shadow-card:hover {
+                    border-color: #93c5fd;
+                }
+
+                .shadow-card.active {
+                    border-color: #2563eb;
+
+                    background: #eff6ff;
+
+                    color: #2563eb;
+                }
+
+                .shadow-preview {
+                    width: 28px;
+                    height: 28px;
+
+                    display: block;
+
+                    border-radius: 50%;
+
+                    background: #cbd5e1;
+                }
+
+                .shadow-preview.none {
+                    box-shadow: none;
+                }
+
+                .shadow-preview.soft {
+                    box-shadow:
+                        0 4px 10px rgba(15, 23, 42, .15);
+                }
+
+                .shadow-preview.medium {
+                    box-shadow:
+                        0 7px 16px rgba(15, 23, 42, .22);
+                }
+
+                .shadow-preview.strong {
+                    box-shadow:
+                        0 10px 22px rgba(15, 23, 42, .32);
+                }
 
                 /* =====================================================
                    PREVIEW
@@ -1302,57 +1946,82 @@ export default function PhotoSettings() {
 
                 .photo-preview-box {
                     overflow: hidden;
+
                     border: 1px solid #e5e7eb;
                     border-radius: 16px;
+
                     background: #f8fafc;
                 }
 
                 .preview-title {
                     padding: 13px 15px;
+
                     border-bottom: 1px solid #e5e7eb;
+
                     background: #ffffff;
                 }
 
-                .preview-title strong,
+                .preview-title strong {
+                    display: block;
+
+                    color: #111827;
+
+                    font-size: 12px;
+                    font-weight: 700;
+                }
+
                 .preview-title small {
                     display: block;
-                }
 
-                .preview-title strong {
-                    color: #111827;
-                    font-size: 12px;
-                }
-
-                .preview-title small {
                     margin-top: 3px;
+
                     color: #64748b;
+
                     font-size: 9px;
                 }
 
                 .preview-stage {
                     min-height: 190px;
+
                     display: flex;
                     align-items: center;
                     justify-content: center;
+
                     padding: 20px;
+
+                    overflow: hidden;
                 }
 
                 .preview-image {
                     display: flex;
                     align-items: center;
                     justify-content: center;
+
+                    flex-shrink: 0;
+
                     box-sizing: border-box;
+
                     background:
                         linear-gradient(
                             135deg,
                             #cbd5e1,
                             #94a3b8
                         );
+
                     color: #ffffff;
+
                     font-size: 9px;
                     font-weight: 700;
+
                     letter-spacing: 1px;
-                    transition: .25s ease;
+
+                    transition:
+                        width .2s ease,
+                        height .2s ease,
+                        border-radius .2s ease,
+                        transform .2s ease,
+                        box-shadow .2s ease,
+                        opacity .2s ease;
                 }
 
                 /* =====================================================
@@ -1362,15 +2031,33 @@ export default function PhotoSettings() {
                 @media (max-width: 500px) {
 
                     .shape-grid {
-                        grid-template-columns: repeat(2, 1fr);
+                        grid-template-columns:
+                            repeat(2, minmax(0, 1fr));
                     }
 
                     .shadow-grid {
-                        grid-template-columns: repeat(2, 1fr);
+                        grid-template-columns:
+                            repeat(2, minmax(0, 1fr));
                     }
 
                     .fit-grid {
                         grid-template-columns: 1fr;
+                    }
+
+                }
+
+                @media (max-width: 360px) {
+
+                    .shape-grid {
+                        gap: 7px;
+                    }
+
+                    .shape-card {
+                        height: 78px;
+                    }
+
+                    .setting-group {
+                        padding: 14px;
                     }
 
                 }
@@ -1380,6 +2067,9 @@ export default function PhotoSettings() {
         </Section>
     );
 }
+
+
+
 
 /*
 import { useResume } from "../context/ResumeContext";
