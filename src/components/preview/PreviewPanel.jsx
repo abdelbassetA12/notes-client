@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useResume } from "../context/ResumeContext";
 import templates from "../templates";
 import ResumePagination from "./ResumePagination";
+import PDFExportRenderer from "../Export/PDFExportRenderer";
 
 export default function PreviewPanel() {
 
@@ -170,7 +171,7 @@ export default function PreviewPanel() {
             {/* =========================
                 TOOLBAR
             ========================== */}
-
+            
             <div className="preview-toolbar">
 
 
@@ -240,21 +241,43 @@ export default function PreviewPanel() {
 
 
             </div>
+           
+              {/* =========================
+                PREVIEW CANVAS
+            ========================== */}
+            <div
+    ref={previewRef}
+    className="preview-canvas"
+>
+    <div
+        id="resume-preview"
+        className="resume-scale-wrapper"
+        style={{
+            transform: `scale(${zoom})`
+        }}
+    >
+        <ResumePagination
+            Template={ActiveTemplate}
+            resume={resume}
+            pageSize={design.pageSize}
+        />
+    </div>
+</div>
+
+            
+            
 
 
             {/* =========================
                 PREVIEW CANVAS
             ========================== */}
-
-            <div
+             {/*  
+              <div
                 ref={previewRef}
                 className="preview-canvas"
             >
 
-
-                {/* =========================
-                    ZOOM WRAPPER
-                ========================== */}
+ 
 
                 <div
                     className="resume-scale-wrapper"
@@ -264,10 +287,7 @@ export default function PreviewPanel() {
                     }}
                 >
 
-
-                    {/* =========================
-                        PAGINATION
-                    ========================== */}
+ 
 
                     <ResumePagination
                         Template={
@@ -284,6 +304,10 @@ export default function PreviewPanel() {
 
 
             </div>
+             */}
+
+           
+            <PDFExportRenderer />
 
 
             <style>

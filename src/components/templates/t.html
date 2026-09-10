@@ -1,0 +1,1184 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Independent Photo Frame System</title>
+
+    <style>
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #e8e9ec;
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+           APP
+        ========================================================= */
+
+        .app {
+            width: 100vw;
+            height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .header {
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 25px;
+
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            margin: 0;
+
+            font-size: 20px;
+            color: #222;
+        }
+
+        .header p {
+            margin: 0;
+
+            font-size: 13px;
+            color: #777;
+        }
+
+
+        /* =========================================================
+           WORKSPACE
+        ========================================================= */
+
+        .workspace {
+            position: relative;
+
+            flex: 1;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+           CANVAS
+        ========================================================= */
+
+        .canvas {
+            position: relative;
+
+            width: 900px;
+            height: 650px;
+
+            background-color: #fff;
+
+            background-image:
+                linear-gradient(
+                    45deg,
+                    #eeeeee 25%,
+                    transparent 25%
+                ),
+                linear-gradient(
+                    -45deg,
+                    #eeeeee 25%,
+                    transparent 25%
+                ),
+                linear-gradient(
+                    45deg,
+                    transparent 75%,
+                    #eeeeee 75%
+                ),
+                linear-gradient(
+                    -45deg,
+                    transparent 75%,
+                    #eeeeee 75%
+                );
+
+            background-size: 20px 20px;
+
+            background-position:
+                0 0,
+                0 10px,
+                10px -10px,
+                -10px 0;
+
+            border: 1px solid #ccc;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.15);
+
+            /*
+                IMPORTANT
+
+                Anything outside the canvas itself
+                will disappear.
+            */
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+           ORIGINAL PHOTO
+           
+           This image is only the editor/source image.
+           It is NOT responsible for clipping.
+        ========================================================= */
+
+        .photo {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 700px;
+            height: auto;
+
+            transform:
+                translate(-50%, -50%);
+
+            z-index: 5;
+
+            user-select: none;
+            pointer-events: none;
+
+            /*
+                The original image is hidden.
+
+                The visible image is the copy
+                inside .photo-mask.
+            */
+            opacity: 0;
+        }
+
+
+        /* =========================================================
+           PHOTO MASK
+
+           This is the REAL visible window.
+
+           The image is clipped by this element,
+           NOT by the image itself.
+        ========================================================= */
+
+        .photo-mask {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 330px;
+            height: 330px;
+
+            transform:
+                translate(-50%, -50%);
+
+            z-index: 10;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            /*
+                Prevent any accidental sizing
+                from affecting the image.
+            */
+            flex-shrink: 0;
+        }
+
+
+        /* =========================================================
+           MASK — CIRCLE
+        ========================================================= */
+
+        .photo-mask.circle {
+            width: 330px;
+            height: 330px;
+
+            border-radius: 50%;
+        }
+
+
+        /* =========================================================
+           MASK — OVAL
+        ========================================================= */
+
+        .photo-mask.oval {
+            width: 430px;
+            height: 260px;
+
+            border-radius: 50%;
+        }
+
+
+        /* =========================================================
+           MASK — SQUARE
+        ========================================================= */
+
+        .photo-mask.square {
+            width: 330px;
+            height: 330px;
+
+            border-radius: 0;
+        }
+
+
+        /* =========================================================
+           MASKED PHOTO
+
+           This image is visible.
+
+           Notice:
+           NO object-fit
+           NO border-radius
+           NO clip-path
+           NO mask
+        ========================================================= */
+
+        .photo-mask img {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 700px;
+            height: auto;
+
+            max-width: none;
+            max-height: none;
+
+            transform:
+                translate(-50%, -50%);
+
+            user-select: none;
+            pointer-events: none;
+
+            display: block;
+        }
+
+
+        /* =========================================================
+           FRAME
+        ========================================================= */
+
+        .frame {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            z-index: 20;
+
+            pointer-events: none;
+
+            flex-shrink: 0;
+        }
+
+
+        /* =========================================================
+           CIRCLE FRAME
+        ========================================================= */
+
+        .circle-frame {
+            width: 400px;
+            height: 400px;
+        }
+
+
+        /* =========================================================
+           FRAME SVG
+        ========================================================= */
+
+        .frame svg {
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            overflow: visible;
+        }
+
+
+        /* =========================================================
+           WOOD FRAME
+        ========================================================= */
+
+        .wood-outer {
+            fill: none;
+
+            stroke: url(#woodGradient);
+
+            stroke-width: 34;
+        }
+
+
+        .wood-inner {
+            fill: none;
+
+            stroke: #d6a064;
+
+            stroke-width: 4;
+        }
+
+
+        /* =========================================================
+           CONTROLS
+        ========================================================= */
+
+        .controls {
+            position: absolute;
+
+            bottom: 25px;
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            z-index: 100;
+
+            display: flex;
+
+            gap: 8px;
+
+            padding: 10px;
+
+            background: rgba(255, 255, 255, 0.97);
+
+            border: 1px solid #ddd;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+
+        /* =========================================================
+           BUTTON
+        ========================================================= */
+
+        button {
+            border: none;
+
+            padding: 10px 15px;
+
+            background: #222;
+            color: #fff;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        button:hover {
+            background: #444;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+
+        /* =========================================================
+           INFORMATION
+        ========================================================= */
+
+        .info {
+            position: absolute;
+
+            top: 20px;
+            left: 20px;
+
+            z-index: 100;
+
+            padding: 12px 15px;
+
+            background: #fff;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+            color: #666;
+
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .info b {
+            color: #222;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE CANVAS
+        ========================================================= */
+
+        @media (max-width: 950px) {
+
+            .canvas {
+                transform: scale(
+                    min(
+                        calc((100vw - 30px) / 900),
+                        calc((100vh - 120px) / 650)
+                    )
+                );
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- =========================================================
+         HEADER
+    ========================================================= -->
+
+    <header class="header">
+
+        <h1>
+            Photo Frame System
+        </h1>
+
+        <p>
+            Photo → Mask → Frame
+        </p>
+
+    </header>
+
+
+    <!-- =========================================================
+         WORKSPACE
+    ========================================================= -->
+
+    <main class="workspace">
+
+
+        <!-- =====================================================
+             CANVAS
+        ====================================================== -->
+
+        <div class="canvas">
+
+
+            <!-- =================================================
+                 ORIGINAL PHOTO
+
+                 Completely independent source.
+            ================================================== -->
+
+            <img
+                id="originalPhoto"
+                class="photo"
+
+                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=90"
+
+                alt="Photo"
+            >
+
+
+            <!-- =================================================
+                 PHOTO MASK
+
+                 This is the visible window.
+            ================================================== -->
+
+            <div
+                id="photoMask"
+                class="photo-mask circle"
+            >
+
+                <img
+                    id="maskedPhoto"
+
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=90"
+
+                    alt=""
+                >
+
+            </div>
+
+
+            <!-- =================================================
+                 FRAME
+
+                 Completely independent from the image.
+            ================================================== -->
+
+            <div
+                id="frame"
+                class="frame circle-frame"
+            >
+
+                <svg
+                    viewBox="0 0 400 400"
+                    preserveAspectRatio="none"
+                >
+
+                    <defs>
+
+                        <linearGradient
+                            id="woodGradient"
+
+                            x1="0%"
+                            y1="0%"
+
+                            x2="100%"
+                            y2="100%"
+                        >
+
+                            <stop
+                                offset="0%"
+                                stop-color="#43230f"
+                            />
+
+                            <stop
+                                offset="25%"
+                                stop-color="#a96c32"
+                            />
+
+                            <stop
+                                offset="50%"
+                                stop-color="#6b3c1b"
+                            />
+
+                            <stop
+                                offset="75%"
+                                stop-color="#c28a4c"
+                            />
+
+                            <stop
+                                offset="100%"
+                                stop-color="#43230f"
+                            />
+
+                        </linearGradient>
+
+                    </defs>
+
+
+                    <!-- WOOD -->
+
+                    <circle
+                        class="wood-outer"
+
+                        cx="200"
+                        cy="200"
+                        r="183"
+                    />
+
+
+                    <!-- INNER DECORATION -->
+
+                    <circle
+                        class="wood-inner"
+
+                        cx="200"
+                        cy="200"
+                        r="164"
+                    />
+
+                </svg>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             CONTROLS
+        ====================================================== -->
+
+        <div class="controls">
+
+            <button onclick="circleFrame()">
+                Circle
+            </button>
+
+            <button onclick="ovalFrame()">
+                Oval
+            </button>
+
+            <button onclick="squareFrame()">
+                Square
+            </button>
+
+            <button onclick="moveLeft()">
+                Photo ←
+            </button>
+
+            <button onclick="moveRight()">
+                Photo →
+            </button>
+
+            <button onclick="zoomIn()">
+                Photo +
+            </button>
+
+            <button onclick="zoomOut()">
+                Photo −
+            </button>
+
+        </div>
+
+
+        <!-- =====================================================
+             INFORMATION
+        ====================================================== -->
+
+        <div class="info">
+
+            <b>
+                Independent layers
+            </b>
+
+            <br>
+
+            Photo = original source
+
+            <br>
+
+            Mask = visible window
+
+            <br>
+
+            Frame = decoration
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
+
+    const originalPhoto =
+        document.getElementById("originalPhoto");
+
+    const maskedPhoto =
+        document.getElementById("maskedPhoto");
+
+    const photoMask =
+        document.getElementById("photoMask");
+
+    const frame =
+        document.getElementById("frame");
+
+
+    /* =========================================================
+       PHOTO STATE
+    ========================================================= */
+
+    let photoX = 0;
+    let photoY = 0;
+
+    let photoWidth = 700;
+
+
+    /* =========================================================
+       UPDATE PHOTO
+
+       Both image layers receive exactly
+       the same position and size.
+
+       Therefore the visible copy always
+       represents the original photo.
+    ========================================================= */
+
+    function updatePhoto() {
+
+        const transform = `
+            translate(-50%, -50%)
+            translate(${photoX}px, ${photoY}px)
+        `;
+
+
+        originalPhoto.style.width =
+            photoWidth + "px";
+
+        originalPhoto.style.transform =
+            transform;
+
+
+        maskedPhoto.style.width =
+            photoWidth + "px";
+
+        maskedPhoto.style.transform =
+            transform;
+
+    }
+
+
+    /* =========================================================
+       MOVE LEFT
+    ========================================================= */
+
+    function moveLeft() {
+
+        photoX -= 20;
+
+        updatePhoto();
+
+    }
+
+
+    /* =========================================================
+       MOVE RIGHT
+    ========================================================= */
+
+    function moveRight() {
+
+        photoX += 20;
+
+        updatePhoto();
+
+    }
+
+
+    /* =========================================================
+       MOVE UP
+    ========================================================= */
+
+    function moveUp() {
+
+        photoY -= 20;
+
+        updatePhoto();
+
+    }
+
+
+    /* =========================================================
+       MOVE DOWN
+    ========================================================= */
+
+    function moveDown() {
+
+        photoY += 20;
+
+        updatePhoto();
+
+    }
+
+
+    /* =========================================================
+       ZOOM IN
+    ========================================================= */
+
+    function zoomIn() {
+
+        photoWidth += 50;
+
+        updatePhoto();
+
+    }
+
+
+    /* =========================================================
+       ZOOM OUT
+    ========================================================= */
+
+    function zoomOut() {
+
+        photoWidth -= 50;
+
+
+        if (photoWidth < 100) {
+            photoWidth = 100;
+        }
+
+
+        updatePhoto();
+
+    }
+
+
+    /* =========================================================
+       FRAME HELPER
+    ========================================================= */
+
+    function setFrameSize(width, height) {
+
+        frame.style.width =
+            width + "px";
+
+        frame.style.height =
+            height + "px";
+
+    }
+
+
+    /* =========================================================
+       MASK HELPER
+    ========================================================= */
+
+    function setMaskSize(width, height, radius) {
+
+        photoMask.style.width =
+            width + "px";
+
+        photoMask.style.height =
+            height + "px";
+
+        photoMask.style.borderRadius =
+            radius;
+
+    }
+
+
+    /* =========================================================
+       WOOD GRADIENT
+    ========================================================= */
+
+    function woodGradient(id) {
+
+        return `
+            <defs>
+
+                <linearGradient
+                    id="${id}"
+
+                    x1="0%"
+                    y1="0%"
+
+                    x2="100%"
+                    y2="100%"
+                >
+
+                    <stop
+                        offset="0%"
+                        stop-color="#43230f"
+                    />
+
+                    <stop
+                        offset="25%"
+                        stop-color="#a96c32"
+                    />
+
+                    <stop
+                        offset="50%"
+                        stop-color="#6b3c1b"
+                    />
+
+                    <stop
+                        offset="75%"
+                        stop-color="#c28a4c"
+                    />
+
+                    <stop
+                        offset="100%"
+                        stop-color="#43230f"
+                    />
+
+                </linearGradient>
+
+            </defs>
+        `;
+
+    }
+
+
+    /* =========================================================
+       CIRCLE FRAME
+    ========================================================= */
+
+    function circleFrame() {
+
+
+        /* FRAME */
+
+        frame.className =
+            "frame circle-frame";
+
+
+        setFrameSize(
+            400,
+            400
+        );
+
+
+        /* MASK */
+
+        photoMask.className =
+            "photo-mask circle";
+
+
+        setMaskSize(
+            330,
+            330,
+            "50%"
+        );
+
+
+        /* FRAME SVG */
+
+        frame.innerHTML = `
+
+            <svg
+                viewBox="0 0 400 400"
+                preserveAspectRatio="none"
+            >
+
+                ${woodGradient("woodGradient")}
+
+
+                <circle
+                    class="wood-outer"
+
+                    cx="200"
+                    cy="200"
+
+                    r="183"
+                />
+
+
+                <circle
+                    class="wood-inner"
+
+                    cx="200"
+                    cy="200"
+
+                    r="164"
+                />
+
+            </svg>
+
+        `;
+
+    }
+
+
+    /* =========================================================
+       OVAL FRAME
+    ========================================================= */
+
+    function ovalFrame() {
+
+
+        /* FRAME */
+
+        frame.className =
+            "frame";
+
+
+        setFrameSize(
+            500,
+            330
+        );
+
+
+        /* MASK */
+
+        photoMask.className =
+            "photo-mask oval";
+
+
+        setMaskSize(
+            430,
+            260,
+            "50%"
+        );
+
+
+        /* FRAME SVG */
+
+        frame.innerHTML = `
+
+            <svg
+                viewBox="0 0 500 330"
+                preserveAspectRatio="none"
+            >
+
+                ${woodGradient("ovalWood")}
+
+
+                <ellipse
+                    cx="250"
+                    cy="165"
+
+                    rx="235"
+                    ry="150"
+
+                    fill="none"
+
+                    stroke="url(#ovalWood)"
+
+                    stroke-width="34"
+                />
+
+
+                <ellipse
+                    cx="250"
+                    cy="165"
+
+                    rx="213"
+                    ry="128"
+
+                    fill="none"
+
+                    stroke="#d6a064"
+
+                    stroke-width="4"
+                />
+
+            </svg>
+
+        `;
+
+    }
+
+
+    /* =========================================================
+       SQUARE FRAME
+    ========================================================= */
+
+    function squareFrame() {
+
+
+        /* FRAME */
+
+        frame.className =
+            "frame";
+
+
+        setFrameSize(
+            400,
+            400
+        );
+
+
+        /* MASK */
+
+        photoMask.className =
+            "photo-mask square";
+
+
+        setMaskSize(
+            330,
+            330,
+            "0"
+        );
+
+
+        /* FRAME SVG */
+
+        frame.innerHTML = `
+
+            <svg
+                viewBox="0 0 400 400"
+                preserveAspectRatio="none"
+            >
+
+                ${woodGradient("squareWood")}
+
+
+                <rect
+
+                    x="17"
+                    y="17"
+
+                    width="366"
+                    height="366"
+
+                    fill="none"
+
+                    stroke="url(#squareWood)"
+
+                    stroke-width="34"
+                />
+
+
+                <rect
+
+                    x="34"
+                    y="34"
+
+                    width="332"
+                    height="332"
+
+                    fill="none"
+
+                    stroke="#d6a064"
+
+                    stroke-width="4"
+                />
+
+            </svg>
+
+        `;
+
+    }
+
+
+    /* =========================================================
+       INITIALIZE
+    ========================================================= */
+
+    updatePhoto();
+
+</script>
+
+</body>
+
+</html>
+ 

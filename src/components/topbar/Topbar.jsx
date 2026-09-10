@@ -1,15 +1,89 @@
- 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useResume } from "../context/ResumeContext";
+ 
+import { downloadResumePDF } from "../utils/downloadResumePDF";
+ 
 
 export default function Topbar() {
+
     const navigate = useNavigate();
-    const [saved, setSaved] = useState(true);
+     const [isDownloading, setIsDownloading] =
+        useState(false);
+        const {
+        resume,
+        design
+    } = useResume();
+
+    const {
+        undo,
+        redo,
+        canUndo,
+        canRedo
+    } = useResume();
+ 
+
+    const [saved, setSaved] =
+        useState(true);
+
+    
+
+   
+
+    const handleDownload = async () => {
+
+        if (isDownloading) return;
+
+        try {
+
+            setIsDownloading(true);
+
+            const firstName =
+                resume?.personal?.firstName ||
+                "";
+
+            const lastName =
+                resume?.personal?.lastName ||
+                "";
+
+            const fullName =
+                `${firstName} ${lastName}`
+                    .trim();
+
+            const fileName =
+                fullName
+                    ? `${fullName} - Resume.pdf`
+                    : "resume.pdf";
+
+            await downloadResumePDF({
+                pageSize:
+                    design?.pageSize || "A4",
+
+                fileName
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Download failed:",
+                error
+            );
+
+        } finally {
+
+            setIsDownloading(false);
+        }
+    };
+
 
     return (
+
         <header className="topbar">
 
-            {/* LEFT */}
+            {/* =================================================
+                LEFT
+            ================================================= */}
+
             <div className="topbar__left">
 
                 <button
@@ -17,62 +91,168 @@ export default function Topbar() {
                     onClick={() => navigate(-1)}
                     title="Back to CVs"
                 >
-                    <span className="back-icon">←</span>
-                    <span className="back-text">Back</span>
+
+                    <span className="back-icon">
+                        ←
+                    </span>
+
+                    <span className="back-text">
+                        Back
+                    </span>
+
                 </button>
+
 
                 <div className="divider" />
 
+
                 <div className="resume-info">
-                    <h2>Untitled Resume</h2>
+
+                    <h2>
+                        Untitled Resume
+                    </h2>
 
                     <div className="save-status">
-                        <span className={`status-dot ${saved ? "saved" : ""}`} />
-                        {saved ? "Saved" : "Unsaved changes"}
+
+                        <span
+                            className={`status-dot ${
+                                saved ? "saved" : ""
+                            }`}
+                        />
+
+                        {saved
+                            ? "Saved"
+                            : "Unsaved changes"}
+
                     </div>
+
                 </div>
 
             </div>
 
-            {/* CENTER */}
+
+            {/* =================================================
+                CENTER
+            ================================================= */}
+
             <div className="topbar__center">
 
-                <button
-                    className="icon-btn"
-                    title="Undo"
-                    aria-label="Undo"
-                >
-                    ↶
-                </button>
+                {/* UNDO */}
 
                 <button
-                    className="icon-btn"
-                    title="Redo"
-                    aria-label="Redo"
+
+                    className={`icon-btn ${
+                        !canUndo
+                            ? "disabled"
+                            : ""
+                    }`}
+
+                    title={
+                        canUndo
+                            ? "Undo (Ctrl + Z)"
+                            : "Nothing to undo"
+                    }
+
+                    aria-label="Undo"
+
+                    onClick={undo}
+
+                    disabled={!canUndo}
+
                 >
+
+                    ↶
+
+                </button>
+
+
+                {/* REDO */}
+
+                <button
+
+                    className={`icon-btn ${
+                        !canRedo
+                            ? "disabled"
+                            : ""
+                    }`}
+
+                    title={
+                        canRedo
+                            ? "Redo (Ctrl + Y)"
+                            : "Nothing to redo"
+                    }
+
+                    aria-label="Redo"
+
+                    onClick={redo}
+
+                    disabled={!canRedo}
+
+                >
+
                     ↷
+
                 </button>
 
             </div>
 
-            {/* RIGHT */}
+
+            {/* =================================================
+                RIGHT
+            ================================================= */}
+
             <div className="topbar__right">
 
-                <button className="preview-btn">
-                    <span>◉</span>
-                    <span className="desktop-text">Preview</span>
+                <button
+                    className="preview-btn"
+                >
+
+                    <span>
+                        ◉
+                    </span>
+
+                    <span className="desktop-text">
+                        Preview
+                    </span>
+
                 </button>
 
-                <button className="download-btn">
-                    <span>↓</span>
-                    <span>Download</span>
-                </button>
 
-                <button className="more-btn" aria-label="More options">
+               
+
+                <button
+    className="download-btn"
+    onClick={handleDownload}
+    disabled={isDownloading}
+    aria-label="Download resume as PDF"
+>
+    <span>
+        {isDownloading ? "..." : "↓"}
+    </span>
+
+    <span>
+        {isDownloading
+            ? "Generating..."
+            : "Download"}
+    </span>
+</button>
+
+
+                <button
+                    className="more-btn"
+                    aria-label="More options"
+                >
+
                     ⋮
+
                 </button>
 
             </div>
+
+
+            {/* =================================================
+                STYLES
+            ================================================= */}
 
             <style>{`
 
@@ -80,22 +260,40 @@ export default function Topbar() {
                     box-sizing: border-box;
                 }
 
+
+                /* =================================================
+                   TOPBAR
+                ================================================= */
+
                 .topbar {
+
                     height: 68px;
+
                     width: 100%;
-                    background: rgba(255, 255, 255, 0.96);
-                    backdrop-filter: blur(12px);
-                    -webkit-backdrop-filter: blur(12px);
+
+                    background:
+                        rgba(255, 255, 255, 0.96);
+
+                    backdrop-filter:
+                        blur(12px);
+
+                    -webkit-backdrop-filter:
+                        blur(12px);
 
                     display: flex;
+
                     align-items: center;
-                    justify-content: space-between;
+
+                    justify-content:
+                        space-between;
 
                     padding: 0 22px;
 
-                    border-bottom: 1px solid #e5e7eb;
+                    border-bottom:
+                        1px solid #e5e7eb;
 
                     position: relative;
+
                     z-index: 100;
 
                     font-family:
@@ -108,30 +306,45 @@ export default function Topbar() {
                         sans-serif;
                 }
 
-                /* LEFT */
+
+                /* =================================================
+                   LEFT
+                ================================================= */
 
                 .topbar__left {
+
                     display: flex;
+
                     align-items: center;
+
                     min-width: 0;
+
                     flex: 1;
                 }
 
+
                 .back-btn {
+
                     height: 38px;
+
                     padding: 0 11px;
 
                     display: flex;
+
                     align-items: center;
+
                     gap: 7px;
 
                     border: 0;
+
                     background: transparent;
+
                     border-radius: 8px;
 
                     color: #374151;
 
                     font-size: 14px;
+
                     font-weight: 600;
 
                     cursor: pointer;
@@ -141,47 +354,71 @@ export default function Topbar() {
                         color .18s ease;
                 }
 
+
                 .back-btn:hover {
+
                     background: #f3f4f6;
+
                     color: #111827;
                 }
 
+
                 .back-icon {
+
                     font-size: 20px;
+
                     line-height: 1;
                 }
 
+
                 .back-text {
+
                     font-size: 14px;
                 }
 
+
                 .divider {
+
                     width: 1px;
+
                     height: 28px;
+
                     background: #e5e7eb;
+
                     margin: 0 17px;
                 }
 
+
                 .resume-info {
+
                     min-width: 0;
                 }
 
+
                 .resume-info h2 {
+
                     margin: 0;
 
                     color: #111827;
 
                     font-size: 14px;
+
                     font-weight: 650;
 
                     white-space: nowrap;
+
                     overflow: hidden;
+
                     text-overflow: ellipsis;
                 }
 
+
                 .save-status {
+
                     display: flex;
+
                     align-items: center;
+
                     gap: 6px;
 
                     margin-top: 3px;
@@ -189,11 +426,15 @@ export default function Topbar() {
                     color: #9ca3af;
 
                     font-size: 11px;
+
                     font-weight: 500;
                 }
 
+
                 .status-dot {
+
                     width: 6px;
+
                     height: 6px;
 
                     border-radius: 50%;
@@ -201,31 +442,48 @@ export default function Topbar() {
                     background: #f59e0b;
                 }
 
+
                 .status-dot.saved {
+
                     background: #22c55e;
                 }
 
-                /* CENTER */
+
+                /* =================================================
+                   CENTER
+                ================================================= */
 
                 .topbar__center {
+
                     position: absolute;
+
                     left: 50%;
-                    transform: translateX(-50%);
+
+                    transform:
+                        translateX(-50%);
 
                     display: flex;
+
                     align-items: center;
+
                     gap: 4px;
                 }
 
+
                 .icon-btn {
+
                     width: 38px;
+
                     height: 38px;
 
                     display: flex;
+
                     align-items: center;
+
                     justify-content: center;
 
                     border: 0;
+
                     border-radius: 8px;
 
                     background: transparent;
@@ -233,47 +491,85 @@ export default function Topbar() {
                     color: #4b5563;
 
                     font-size: 23px;
+
                     font-weight: 400;
 
                     cursor: pointer;
 
                     transition:
                         background .18s ease,
-                        color .18s ease;
+                        color .18s ease,
+                        opacity .18s ease,
+                        transform .12s ease;
                 }
 
-                .icon-btn:hover {
+
+                .icon-btn:hover:not(:disabled) {
+
                     background: #f3f4f6;
+
                     color: #111827;
                 }
 
-                .icon-btn:active {
-                    transform: scale(.94);
+
+                .icon-btn:active:not(:disabled) {
+
+                    transform:
+                        scale(.94);
                 }
 
-                /* RIGHT */
+
+                /* =================================================
+                   DISABLED
+                ================================================= */
+
+                .icon-btn.disabled,
+                .icon-btn:disabled {
+
+                    color: #d1d5db;
+
+                    cursor: not-allowed;
+
+                    opacity: .55;
+
+                    background: transparent;
+                }
+
+
+                /* =================================================
+                   RIGHT
+                ================================================= */
 
                 .topbar__right {
+
                     display: flex;
+
                     align-items: center;
+
                     justify-content: flex-end;
+
                     gap: 8px;
 
                     flex: 1;
                 }
 
+
                 .preview-btn,
                 .download-btn,
                 .more-btn {
+
                     height: 38px;
 
                     display: flex;
+
                     align-items: center;
+
                     justify-content: center;
 
                     border-radius: 8px;
 
                     font-size: 13px;
+
                     font-weight: 600;
 
                     cursor: pointer;
@@ -284,50 +580,73 @@ export default function Topbar() {
                         transform .12s ease;
                 }
 
+
                 .preview-btn {
+
                     gap: 7px;
 
                     padding: 0 12px;
 
                     background: #fff;
+
                     color: #374151;
 
-                    border: 1px solid #e5e7eb;
+                    border:
+                        1px solid #e5e7eb;
                 }
+
 
                 .preview-btn:hover {
+
                     background: #f9fafb;
-                    border-color: #d1d5db;
+
+                    border-color:
+                        #d1d5db;
                 }
 
+
                 .download-btn {
+
                     gap: 8px;
 
                     padding: 0 15px;
 
                     background: #111827;
+
                     color: white;
 
-                    border: 1px solid #111827;
+                    border:
+                        1px solid #111827;
 
                     box-shadow:
-                        0 1px 2px rgba(0, 0, 0, .08);
+                        0 1px 2px
+                        rgba(0, 0, 0, .08);
                 }
 
+
                 .download-btn:hover {
+
                     background: #1f2937;
-                    border-color: #1f2937;
+
+                    border-color:
+                        #1f2937;
                 }
+
 
                 .download-btn:active,
                 .preview-btn:active {
-                    transform: translateY(1px);
+
+                    transform:
+                        translateY(1px);
                 }
 
+
                 .more-btn {
+
                     width: 36px;
 
                     background: transparent;
+
                     border: 0;
 
                     color: #6b7280;
@@ -335,96 +654,148 @@ export default function Topbar() {
                     font-size: 22px;
                 }
 
+
                 .more-btn:hover {
+
                     background: #f3f4f6;
+
                     color: #111827;
                 }
 
-                /* TABLET */
+
+                /* =================================================
+                   TABLET
+                ================================================= */
 
                 @media (max-width: 800px) {
 
                     .topbar {
+
                         padding: 0 14px;
                     }
 
+
                     .divider {
-                        margin: 0 11px;
+
+                        margin:
+                            0 11px;
                     }
 
+
                     .topbar__center {
+
                         position: static;
+
                         transform: none;
+
                         margin-left: auto;
+
                         margin-right: 8px;
                     }
 
+
                     .topbar__right {
+
                         flex: 0;
                     }
 
+
                     .preview-btn {
+
                         display: none;
                     }
+
 
                     .desktop-text {
+
                         display: none;
                     }
-
                 }
 
-                /* MOBILE */
+
+                /* =================================================
+                   MOBILE
+                ================================================= */
 
                 @media (max-width: 520px) {
 
                     .topbar {
+
                         height: 62px;
+
                         padding: 0 10px;
                     }
 
+
                     .back-btn {
+
                         padding: 0 8px;
                     }
 
+
                     .back-text {
+
                         display: none;
                     }
 
+
                     .divider {
-                        margin: 0 9px;
+
+                        margin:
+                            0 9px;
+
                         height: 24px;
                     }
 
+
                     .resume-info h2 {
+
                         max-width: 125px;
+
                         font-size: 13px;
                     }
 
+
                     .save-status {
+
                         font-size: 10px;
                     }
 
+
                     .topbar__center {
+
                         gap: 1px;
+
                         margin-right: 3px;
                     }
 
+
                     .icon-btn {
+
                         width: 34px;
+
                         height: 34px;
                     }
 
+
                     .download-btn {
+
                         width: 38px;
+
                         padding: 0;
+
                         font-size: 18px;
                     }
 
+
                     .download-btn span:last-child {
+
                         display: none;
                     }
 
+
                     .more-btn {
+
                         width: 30px;
                     }
 
@@ -435,4 +806,4 @@ export default function Topbar() {
         </header>
     );
 }
- 
+

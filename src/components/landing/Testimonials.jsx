@@ -1,3 +1,4 @@
+ 
 import {
     FiStar,
     FiArrowRight
@@ -8,23 +9,23 @@ export default function Testimonials() {
     const testimonials = [
         {
             name: "Youssef A.",
-            role: "Hotel Receptionist",
+            role: "Freelance Developer",
             country: "Morocco",
-            text: "JobReach made it much easier to contact hotels across Europe. I stopped losing track of where I had applied.",
+            text: "The platform helps me keep my contacts, projects, and follow-ups organized. I can manage my professional outreach without losing track of anything.",
             initials: "YA"
         },
         {
             name: "Sara M.",
-            role: "Hospitality Professional",
+            role: "Marketing Professional",
             country: "Tunisia",
-            text: "The templates and lead management are exactly what I needed. I can send applications much faster now.",
+            text: "The templates and contact management save me a lot of time. Everything I need for professional communication is finally in one place.",
             initials: "SM"
         },
         {
             name: "Adam K.",
-            role: "Restaurant Manager",
+            role: "Business Consultant",
             country: "Algeria",
-            text: "The dashboard gives me a clear view of every application. It feels like having my own job search assistant.",
+            text: "The dashboard gives me a clear view of my contacts, opportunities, and activity. It makes managing my professional workflow much easier.",
             initials: "AK"
         }
     ];
@@ -34,79 +35,55 @@ export default function Testimonials() {
             className="jr-testimonials"
             id="testimonials"
         >
-
             <div className="jr-section-container">
-
                 <div className="jr-section-heading">
-
                     <h2>
-                        Loved by Job Seekers
+                        Loved by Professionals
                     </h2>
-
                     <p className="jr-section-subtitle">
-                        Real people. Real applications. Real progress.
+                        Real people. Real connections. Real progress.
                     </p>
-
                 </div>
 
-
                 <div className="jr-testimonials-grid">
-
                     {testimonials.map((item, index) => (
-
                         <article
                             className="jr-testimonial-card"
                             key={index}
                         >
-
                             <div className="jr-testimonial-stars">
-
                                 <FiStar />
                                 <FiStar />
                                 <FiStar />
                                 <FiStar />
                                 <FiStar />
-
                             </div>
-
 
                             <p>
                                 “{item.text}”
                             </p>
 
-
                             <div className="jr-testimonial-author">
-
                                 <div className="jr-testimonial-avatar">
                                     {item.initials}
                                 </div>
-
                                 <div>
-
                                     <strong>
                                         {item.name}
                                     </strong>
-
                                     <span>
                                         {item.role}
                                     </span>
-
                                     <small>
                                         {item.country}
                                     </small>
-
                                 </div>
-
                             </div>
-
                         </article>
-
                     ))}
-
                 </div>
-
             </div>
-
         </section>
     );
 }
+ 

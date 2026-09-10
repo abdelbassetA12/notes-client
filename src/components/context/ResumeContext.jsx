@@ -1,3 +1,6 @@
+
+
+
 import { createContext, useContext, useState } from "react";
 import defaultResume from "../data/defaultResume";
 
@@ -157,10 +160,113 @@ export function ResumeProvider({ children }) {
     const [design, setDesign] =
         useState(defaultDesign);
 
+         const [history, setHistory] = useState([]);
+    const [future, setFuture] = useState([]);
+
+    const saveToHistory = () => {
+
+    setHistory(prev => [
+        ...prev,
+        {
+            resume: structuredClone(resume),
+            design: structuredClone(design)
+        }
+    ]);
+
+    setFuture([]);
+};
+
+const undo = () => {
+
+    if (history.length === 0) {
+        return;
+    }
+
+    const previousState =
+        history[history.length - 1];
+
+    setFuture(prev => [
+        ...prev,
+        {
+            resume: structuredClone(resume),
+            design: structuredClone(design)
+        }
+    ]);
+
+    setResume(
+        structuredClone(previousState.resume)
+    );
+
+    setDesign(
+        structuredClone(previousState.design)
+    );
+
+    setHistory(prev =>
+        prev.slice(0, -1)
+    );
+};
+
+const redo = () => {
+
+    if (future.length === 0) {
+        return;
+    }
+
+    const nextState =
+        future[future.length - 1];
+
+    setHistory(prev => [
+        ...prev,
+        {
+            resume: structuredClone(resume),
+            design: structuredClone(design)
+        }
+    ]);
+
+    setResume(
+        structuredClone(nextState.resume)
+    );
+
+    setDesign(
+        structuredClone(nextState.design)
+    );
+
+    setFuture(prev =>
+        prev.slice(0, -1)
+    );
+};
+
+const canUndo = history.length > 0;
+
+const canRedo = future.length > 0;
+
     // =========================================================
     // PERSONAL
     // =========================================================
+    const updatePersonal = (field, value) => {
 
+    setResume(prev => {
+
+        setHistory(historyPrev => [
+            ...historyPrev,
+            {
+                resume: structuredClone(prev),
+                design: structuredClone(design)
+            }
+        ]);
+
+        setFuture([]);
+
+        return {
+            ...prev,
+            personal: {
+                ...prev.personal,
+                [field]: value
+            }
+        };
+    });
+};
+/*
     const updatePersonal = (field, value) => {
 
         setResume(prev => ({
@@ -172,6 +278,7 @@ export function ResumeProvider({ children }) {
             }
         }));
     };
+    */
 
     // =========================================================
     // PROFILE
@@ -179,16 +286,62 @@ export function ResumeProvider({ children }) {
 
     const updateProfile = (value) => {
 
+    setResume(prev => {
+
+        setHistory(historyPrev => [
+            ...historyPrev,
+            {
+                resume: structuredClone(prev),
+                design: structuredClone(design)
+            }
+        ]);
+
+        setFuture([]);
+
+        return {
+            ...prev,
+            profile: value
+        };
+    });
+};
+/*
+    const updateProfile = (value) => {
+
         setResume(prev => ({
             ...prev,
             profile: value
         }));
     };
-
+*/
     // =========================================================
     // ADD ITEM
     // =========================================================
+    const addItem = (section, item) => {
 
+    setResume(prev => {
+
+        setHistory(historyPrev => [
+            ...historyPrev,
+            {
+                resume: structuredClone(prev),
+                design: structuredClone(design)
+            }
+        ]);
+
+        setFuture([]);
+
+        return {
+            ...prev,
+            [section]: [
+                ...(Array.isArray(prev[section])
+                    ? prev[section]
+                    : []),
+                item
+            ]
+        };
+    });
+};
+/*
     const addItem = (section, item) => {
 
         setResume(prev => ({
@@ -202,12 +355,36 @@ export function ResumeProvider({ children }) {
                 item
             ]
         }));
-    };
+    };*/
 
     // =========================================================
     // REMOVE ITEM
     // =========================================================
+const removeItem = (section, index) => {
 
+    setResume(prev => {
+
+        setHistory(historyPrev => [
+            ...historyPrev,
+            {
+                resume: structuredClone(prev),
+                design: structuredClone(design)
+            }
+        ]);
+
+        setFuture([]);
+
+        return {
+            ...prev,
+            [section]: Array.isArray(prev[section])
+                ? prev[section].filter(
+                    (_, i) => i !== index
+                )
+                : []
+        };
+    });
+};
+/*
     const removeItem = (section, index) => {
 
         setResume(prev => ({
@@ -220,11 +397,46 @@ export function ResumeProvider({ children }) {
                 : []
         }));
     };
-
+*/
     // =========================================================
     // UPDATE ITEM FIELD
     // =========================================================
+const updateItemField = (
+    section,
+    id,
+    field,
+    value
+) => {
 
+    setResume(prev => {
+
+        setHistory(historyPrev => [
+            ...historyPrev,
+            {
+                resume: structuredClone(prev),
+                design: structuredClone(design)
+            }
+        ]);
+
+        setFuture([]);
+
+        return {
+            ...prev,
+
+            [section]: Array.isArray(prev[section])
+                ? prev[section].map(item =>
+                    item.id === id
+                        ? {
+                            ...item,
+                            [field]: value
+                        }
+                        : item
+                )
+                : []
+        };
+    });
+};
+/*
     const updateItemField = (
         section,
         id,
@@ -246,19 +458,36 @@ export function ResumeProvider({ children }) {
                 )
                 : []
         }));
-    };
+    };*/
 
     // =========================================================
     // UPDATE DESIGN
     // =========================================================
+const updateDesign = (field, value) => {
 
+    setHistory(prev => [
+        ...prev,
+        {
+            resume: structuredClone(resume),
+            design: structuredClone(design)
+        }
+    ]);
+
+    setFuture([]);
+
+    setDesign(prev => ({
+        ...prev,
+        [field]: value
+    }));
+};
+/*
     const updateDesign = (field, value) => {
 
         setDesign(prev => ({
             ...prev,
             [field]: value
         }));
-    };
+    };*/
 
     // =========================================================
     // RESET DESIGN
@@ -291,7 +520,12 @@ export function ResumeProvider({ children }) {
                 design,
                 setDesign,
                 updateDesign,
-                resetDesign
+                resetDesign,
+
+                undo,
+redo,
+canUndo,
+canRedo,
             }}
         >
             {children}
@@ -303,6 +537,24 @@ export function useResume() {
 
     return useContext(ResumeContext);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 

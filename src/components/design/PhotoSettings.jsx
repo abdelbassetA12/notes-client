@@ -60,18 +60,7 @@ const objectFits = [
         description: "Show full image",
     },
 ];
-const objectPositions = [
-    { id: "center", label: "Center", position: "center center" },
-    { id: "top", label: "Top", position: "center top" },
-    { id: "bottom", label: "Bottom", position: "center bottom" },
-    { id: "left", label: "Left", position: "left center" },
-    { id: "right", label: "Right", position: "right center" },
-    { id: "top-left", label: "Top Left", position: "left top" },
-    { id: "top-right", label: "Top Right", position: "right top" },
-    { id: "bottom-left", label: "Bottom Left", position: "left bottom" },
-    { id: "bottom-right", label: "Bottom Right", position: "right bottom" },
-];
-
+ 
 /* =========================================================
    BORDER STYLES
 ========================================================= */
@@ -141,6 +130,14 @@ export default function PhotoSettings() {
         design?.photoScale ?? 100
     );
 
+    const photoPositionX = Number(
+    design?.photoPositionX ?? 0
+);
+
+const photoPositionY = Number(
+    design?.photoPositionY ?? 0
+);
+
     const photoRotation = Number(
         design?.photoRotation ?? 0
     );
@@ -155,8 +152,7 @@ export default function PhotoSettings() {
     const objectFit =
         design?.photoObjectFit || "cover";
 
-        const objectPosition =
-    design.photoObjectPosition || "center center";
+         
 
     const borderStyle =
         design?.photoBorderStyle || "solid";
@@ -171,9 +167,63 @@ export default function PhotoSettings() {
        UPDATE
     ===================================================== */
 
-    const update = (field, value) => {
-        updateDesign(field, value);
-    };
+   const update = (field, value) => {
+    updateDesign(field, value);
+};
+
+
+/* =====================================================
+   IMAGE POSITION
+   ===================================================== */
+
+const movePhoto = (direction) => {
+    const step = 5;
+
+    let nextX = photoPositionX;
+    let nextY = photoPositionY;
+
+    switch (direction) {
+        case "left":
+            nextX -= step;
+            break;
+
+        case "right":
+            nextX += step;
+            break;
+
+        case "up":
+            nextY -= step;
+            break;
+
+        case "down":
+            nextY += step;
+            break;
+
+        default:
+            break;
+    }
+
+    /*
+      Prevent the image from being moved
+      infinitely outside the frame.
+    */
+
+    nextX = Math.max(-100, Math.min(100, nextX));
+    nextY = Math.max(-100, Math.min(100, nextY));
+
+    update("photoPositionX", nextX);
+    update("photoPositionY", nextY);
+};
+
+
+/* =====================================================
+   RESET IMAGE POSITION
+   ===================================================== */
+
+const resetPhotoPosition = () => {
+    update("photoPositionX", 0);
+    update("photoPositionY", 0);
+};
 
     /* =====================================================
        GET RADIUS
@@ -657,66 +707,129 @@ export default function PhotoSettings() {
     </div>
 
 
+   
+
     {/* =================================================
-        IMAGE POSITION
-    ================================================= */}
+    IMAGE POSITION
+================================================= */}
 
-    {objectFit === "cover" && (
+<div className="position-control">
 
-        <div className="position-control">
+    <div className="position-heading">
 
-            <div className="position-heading">
+        <div>
+            <h4>Image Position</h4>
 
-                <div>
-                    <h4>Image Position</h4>
-
-                    <small>
-                        Choose which part of the image remains visible
-                    </small>
-                </div>
-
-            </div>
-
-
-            <div className="position-grid">
-
-                {objectPositions.map((item) => (
-
-                    <button
-                        type="button"
-                        key={item.id}
-                        className={
-                            objectPosition === item.position
-                                ? "position-card active"
-                                : "position-card"
-                        }
-                        onClick={() =>
-                            update(
-                                "photoObjectPosition",
-                                item.position
-                            )
-                        }
-                    >
-
-                        <span
-                            className={`position-preview position-${item.id}`}
-                        >
-                            <span />
-                        </span>
-
-                        <span className="position-label">
-                            {item.label}
-                        </span>
-
-                    </button>
-
-                ))}
-
-            </div>
-
+            <small>
+                Move the image inside the frame
+            </small>
         </div>
 
-    )}
+        <button
+            type="button"
+            className="position-reset"
+            onClick={resetPhotoPosition}
+        >
+            Reset
+        </button>
+
+    </div>
+
+
+    <div className="position-editor">
+
+        {/* UP */}
+
+        <button
+            type="button"
+            className="position-arrow position-up"
+            onClick={() => movePhoto("up")}
+            aria-label="Move image up"
+            title="Move image up"
+        >
+            ↑
+        </button>
+
+
+        {/* LEFT */}
+
+        <button
+            type="button"
+            className="position-arrow position-left"
+            onClick={() => movePhoto("left")}
+            aria-label="Move image left"
+            title="Move image left"
+        >
+            ←
+        </button>
+
+
+        {/* CENTER */}
+
+        <div className="position-center-indicator">
+            <span>
+                {photoPositionX > 0
+                    ? `+${photoPositionX}`
+                    : photoPositionX}
+                {" , "}
+                {photoPositionY > 0
+                    ? `+${photoPositionY}`
+                    : photoPositionY}
+            </span>
+        </div>
+
+
+        {/* RIGHT */}
+
+        <button
+            type="button"
+            className="position-arrow position-right"
+            onClick={() => movePhoto("right")}
+            aria-label="Move image right"
+            title="Move image right"
+        >
+            →
+        </button>
+
+
+        {/* DOWN */}
+
+        <button
+            type="button"
+            className="position-arrow position-down"
+            onClick={() => movePhoto("down")}
+            aria-label="Move image down"
+            title="Move image down"
+        >
+            ↓
+        </button>
+
+    </div>
+
+
+    <div className="position-values">
+
+        <span>
+            Horizontal:{" "}
+            <strong>
+                {photoPositionX > 0
+                    ? `+${photoPositionX}`
+                    : photoPositionX}
+            </strong>
+        </span>
+
+        <span>
+            Vertical:{" "}
+            <strong>
+                {photoPositionY > 0
+                    ? `+${photoPositionY}`
+                    : photoPositionY}
+            </strong>
+        </span>
+
+    </div>
+
+</div>
 
 </div>
 
@@ -749,7 +862,7 @@ export default function PhotoSettings() {
                         <input
                             className="range"
                             type="range"
-                            min="80"
+                            min="20"
                             max="160"
                             step="1"
                             value={photoScale}
@@ -1600,244 +1713,283 @@ export default function PhotoSettings() {
 
 
 
-                /* =====================================================
+/* =====================================================
    IMAGE POSITION
 ===================================================== */
 
 .position-control {
     margin-top: 18px;
     padding-top: 18px;
+
     border-top: 1px solid #f1f5f9;
 }
+
+
+/* =====================================================
+   POSITION HEADER
+===================================================== */
 
 .position-heading {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    gap: 12px;
 }
 
 .position-heading h4 {
     margin: 0;
+
     color: #111827;
+
     font-size: 13px;
     font-weight: 700;
 }
 
 .position-heading small {
     display: block;
+
     margin-top: 4px;
+
     color: #64748b;
+
     font-size: 10.5px;
     line-height: 1.4;
 }
 
 
 /* =====================================================
-   POSITION GRID
+   RESET
 ===================================================== */
 
-.position-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 14px;
-}
+.position-reset {
+    flex-shrink: 0;
 
+    padding: 6px 10px;
 
-/* =====================================================
-   POSITION CARD
-===================================================== */
-
-.position-card {
-    min-height: 66px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    gap: 6px;
-
-    padding: 8px 5px;
-
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
 
     background: #ffffff;
 
-    cursor: pointer;
-
-    transition:
-        border-color .2s ease,
-        background .2s ease,
-        transform .2s ease;
-}
-
-.position-card:hover {
-    border-color: #93c5fd;
-    transform: translateY(-1px);
-}
-
-.position-card.active {
-    border: 2px solid #2563eb;
-    background: #eff6ff;
-}
-
-
-/* =====================================================
-   POSITION PREVIEW
-===================================================== */
-
-.position-preview {
-    position: relative;
-
-    width: 38px;
-    height: 30px;
-
-    overflow: hidden;
-
-    border-radius: 6px;
-
-    background: #e2e8f0;
-
-    display: block;
-}
-
-
-/*
-   Fake image inside the frame.
-   The white/light shape represents
-   the visible subject position.
-*/
-
-.position-preview span {
-    position: absolute;
-
-    width: 18px;
-    height: 25px;
-
-    border-radius: 50%;
-
-    background: #94a3b8;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    transition: .2s ease;
-}
-
-
-/* =====================================================
-   CENTER
-===================================================== */
-
-.position-center span {
-    left: 50%;
-    top: 50%;
-}
-
-
-/* =====================================================
-   TOP
-===================================================== */
-
-.position-top span {
-    left: 50%;
-    top: 20%;
-}
-
-
-/* =====================================================
-   BOTTOM
-===================================================== */
-
-.position-bottom span {
-    left: 50%;
-    top: 80%;
-}
-
-
-/* =====================================================
-   LEFT
-===================================================== */
-
-.position-left span {
-    left: 20%;
-    top: 50%;
-}
-
-
-/* =====================================================
-   RIGHT
-===================================================== */
-
-.position-right span {
-    left: 80%;
-    top: 50%;
-}
-
-
-/* =====================================================
-   TOP LEFT
-===================================================== */
-
-.position-top-left span {
-    left: 20%;
-    top: 20%;
-}
-
-
-/* =====================================================
-   TOP RIGHT
-===================================================== */
-
-.position-top-right span {
-    left: 80%;
-    top: 20%;
-}
-
-
-/* =====================================================
-   BOTTOM LEFT
-===================================================== */
-
-.position-bottom-left span {
-    left: 20%;
-    top: 80%;
-}
-
-
-/* =====================================================
-   BOTTOM RIGHT
-===================================================== */
-
-.position-bottom-right span {
-    left: 80%;
-    top: 80%;
-}
-
-
-/* =====================================================
-   LABEL
-===================================================== */
-
-.position-label {
-    color: #475569;
+    color: #64748b;
 
     font-size: 9px;
     font-weight: 600;
 
-    line-height: 1.1;
+    cursor: pointer;
 
-    text-align: center;
+    transition:
+        border-color .18s ease,
+        background .18s ease,
+        color .18s ease;
 }
 
-.position-card.active .position-label {
+.position-reset:hover {
+    border-color: #93c5fd;
+
+    background: #eff6ff;
+
     color: #2563eb;
 }
 
+
+/* =====================================================
+   POSITION EDITOR
+===================================================== */
+
+.position-editor {
+    position: relative;
+
+    width: 150px;
+    height: 150px;
+
+    margin: 18px auto 0;
+
+    display: grid;
+
+    grid-template-columns:
+        44px 1fr 44px;
+
+    grid-template-rows:
+        44px 1fr 44px;
+
+    align-items: center;
+    justify-items: center;
+
+    gap: 5px;
+
+    padding: 8px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #ffffff
+        );
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   ARROW BUTTON
+===================================================== */
+
+.position-arrow {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #dbe3ee;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #334155;
+
+    font-size: 20px;
+    font-weight: 500;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 5px rgba(15, 23, 42, .05);
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        background .15s ease,
+        color .15s ease,
+        box-shadow .15s ease;
+}
+
+.position-arrow:hover {
+    border-color: #93c5fd;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    box-shadow:
+        0 4px 10px rgba(37, 99, 235, .10);
+
+    transform: translateY(-1px);
+}
+
+.position-arrow:active {
+    transform: scale(.94);
+}
+
+
+/* =====================================================
+   ARROW POSITIONS
+===================================================== */
+
+.position-up {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.position-left {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.position-right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.position-down {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+
+/* =====================================================
+   CENTER INDICATOR
+===================================================== */
+
+.position-center-indicator {
+    grid-column: 2;
+    grid-row: 2;
+
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px dashed #cbd5e1;
+    border-radius: 50%;
+
+    background: #f8fafc;
+
+    color: #64748b;
+
+    box-sizing: border-box;
+}
+
+.position-center-indicator span {
+    font-size: 8px;
+    font-weight: 700;
+
+    font-family: monospace;
+
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   POSITION VALUES
+===================================================== */
+
+.position-values {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 18px;
+
+    margin-top: 12px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+.position-values strong {
+    color: #2563eb;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 500px) {
+
+    .position-editor {
+        width: 140px;
+        height: 140px;
+    }
+
+}
 
 /* =====================================================
    RESPONSIVE

@@ -17,7 +17,7 @@ export default function EditLeadModal({
 
       companyName: "",
 
-      type: "hotel",
+      type: "",
 
       country: "",
 
@@ -57,7 +57,7 @@ export default function EditLeadModal({
         lead.companyName || "",
 
       type:
-        lead.type || "hotel",
+        lead.type || "",
 
       country:
         lead.country || "",
@@ -191,6 +191,7 @@ export default function EditLeadModal({
             required
           />
 
+          {/*
           <select
             name="type"
             value={form.type}
@@ -206,6 +207,17 @@ export default function EditLeadModal({
             </option>
 
           </select>
+          */}
+
+          
+
+          <input
+  name="type"
+  placeholder="Type (e.g. Hotel, Company, Agency)"
+  value={form.type}
+  onChange={handleChange}
+  required
+/>
 
           <input
             name="country"

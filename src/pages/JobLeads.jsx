@@ -30,6 +30,15 @@ export default function JobLeads() {
   const [leads, setLeads] = useState([]);
 
   const [stats, setStats] = useState({
+  total: 0,
+  applicationsSent: 0,
+  waiting: 0,
+  interviews: 0,
+  accepted: 0,
+  rejected: 0
+});
+/*
+  const [stats, setStats] = useState({
     total: 0,
     hotels: 0,
     restaurants: 0,
@@ -38,6 +47,7 @@ export default function JobLeads() {
     waiting: 0,
     emailsSent: 0
   });
+  */
 
   const [loading, setLoading] =
     useState(true);
@@ -65,6 +75,8 @@ export default function JobLeads() {
   const [countries,setCountries]=useState([]);
 
 const [cities,setCities]=useState({});
+
+const [types, setTypes] = useState([]);
 
 const [emailCount, setEmailCount] = useState(0);
 //const allCities = [...new Set(Object.values(cities).flat())];
@@ -169,7 +181,30 @@ const [selectedTemplate, setSelectedTemplate] = useState("");
     }
 
   };
+const fetchFilters = async () => {
 
+  try {
+
+    const res = await axios.get(
+      `${API_BASE}/api/job-leads/filters`,
+      {
+        withCredentials: true
+      }
+    );
+
+    setTypes(res.data.types || []);
+    setCountries(res.data.countries || []);
+    setCities(res.data.cities || {});
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
+};
+
+ /*
   const fetchFilters = async () => {
 
     try {
@@ -190,7 +225,7 @@ const [selectedTemplate, setSelectedTemplate] = useState("");
 
     }
 
-};
+};*/
 
 
 const fetchTemplates = async () => {
@@ -1266,164 +1301,183 @@ return (
     {/* =====================================================
         STATS
     ===================================================== */}
-
     <section className="stats-section">
 
-      <div className="section-heading">
+  <div className="section-heading">
 
-        <div>
-          <h2>Overview</h2>
+    <div>
 
-          <span>
-            Your application pipeline
-          </span>
+      <h2>
+        Overview
+      </h2>
+
+      <span>
+        Overview of your job search progress
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div className="stats-grid">
+
+
+    {/* =====================================
+        TOTAL LEADS
+    ===================================== */}
+
+    <div className="stat-card stat-card--total">
+
+      <div className="stat-card__top">
+
+        <div className="stat-card__icon">
+          <FiBriefcase />
         </div>
+
+        <span className="stat-card__label">
+          Total Leads
+        </span>
 
       </div>
 
+      <strong>
+        {stats.total}
+      </strong>
 
-      <div className="stats-grid">
+    </div>
 
-        {/* Total */}
 
-        <div className="stat-card stat-card--total">
+    {/* =====================================
+        APPLICATIONS SENT
+    ===================================== */}
 
-          <div className="stat-card__top">
+    <div className="stat-card">
 
-            <div className="stat-card__icon">
-              <FiBriefcase />
-            </div>
+      <div className="stat-card__top">
 
-            <span className="stat-card__label">
-              Total Leads
-            </span>
-
-          </div>
-
-          <strong>
-            {stats.total}
-          </strong>
-
+        <div className="stat-card__icon">
+          <FiMail />
         </div>
 
-
-        {/* Hotels */}
-
-        <div className="stat-card">
-
-          <div className="stat-card__top">
-
-            <div className="stat-card__icon">
-              <FiHome />
-            </div>
-
-            <span className="stat-card__label">
-              Hotels
-            </span>
-
-          </div>
-
-          <strong>
-            {stats.hotels}
-          </strong>
-
-        </div>
-
-
-        {/* Restaurants */}
-
-        <div className="stat-card">
-
-          <div className="stat-card__top">
-
-            <div className="stat-card__icon">
-              <FiHome />
-            </div>
-
-            <span className="stat-card__label">
-              Restaurants
-            </span>
-
-          </div>
-
-          <strong>
-            {stats.restaurants}
-          </strong>
-
-        </div>
-
-
-        {/* Emails */}
-
-        <div className="stat-card">
-
-          <div className="stat-card__top">
-
-            <div className="stat-card__icon">
-              <FiMail />
-            </div>
-
-            <span className="stat-card__label">
-              Emails Sent
-            </span>
-
-          </div>
-
-          <strong>
-            {stats.emailsSent}
-          </strong>
-
-        </div>
-
-
-        {/* Waiting */}
-
-        <div className="stat-card">
-
-          <div className="stat-card__top">
-
-            <div className="stat-card__icon">
-              <FiClock />
-            </div>
-
-            <span className="stat-card__label">
-              Waiting Reply
-            </span>
-
-          </div>
-
-          <strong>
-            {stats.waiting}
-          </strong>
-
-        </div>
-
-
-        {/* Accepted */}
-
-        <div className="stat-card stat-card--success">
-
-          <div className="stat-card__top">
-
-            <div className="stat-card__icon">
-              <FiCheckCircle />
-            </div>
-
-            <span className="stat-card__label">
-              Accepted
-            </span>
-
-          </div>
-
-          <strong>
-            {stats.accepted}
-          </strong>
-
-        </div>
+        <span className="stat-card__label">
+          Applications Sent
+        </span>
 
       </div>
 
-    </section>
+      <strong>
+        {stats.applicationsSent}
+      </strong>
+
+    </div>
+
+
+    {/* =====================================
+        WAITING REPLY
+    ===================================== */}
+
+    <div className="stat-card">
+
+      <div className="stat-card__top">
+
+        <div className="stat-card__icon">
+          <FiClock />
+        </div>
+
+        <span className="stat-card__label">
+          Waiting Reply
+        </span>
+
+      </div>
+
+      <strong>
+        {stats.waiting}
+      </strong>
+
+    </div>
+
+
+    {/* =====================================
+        INTERVIEWS
+    ===================================== */}
+
+    <div className="stat-card">
+
+      <div className="stat-card__top">
+
+        <div className="stat-card__icon">
+          <FiBriefcase />
+        </div>
+
+        <span className="stat-card__label">
+          Interviews
+        </span>
+
+      </div>
+
+      <strong>
+        {stats.interviews}
+      </strong>
+
+    </div>
+
+
+    {/* =====================================
+        ACCEPTED
+    ===================================== */}
+
+    <div className="stat-card stat-card--success">
+
+      <div className="stat-card__top">
+
+        <div className="stat-card__icon">
+          <FiCheckCircle />
+        </div>
+
+        <span className="stat-card__label">
+          Accepted
+        </span>
+
+      </div>
+
+      <strong>
+        {stats.accepted}
+      </strong>
+
+    </div>
+
+
+    {/* =====================================
+        REJECTED
+    ===================================== */}
+
+    <div className="stat-card">
+
+      <div className="stat-card__top">
+
+        <div className="stat-card__icon">
+          <FiTrash2 />
+        </div>
+
+        <span className="stat-card__label">
+          Rejected
+        </span>
+
+      </div>
+
+      <strong>
+        {stats.rejected}
+      </strong>
+
+    </div>
+
+
+  </div>
+
+</section>
+
+   
 
 
     {/* =====================================================
@@ -1482,27 +1536,32 @@ return (
             Type
           </label>
 
+           
+
           <select
-            value={type}
-            onChange={(e) => {
-              setType(e.target.value);
-              setPage(1);
-            }}
-          >
+  value={type}
+  onChange={(e) => {
+    setType(e.target.value);
+    setPage(1);
+  }}
+>
 
-            <option value="">
-              All Types
-            </option>
+  <option value="">
+    All Types
+  </option>
 
-            <option value="hotel">
-              Hotels
-            </option>
+  {types.map((item) => (
 
-            <option value="restaurant">
-              Restaurants
-            </option>
+    <option
+      key={item}
+      value={item}
+    >
+      {item}
+    </option>
 
-          </select>
+  ))}
+
+</select>
 
         </div>
 
@@ -1757,20 +1816,13 @@ return (
                   {/* TYPE */}
 
                   <td>
-
-                    <span
-                      className={`type-badge ${
-                        lead.type === "hotel"
-                          ? "type-badge--hotel"
-                          : "type-badge--restaurant"
-                      }`}
-                    >
-
-                      {lead.type === "hotel"
-                        ? "Hotel"
-                        : "Restaurant"}
+                    <span className="type-badge type-badge--hotel">
+                      {lead.type}
 
                     </span>
+
+                     
+          
 
                   </td>
 
@@ -3398,1165 +3450,3 @@ return (
 
 
 
-
-
-/*
- return (
-    <div className="job-page">
-
-    
-
-      <div className="page-header">
-
-        <div>
-
-          <h1>
-            Job Applications
-          </h1>
-
-          <p>
-            Track hotels and restaurants
-            you contacted in Europe
-          </p>
-
-        </div>
-
-        <label className="import-btn">
-
-  Import CSV
-
-  <input
-    type="file"
-    accept=".csv"
-    hidden
-    onChange={importCsv}
-  />
-
-</label>
-
-<label className="import-btn">
-
-  Import Excel
-
-  <input
-    hidden
-    type="file"
-    accept=".xlsx,.xls"
-    onChange={importExcel}
-  />
-
-</label>
-
-        <button
-          className="add-btn"
-          onClick={() =>
-            setShowAddModal(true)
-          }
-        >
-          <FiPlus />
-          Add Lead
-        </button>
-     
-
-  <button
-    className="add-btn"
-    onClick={openGmail}
->
-    <FiMail />
-    Open Gmail ({emailCount})
-
-     
-
-</button>
-
-<div className="template-selector">
-
-  <FiMail />
-
-  <select
-    value={selectedTemplate}
-    onChange={(e) =>
-      setSelectedTemplate(e.target.value)
-    }
-  >
-
-    <option value="">
-      Select Email Template
-    </option>
-
-    {templates.map(template => (
-
-      <option
-        key={template._id}
-        value={template._id}
-      >
-
-        {template.isDefault ? "⭐ " : ""}
-        {template.name}
-
-      </option>
-
-    ))}
-
-  </select>
-
-</div>
- 
-
-
-
- 
-
-      </div>
-
-     
-
-      <div className="stats-grid">
-
-        <div className="stat-card">
-
-          <FiBriefcase />
-
-          <h3>
-            {stats.total}
-          </h3>
-
-          <span>
-            Total Leads
-          </span>
-
-        </div>
-
-        <div className="stat-card">
-
-          <FiHome />
-
-          <h3>
-            {stats.hotels}
-          </h3>
-
-          <span>
-            Hotels
-          </span>
-
-        </div>
-
-        <div className="stat-card">
-
-          <FiHome />
-
-          <h3>
-            {stats.restaurants}
-          </h3>
-
-          <span>
-            Restaurants
-          </span>
-
-        </div>
-
-        <div className="stat-card">
-
-          <FiMail />
-
-          <h3>
-            {stats.emailsSent}
-          </h3>
-
-          <span>
-            Emails Sent
-          </span>
-
-        </div>
-
-        <div className="stat-card">
-
-          <FiClock />
-
-          <h3>
-            {stats.waiting}
-          </h3>
-
-          <span>
-            Waiting Reply
-          </span>
-
-        </div>
-
-        <div className="stat-card">
-
-          <FiCheckCircle />
-
-          <h3>
-            {stats.accepted}
-          </h3>
-
-          <span>
-            Accepted
-          </span>
-
-        </div>
-
-      </div>
-
-      
-
-      <div className="filters-card">
-
-        <div className="search-box">
-
-          <FiSearch />
-
-          <input
-            type="text"
-            placeholder="Search hotel, restaurant, email..."
-            value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
-          />
-
-        </div>
-
-        <select
-          value={type}
-          onChange={(e) =>
-            setType(e.target.value)
-          }
-        >
-
-          <option value="">
-            All Types
-          </option>
-
-          <option value="hotel">
-            Hotels
-          </option>
-
-          <option value="restaurant">
-            Restaurants
-          </option>
-
-        </select>
-
-        <select
-          value={status}
-          onChange={(e) =>
-            setStatus(e.target.value)
-          }
-        >
-
-          <option value="">
-            All Status
-          </option>
-
-          <option value="not_contacted">
-            Not Contacted
-          </option>
-
-          <option value="email_sent">
-            Email Sent
-          </option>
-
-          <option value="waiting_reply">
-            Waiting Reply
-          </option>
-
-          <option value="interview">
-            Interview
-          </option>
-
-          <option value="accepted">
-            Accepted
-          </option>
-
-          <option value="rejected">
-            Rejected
-          </option>
-
-        </select>
-        <select
-  value={country}
-  onChange={handleCountry}
->
-
-  <option value="">
-    All Countries
-  </option>
-
-  {countries.map((item) => (
-
-    <option
-      key={item}
-      value={item}
-    >
-      {item}
-    </option>
-
-  ))}
-
-</select>
-
-
-
-
-
-<select
-    value={city}
-    onChange={(e) => {
-        setCity(e.target.value);
-        setPage(1);
-    }}
->
-    <option value="">
-        All Cities
-    </option>
-
-    {country
-  ? (cities[country] || []).map(city => (
-      <option
-        key={city}
-        value={city}
-      >
-        {city}
-      </option>
-    ))
-  : allCities.map(item => (
-      <option
-        key={`${item.country}-${item.city}`}
-        value={item.city}
-      >
-        {item.city} - {item.country}
-      </option>
-    ))
-}
-
-   
-
-</select>
-
-
-
-        
-
-      </div>
-
-   
-
-<div className="table-card">
-
-  {loading ? (
-
-    <div className="empty-state">
-      Loading...
-    </div>
-
-  ) : leads.length === 0 ? (
-
-    <div className="empty-state">
-
-      <h3>
-        No Leads Found
-      </h3>
-
-      <p>
-        Start adding hotels and
-        restaurants.
-      </p>
-
-    </div>
-
-  ) : (
-
-    <table>
-
-      <thead>
-
-        <tr>
-
-          <th>
-            Company
-          </th>
-
-          <th>
-            Type
-          </th>
-
-          <th>
-            Location
-          </th>
-
-          <th>
-            Contact
-          </th>
-
-          <th>
-            Status
-          </th>
-
-          <th>
-            Actions
-          </th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-        {leads.map((lead) => (
-
-          <tr key={lead._id}>
-
-         
-
-            <td>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "4px"
-                }}
-              >
-
-                <strong>
-                  {lead.companyName}
-                </strong>
-
-                {lead.position && (
-                  <small>
-                    {lead.position}
-                  </small>
-                )}
-
-              </div>
-
-            </td>
-
-            
-
-            <td>
-
-              <span
-                className={
-                  lead.type === "hotel"
-                    ? "type hotel"
-                    : "type restaurant"
-                }
-              >
-
-                {lead.type}
-
-              </span>
-
-            </td>
-
-             
-
-            <td>
-
-              <div>
-
-                {lead.city}
-
-                <br />
-
-                <small>
-                  {lead.country}
-                </small>
-
-              </div>
-
-            </td>
-
-            
-
-            <td>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px"
-                }}
-              >
-
-                {lead.email && (
-
-                  <a
-                   
-                    className="action-link"
-
-
-                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${lead.email}`}
-target="_blank"
-rel="noreferrer"
-                  >
-                    <FiMail />
-                    {lead.email}
-                  </a>
-
-                )}
-
-                {lead.phone && (
-
-                  <a
-                    href={`tel:${lead.phone}`}
-                    className="action-link"
-                  >
-                    <FiPhone />
-                    {lead.phone}
-                  </a>
-
-                )}
-
-                {lead.website && (
-
-                  <a
-                    href={lead.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="action-link"
-                  >
-                    <FiGlobe />
-                    Website
-                  </a>
-
-                )}
-
-              </div>
-
-            </td>
-
-            
-
-            <td>
-
-              <select
-                value={lead.status}
-                className={getStatusClass(
-                  lead.status
-                )}
-                onChange={(e) =>
-                  updateStatus(
-                    lead._id,
-                    e.target.value
-                  )
-                }
-              >
-
-                <option value="not_contacted">
-                  Not Contacted
-                </option>
-
-                <option value="email_sent">
-                  Email Sent
-                </option>
-
-                <option value="waiting_reply">
-                  Waiting Reply
-                </option>
-
-                <option value="interview">
-                  Interview
-                </option>
-
-                <option value="accepted">
-                  Accepted
-                </option>
-
-                <option value="rejected">
-                  Rejected
-                </option>
-
-              </select>
-
-            </td>
-
-           
-
-            <td>
-
-              <div className="actions">
-                <button
-  onClick={() => openLeadEmail(lead)}
-  className="icon-btn"
-  title="Send Email"
->
-  <FiMail />
-</button>
-
-                <button
-                  onClick={() =>
-                    toggleFavorite(
-                      lead._id
-                    )
-                  }
-                  className={
-                    lead.favorite
-                      ? "icon-btn active"
-                      : "icon-btn"
-                  }
-                >
-                  <FiStar />
-                </button>
-
-                <button
-                  onClick={() =>
-                    toggleArchive(
-                      lead._id
-                    )
-                  }
-                  className="icon-btn"
-                >
-                  <FiArchive />
-                </button>
-
-                <button
-                  onClick={() => {
-
-                    setSelectedLead(
-                      lead
-                    );
-
-                    setShowEditModal(
-                      true
-                    );
-
-                  }}
-                  className="icon-btn"
-                >
-                  Edit
-                </button>
-
-                <button
-                  onClick={() =>
-                    deleteLead(
-                      lead._id
-                    )
-                  }
-                  className="icon-btn danger"
-                >
-                  <FiTrash2 />
-                </button>
-
-              </div>
-
-            </td>
-
-          </tr>
-
-        ))}
-
-      </tbody>
-
-    </table>
-
-  )}
-
-</div>
-
- 
-
-{pages > 1 && (
-
-  <div className="pagination">
-
-    <button
-      disabled={page === 1}
-      onClick={() =>
-        setPage(
-          (prev) => prev - 1
-        )
-      }
-    >
-      Previous
-    </button>
-
-    <span>
-      Page {page} / {pages}
-    </span>
-
-    <button
-      disabled={page === pages}
-      onClick={() =>
-        setPage(
-          (prev) => prev + 1
-        )
-      }
-    >
-      Next
-    </button>
-
-  </div>
-
-)}
-
-
-
-
-{showAddModal && (
-
-  <AddLeadModal
-    onClose={() =>
-      setShowAddModal(false)
-    }
-    fetchLeads={fetchLeads}
-    fetchStats={fetchStats}
-  />
-
-)}
-
-{showEditModal && selectedLead && (
-
-  <EditLeadModal
-    lead={selectedLead}
-    onClose={() =>
-      setShowEditModal(false)
-    }
-    fetchLeads={fetchLeads}
-    fetchStats={fetchStats}
-  />
-
-)}
-
-
-
-<style>
-    {
-        `
-       
-
-.job-page{
-  padding:24px;
-  min-height:100vh;
-  background:#F1F5F9;
-}
-
- 
-
-.page-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:20px;
-  margin-bottom:24px;
-}
-
-.page-header h1{
-  font-size:32px;
-  color:#0F172A;
-  margin-bottom:6px;
-}
-
-.page-header p{
-  color:#64748B;
-}
-
-
-.import-btn{
-height:48px;
-padding:0 20px;
-background:#16A34A;
-color:white;
-border-radius:12px;
-display:flex;
-align-items:center;
-cursor:pointer;
-font-weight:600;
-}
-
-.add-btn{
-  border:none;
-  background:#4F46E5;
-  color:white;
-  height:48px;
-  padding:0 20px;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  cursor:pointer;
-  font-weight:600;
-  transition:.2s;
-}
-
-.add-btn:hover{
-  transform:translateY(-2px);
-}
-
- 
-
-.stats-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:18px;
-  margin-bottom:24px;
-}
-
-.stat-card{
-  background:white;
-  border-radius:18px;
-  padding:22px;
-  border:1px solid #E2E8F0;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.stat-card svg{
-  font-size:26px;
-  color:#4F46E5;
-}
-
-.stat-card h3{
-  font-size:28px;
-  color:#0F172A;
-}
-
-.stat-card span{
-  color:#64748B;
-}
-
- 
-
-.filters-card{
-  background:white;
-  border:1px solid #E2E8F0;
-  border-radius:18px;
-  padding:20px;
-  margin-bottom:24px;
-
-  display:grid;
-  grid-template-columns:
-  2fr
-  1fr
-  1fr
-  1fr;
-  gap:14px;
-}
-
-.search-box{
-  position:relative;
-}
-
-.search-box svg{
-  position:absolute;
-  left:14px;
-  top:50%;
-  transform:translateY(-50%);
-  color:#64748B;
-}
-
-.search-box input{
-  padding-left:42px !important;
-}
-
-.filters-card input,
-.filters-card select{
-  height:48px;
-  border:1px solid #E2E8F0;
-  border-radius:12px;
-  padding:0 14px;
-  outline:none;
-  background:white;
-}
-
- 
-
-.table-card{
-  background:white;
-  border-radius:20px;
-  border:1px solid #E2E8F0;
-  overflow-y: scroll;
-}
-
-.table-card table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-.table-card thead{
-  background:#F8FAFC;
-}
-
-.table-card th{
-  text-align:left;
-  padding:18px;
-  color:#64748B;
-  font-size:14px;
-  font-weight:600;
-}
-
-.table-card td{
-  padding:18px;
-  border-top:1px solid #F1F5F9;
-}
-
-.table-card tr:hover{
-  background:#FAFAFC;
-}
-
- 
-
-.type{
-  padding:8px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:600;
-}
-
-.type.hotel{
-  background:#EEF2FF;
-  color:#4F46E5;
-}
-
-.type.restaurant{
-  background:#ECFDF5;
-  color:#16A34A;
-}
-
- 
-
-.action-link{
-  text-decoration:none;
-  color:#4F46E5;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:14px;
-}
-
-.action-link:hover{
-  text-decoration:underline;
-}
-
- 
-
-.status{
-  border:none;
-  border-radius:12px;
-  padding:10px;
-  font-weight:600;
-}
-
-.status.sent{
-  background:#DBEAFE;
-  color:#2563EB;
-}
-
-.status.waiting{
-  background:#FEF3C7;
-  color:#D97706;
-}
-
-.status.interview{
-  background:#E0E7FF;
-  color:#4F46E5;
-}
-
-.status.accepted{
-  background:#DCFCE7;
-  color:#16A34A;
-}
-
-.status.rejected{
-  background:#FEE2E2;
-  color:#DC2626;
-}
-
- 
-
-.actions{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.icon-btn{
-  width:38px;
-  height:38px;
-  border:none;
-  border-radius:10px;
-  background:#F8FAFC;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:.2s;
-}
-
-.icon-btn:hover{
-  transform:translateY(-2px);
-}
-
-.icon-btn.active{
-  background:#FEF3C7;
-  color:#F59E0B;
-}
-
-.icon-btn.danger{
-  background:#FEE2E2;
-  color:#DC2626;
-}
-
- 
-
-.empty-state{
-  padding:80px 20px;
-  text-align:center;
-}
-
-.empty-state h3{
-  margin-bottom:8px;
-  color:#0F172A;
-}
-
-.empty-state p{
-  color:#64748B;
-}
-
- 
-
-.pagination{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:16px;
-  margin-top:24px;
-}
-
-.pagination button{
-  height:42px;
-  padding:0 16px;
-  border:none;
-  border-radius:10px;
-  background:#4F46E5;
-  color:white;
-  cursor:pointer;
-}
-
-.pagination button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
- 
-
-.modal-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(15,23,42,.55);
-  backdrop-filter:blur(6px);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-
-.modal{
-  width:900px;
-  max-width:95%;
-  max-height:90vh;
-  overflow:auto;
-  background:white;
-  border-radius:24px;
-  padding:28px;
-}
-
-.modal-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:24px;
-}
-
-.modal-header h2{
-  color:#0F172A;
-}
-
-.modal-header button{
-  border:none;
-  background:#F1F5F9;
-  width:40px;
-  height:40px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
- 
-
-.lead-form{
-  display:grid;
-  grid-template-columns:
-  repeat(2,minmax(0,1fr));
-  gap:16px;
-}
-
-.lead-form textarea{
-  grid-column:1/-1;
-}
-
-.lead-form input,
-.lead-form select,
-.lead-form textarea{
-  width:100%;
-  border:1px solid #E2E8F0;
-  border-radius:12px;
-  padding:14px;
-  outline:none;
-}
-
-.lead-form label{
-  color:#64748B;
-  font-size:14px;
-}
-
-.save-btn{
-  grid-column:1/-1;
-
-  height:52px;
-
-  border:none;
-
-  border-radius:12px;
-
-  background:#4F46E5;
-
-  color:white;
-
-  font-weight:600;
-
-  cursor:pointer;
-}
-
- 
-
-@media(max-width:768px){
-
-  .filters-card{
-    grid-template-columns:1fr;
-  }
-
-  .lead-form{
-    grid-template-columns:1fr;
-  }
-
-  .page-header{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  .table-card{
-    overflow:auto;
-  }
-
-}
-        `
-    }
-</style>
-
-    </div>
-  );
- */

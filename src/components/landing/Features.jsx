@@ -19,8 +19,8 @@ export default function Features() {
 
         {
             icon: <FiBriefcase />,
-            title: "Job Leads Management",
-            text: "Store and organize hotels and restaurants from any country in one place."
+            title: "Contacts & Opportunities",
+            text: "Store and organize clients, companies, leads, projects, and professional opportunities in one place."
         },
 
         {
@@ -62,8 +62,8 @@ export default function Features() {
                 <div className="jr-section-heading">
 
                     <h2>
-                        Everything You Need to Land Your Next{" "}
-                        <span>Job</span>
+                        Everything You Need to Manage Your{" "}
+                        <span>Professional Opportunities</span>
                     </h2>
 
                 </div>

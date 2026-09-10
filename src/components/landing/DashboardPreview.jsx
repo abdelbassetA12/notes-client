@@ -1,3 +1,4 @@
+ 
 import {
     FiSearch,
     FiBell,
@@ -17,49 +18,42 @@ import {
 } from "react-icons/fi";
 
 export default function DashboardPreview() {
-
     const leads = [
         {
-            name: "Hotel Aurora",
-            location: "Venice, Italy",
+            name: "TechVision Studio",
+            location: "Berlin, Germany",
             status: "Email Sent",
             statusClass: "sent",
             time: "2h ago"
         },
         {
-            name: "Restaurant Roma",
-            location: "Prague, Czech Republic",
+            name: "Marco Rossi",
+            location: "Milan, Italy",
             status: "Waiting Reply",
             statusClass: "waiting",
             time: "1d ago"
         },
         {
-            name: "Grand Hotel Wien",
-            location: "Vienna, Austria",
+            name: "Creative Labs",
+            location: "Paris, France",
             status: "Interview",
             statusClass: "interview",
             time: "2d ago"
         },
         {
-            name: "Hotel Florian",
-            location: "Paris, France",
+            name: "Nova Solutions",
+            location: "Amsterdam, Netherlands",
             status: "Email Sent",
             statusClass: "sent",
             time: "3d ago"
         }
     ];
 
-
     return (
-
         <div className="jr-dashboard">
-
             {/* Sidebar */}
-
             <aside className="jr-dashboard-sidebar">
-
                 <div className="jr-dashboard-brand">
-
                     <span className="jr-mini-logo">
                         ➤
                     </span>
@@ -67,12 +61,9 @@ export default function DashboardPreview() {
                     <span>
                         Avertools
                     </span>
-
                 </div>
 
-
                 <div className="jr-sidebar-menu">
-
                     <div className="jr-sidebar-item active">
                         <FiHome />
                         <span>Dashboard</span>
@@ -80,7 +71,7 @@ export default function DashboardPreview() {
 
                     <div className="jr-sidebar-item">
                         <FiBriefcase />
-                        <span>Job Leads</span>
+                        <span>Opportunities</span>
                     </div>
 
                     <div className="jr-sidebar-item">
@@ -90,7 +81,7 @@ export default function DashboardPreview() {
 
                     <div className="jr-sidebar-item">
                         <FiFileText />
-                        <span>CV Builder</span>
+                        <span>Resume Builder</span>
 
                         <span className="jr-new-label">
                             New
@@ -116,22 +107,15 @@ export default function DashboardPreview() {
                         <FiSettings />
                         <span>Settings</span>
                     </div>
-
                 </div>
-
             </aside>
 
-
             {/* Main Dashboard */}
-
             <main className="jr-dashboard-main">
 
                 {/* Topbar */}
-
                 <div className="jr-dashboard-topbar">
-
                     <div className="jr-dashboard-title">
-
                         <strong>
                             Dashboard
                         </strong>
@@ -139,12 +123,9 @@ export default function DashboardPreview() {
                         <span>
                             →
                         </span>
-
                     </div>
 
-
                     <div className="jr-dashboard-tools">
-
                         <button>
                             <FiSearch />
                         </button>
@@ -156,18 +137,13 @@ export default function DashboardPreview() {
                         <div className="jr-avatar">
                             A
                         </div>
-
                     </div>
-
                 </div>
 
-
                 {/* Stats */}
-
                 <div className="jr-dashboard-stats">
 
                     <div className="jr-stat-card">
-
                         <div className="jr-stat-icon blue">
                             <FiBriefcase />
                         </div>
@@ -183,12 +159,9 @@ export default function DashboardPreview() {
                         <small>
                             +16% this week
                         </small>
-
                     </div>
 
-
                     <div className="jr-stat-card">
-
                         <div className="jr-stat-icon green">
                             <FiMail />
                         </div>
@@ -204,12 +177,9 @@ export default function DashboardPreview() {
                         <small>
                             +12% this week
                         </small>
-
                     </div>
 
-
                     <div className="jr-stat-card">
-
                         <div className="jr-stat-icon orange">
                             <FiClock />
                         </div>
@@ -225,12 +195,9 @@ export default function DashboardPreview() {
                         <small>
                             +8% this week
                         </small>
-
                     </div>
 
-
                     <div className="jr-stat-card">
-
                         <div className="jr-stat-icon purple">
                             <FiSend />
                         </div>
@@ -246,12 +213,9 @@ export default function DashboardPreview() {
                         <small>
                             +10% this week
                         </small>
-
                     </div>
 
-
                     <div className="jr-stat-card">
-
                         <div className="jr-stat-icon accepted">
                             <FiCheckCircle />
                         </div>
@@ -267,42 +231,32 @@ export default function DashboardPreview() {
                         <small>
                             +13% this week
                         </small>
-
                     </div>
 
                 </div>
 
-
                 {/* Bottom dashboard area */}
-
                 <div className="jr-dashboard-content">
 
                     {/* Leads */}
-
                     <section className="jr-recent-leads">
 
                         <div className="jr-panel-header">
-
                             <h3>
-                                Recent Leads
+                                Recent Activity
                             </h3>
 
                             <button>
                                 View All
                             </button>
-
                         </div>
 
-
                         <div className="jr-leads-list">
-
                             {leads.map((lead, index) => (
-
                                 <div
                                     className="jr-lead-row"
                                     key={index}
                                 >
-
                                     <div className="jr-lead-person">
 
                                         <div className="jr-lead-avatar">
@@ -310,7 +264,6 @@ export default function DashboardPreview() {
                                         </div>
 
                                         <div>
-
                                             <strong>
                                                 {lead.name}
                                             </strong>
@@ -318,11 +271,9 @@ export default function DashboardPreview() {
                                             <span>
                                                 {lead.location}
                                             </span>
-
                                         </div>
 
                                     </div>
-
 
                                     <div className="jr-lead-right">
 
@@ -337,22 +288,16 @@ export default function DashboardPreview() {
                                         </small>
 
                                     </div>
-
                                 </div>
-
                             ))}
-
                         </div>
 
                     </section>
 
-
                     {/* Right panel */}
-
                     <section className="jr-template-panel">
 
                         <div className="jr-template-title">
-
                             <span className="jr-star">
                                 ★
                             </span>
@@ -360,14 +305,12 @@ export default function DashboardPreview() {
                             <strong>
                                 Default Template
                             </strong>
-
                         </div>
-
 
                         <div className="jr-template-box">
 
                             <span>
-                                Job Application Template
+                                Professional Outreach Template
                             </span>
 
                             <small>
@@ -379,7 +322,6 @@ export default function DashboardPreview() {
                             </button>
 
                         </div>
-
 
                         <div className="jr-quick-actions">
 
@@ -400,7 +342,7 @@ export default function DashboardPreview() {
 
                             <div>
                                 <FiPlus />
-                                Add New Lead
+                                Add New Contact
                             </div>
 
                         </div>
@@ -410,9 +352,7 @@ export default function DashboardPreview() {
                 </div>
 
             </main>
-
         </div>
-
     );
-
 }
+ 

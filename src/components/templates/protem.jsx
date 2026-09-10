@@ -150,13 +150,10 @@ const photoBorderStyle =
 const photoBorderColor =
     design?.photoBorderColor || "#ffffff";
 
- const photoPositionX = Number(
-  design?.photoPositionX ?? 0
-);
-
-const photoPositionY = Number(
-  design?.photoPositionY ?? 0
-);
+const photoObjectFit =
+    design?.photoObjectFit || "cover";
+    const photoObjectPosition =
+    design?.photoObjectPosition || "center center";
 
 const photoScale =
     Number(design?.photoScale) || 100;
@@ -515,58 +512,52 @@ data-show-item-dividers={
 
                 </div>
                 */}
-                    {showPhoto && (
-  <div className="eu2-photo-wrap">
-    <div
-      className={`eu2-photo-frame ${photoStyle}`}
-      style={{
-        width: `${photoSize}px`,
-        height: `${photoSize}px`,
-        borderWidth: `${photoBorderWidth}px`,
-        borderStyle: photoBorderStyle,
-        borderColor: photoBorderColor,
-        boxShadow:
-          photoShadow === "none"
-            ? "none"
-            : photoShadow,
-        margin: `${photoMargin}px auto`,
-      }}
-    >
-      <img
-  src={
-    personal.photo ||
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTy0kRPah-wj6NkcDY28AaLSbo9_skjIS9uOPjiqUzx9w&s=10"
-  }
-  alt="Profile"
-  className="eu2-photo"
-  style={{
-    width: "auto",
-    height: "auto",
-    maxWidth: "none",
-    maxHeight: "none",
-
-    position: "absolute",
-
-    left: `calc(50% + ${photoPositionX}%)`,
-    top: `calc(50% + ${photoPositionY}%)`,
-
-    transform: `
-      translate(-50%, -50%)
-      scale(${photoScale / 100})
-      rotate(${photoRotation}deg)
-    `,
-
-    opacity: photoOpacity / 100,
-  }}
-/>
-    </div>
-  </div>
-)}
        
 
+    {showPhoto && (
 
-        
+    <div className="eu2-photo-wrap">
 
+        <img
+            src={
+                personal.photo ||
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTy0kRPah-wj6NkcDY28AaLSbo9_skjIS9uOPjiqUzx9w&s=10"
+            }
+
+            alt="Profile"
+
+            className={`eu2-photo ${photoStyle}`}
+
+            style={{
+                width: `${photoSize}px`,
+                height: `${photoSize}px`,
+
+                objectFit: photoObjectFit,
+                objectPosition: photoObjectPosition,
+
+                borderWidth: `${photoBorderWidth}px`,
+                borderStyle: photoBorderStyle,
+                borderColor: photoBorderColor,
+
+                transform: `
+                    scale(${photoScale / 100})
+                    rotate(${photoRotation}deg)
+                `,
+
+                opacity: photoOpacity / 100,
+
+                boxShadow:
+                    photoShadow === "none"
+                        ? "none"
+                        : photoShadow,
+
+                margin: `${photoMargin}px auto`
+            }}
+        />
+
+    </div>
+
+)}
 
                 
             
@@ -1882,171 +1873,106 @@ data-show-item-dividers={
                 }
 
 
-               
+                .eu2-photo-wrap {
 
+                    width:
+                        100%;
 
+                    background:
+                        var(--eu2-sidebar-background);
 
-
-
-                /* ================================
-   PROFILE PHOTO SYSTEM
-   ================================ */
-
-.eu2-photo-wrap {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  background: var(--eu2-sidebar-background);
-}
-
-
-/* =================================
-   FIXED PHOTO FRAME
-   ================================= */
-
-.eu2-photo-frame {
-  position: relative;
-
-  flex: 0 0 auto;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  box-sizing: border-box;
-
-  /*
-    مهم جداً:
-    الـ Frame هو الذي يقوم بالقص.
-    وليس الصورة.
-  */
-  overflow: hidden;
-
-  background: var(--eu2-sidebar-background);
-
-  /*
-    منع أي تأثير على بقية الـ sidebar
-  */
-  isolation: isolate;
-
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-
-
-/* =================================
-   PHOTO ITSELF
-   ================================= */
-
-.eu2-photo-frame .eu2-photo {
-  display: block;
-
-  /*
-    لا يوجد object-fit
-    لا يوجد object-position
-  */
-
-  width: auto;
-  height: auto;
-
-  max-width: none;
-  max-height: none;
-
-  flex: 0 0 auto;
-
-  box-sizing: border-box;
-
-  /*
-    الصورة تبقى بحجمها الطبيعي.
-    الـ Frame هو الذي يحدد الجزء الظاهر.
-  */
-  object-fit: initial;
-  object-position: initial;
-
-  transform-origin: center center;
-
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
-
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-
-
-/* =================================
-   FRAME SHAPES
-   ================================= */
-
-.eu2-photo-frame.circle {
-  border-radius: 50%;
-}
-
-.eu2-photo-frame.rounded {
-  border-radius: 18px;
-}
-
-.eu2-photo-frame.soft {
-  border-radius: 28px;
-}
-
-.eu2-photo-frame.square {
-  border-radius: 0;
-}
-
-.eu2-photo-frame.pill {
-  border-radius: 999px;
-}
-
-.eu2-photo-frame.top-rounded {
-  border-radius: 28px 28px 0 0;
-}
-
-.eu2-photo-frame.bottom-rounded {
-  border-radius: 0 0 28px 28px;
-}
-
-
-/* =================================
-   PRINT / PDF
-   ================================= */
-
-@media print {
-
-  .eu2-photo-wrap {
-    overflow: visible;
-  }
-
-  .eu2-photo-frame {
-    overflow: hidden;
-
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  .eu2-photo-frame .eu2-photo {
-    max-width: none;
-    max-height: none;
-
-    object-fit: initial;
-    object-position: initial;
-
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-}
+                    overflow:
+                        hidden;
+                }
 
            
-        
+                /* =================================================
+   PHOTO
+================================================= */
+
+.eu2-photo-wrap {
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: var(--eu2-sidebar-background);
+
+    overflow: visible;
+
+    box-sizing: border-box;
+}
+
+
+.eu2-photo {
+
+    display: block;
+
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    transition:
+        transform .2s ease,
+        opacity .2s ease,
+        box-shadow .2s ease;
+}
+
+
+/* CIRCLE */
+
+.eu2-photo.circle {
+
+    border-radius: 50%;
+}
+
+
+/* ROUNDED */
+
+.eu2-photo.rounded {
+
+    border-radius: 18px;
+}
+
+/* SOFT */
+
+.eu2-photo.soft {
+    border-radius: 28px;
+}
+
+
+/* SQUARE */
+
+.eu2-photo.square {
+
+    border-radius: 0;
+}
+
+/* PILL */
+
+.eu2-photo.pill {
+    border-radius: 999px;
+}
+
+/* TOP ROUNDED */
+
+.eu2-photo.top-rounded {
+    border-radius: 28px 28px 0 0;
+}
+
+
+/* BOTTOM ROUNDED */
+
+.eu2-photo.bottom-rounded {
+    border-radius: 0 0 28px 28px;
+}
+
  
  
-
-
-
-
-
 
 
    
@@ -3302,6 +3228,8 @@ data-show-item-dividers={
     );
 }
  
+
+
 
 
 

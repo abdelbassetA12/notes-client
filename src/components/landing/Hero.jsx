@@ -25,21 +25,22 @@ export default function Hero() {
                             ✦
                         </span>
 
-                        All-in-One Platform for Job Seekers
+                        ✦ All-in-One Platform for Opportunities & Growth
 
                     </div>
 
 
                     <h1>
 
-                        Find Hotels.
+                         
+                        Manage Opportunities.
                         <br />
 
-                        Send Applications.
+                        Build Connections.
                         <br />
 
                         <span>
-                            Get Hired Faster.
+                            Grow Your Career.
                         </span>
 
                     </h1>
@@ -47,10 +48,11 @@ export default function Hero() {
 
                     <p className="jr-hero-description">
 
-                        Manage your job leads, build professional email
-                        templates, create stunning resumes, contact
-                        hundreds of hotels and restaurants, and track
-                        every opportunity — all in one place.
+                        Manage your contacts, opportunities, emails, resumes,
+                         and follow-ups — all in one powerful platform. Whether 
+                         you're looking for a job, finding freelance projects,
+                          or managing clients, everything you need to organize
+                           your professional journey is in one place.
 
                     </p>
 
@@ -59,7 +61,7 @@ export default function Hero() {
 
                         <button className="jr-primary-btn">
 
-                            Start Applying Now
+                           Get Started
 
                             <FiArrowRight />
 
@@ -83,27 +85,28 @@ export default function Hero() {
 
                         <span>
                             <FiCheck />
-                            Gmail Ready
+                              Contact Management
                         </span>
+
+                       
 
                         <span>
                             <FiCheck />
-                            CSV Import
-                        </span>
-
-                        <span>
-                            <FiCheck />
-                            Email Templates
+                            Email & Follow-ups
                         </span>
 
                         <span>
                             <FiCheck />
                             Resume Builder
                         </span>
+                        <span>
+                            <FiCheck />
+                            Opportunity Tracking
+                        </span>
 
                         <span>
                             <FiCheck />
-                            Europe Ready
+                            Built for Professionals
                         </span>
 
                     </div>

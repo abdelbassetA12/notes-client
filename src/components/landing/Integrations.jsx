@@ -2,8 +2,8 @@ import {
     FiFileText,
     FiGrid,
     FiDatabase,
-    FiBriefcase,
-    FiCoffee
+    FiUsers,
+    FiFolder
 } from "react-icons/fi";
 
 export default function Integrations() {
@@ -27,12 +27,12 @@ export default function Integrations() {
             title: "CSV"
         },
         {
-            type: "hotels",
-            title: "Hotels"
+            type: "contacts",
+            title: "Contacts"
         },
         {
-            type: "restaurants",
-            title: "Restaurants"
+            type: "projects",
+            title: "Projects"
         }
     ];
 
@@ -44,11 +44,11 @@ export default function Integrations() {
                 <div className="jr-integrations-label">
 
                     <strong>
-                        Built for job seekers
+                       Built for professionals
                     </strong>
 
                     <span>
-                        powered by best tools
+                        powered by tools you already use
                     </span>
 
                 </div>
@@ -87,15 +87,15 @@ export default function Integrations() {
                                 </div>
                             )}
 
-                            {item.type === "hotels" && (
+                            {item.type === "contacts" && (
                                 <div className="jr-brand-symbol hotels">
-                                    <FiBriefcase />
+                                    <FiUsers />
                                 </div>
                             )}
 
-                            {item.type === "restaurants" && (
+                            {item.type === "projects" && (
                                 <div className="jr-brand-symbol restaurants">
-                                    <FiCoffee />
+                                    <FiFolder />
                                 </div>
                             )}
 

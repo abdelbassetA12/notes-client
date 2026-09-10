@@ -5,26 +5,50 @@ import SectionSettings from "./SectionSettings";
 import HeaderSettings from "./HeaderSettings";
 import SkillsSettings from "./SkillsSettings";
 import PhotoSettings from "./PhotoSettings";
+import Accordion from "../common/Accordion";
 
 export default function DesignSection(){
 
     return(
 
         <>
+        <Accordion
+                    title="Color Settings"
+                     
+                >
+                    <ColorSettings />
+                </Accordion>
 
-            <ColorSettings />
+           
+            <Accordion title="Typography Settings">
+                <TypographySettings />
+            </Accordion>
             
-            <TypographySettings />
+            <Accordion title="Layout Settings">
+               <LayoutSettings />
+            </Accordion>
+            
 
-            <LayoutSettings />
+            <Accordion title="Section Settings">
+                <SectionSettings />
+                
+            </Accordion>
 
-            <SectionSettings />
-
-            <HeaderSettings/>
-
-            <SkillsSettings />
-
-            <PhotoSettings />
+            
+            <Accordion title="Header Settings">
+                <HeaderSettings/>
+                
+            </Accordion>
+            
+            <Accordion title="Skills Settings">
+                <SkillsSettings />
+            </Accordion>
+            
+            
+            <Accordion title="Photo Settings">
+                <PhotoSettings />
+            </Accordion>
+            
            
 
             

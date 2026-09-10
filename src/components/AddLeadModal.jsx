@@ -16,7 +16,7 @@ export default function AddLeadModal({
 
       companyName: "",
 
-      type: "hotel",
+      type: "",
 
       country: "",
 
@@ -120,8 +120,8 @@ export default function AddLeadModal({
             onChange={handleChange}
             required
           />
-
-          <select
+         {/*
+         <select
             name="type"
             value={form.type}
             onChange={handleChange}
@@ -137,6 +137,15 @@ export default function AddLeadModal({
               
 
           </select>
+         */}
+          
+          <input
+  name="type"
+  placeholder="Type (e.g. Hotel, Company, Agency)"
+  value={form.type}
+  onChange={handleChange}
+  required
+/>
 
           <input
             name="country"
