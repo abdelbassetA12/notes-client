@@ -40,6 +40,11 @@ export default function SystemSidebar() {
             path: "/EmailTemplates",
             label: "Email Templates",
             icon: FiClock
+        } ,
+        {
+            path: "/subscription",
+            label: "subscription",
+            icon: FiClock
         } 
     ];
 
