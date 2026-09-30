@@ -486,7 +486,112 @@ export default function Subscription() {
       setActionLoading(false);
     }
   }
+function renderPlanButton(plan) {
+  if (isCurrentPlan(plan)) {
+    return (
+      <button
+        className="subscription-plan-button current"
+        disabled
+      >
+        Current plan
+      </button>
+    );
+  }
 
+  const planId = plan?._id || plan?.id;
+
+  // إذا كان المستخدم على اشتراك Internal/Free
+  // فالانتقال إلى خطة مدفوعة يجب أن يمر عبر Paddle Checkout
+  const needsCheckout =
+    !subscription?.provider ||
+    subscription?.provider === "internal" ||
+    !subscription?.providerSubscriptionId;
+
+  // أي خطة مدفوعة تحتاج Checkout إذا لم يكن هناك
+  // اشتراك Paddle حقيقي مربوط بالمستخدم
+  if (!plan?.isFree && needsCheckout) {
+    return (
+      <button
+        className="subscription-plan-button"
+        onClick={() => handleCheckout(plan)}
+        disabled={
+          actionLoading &&
+          selectedPlan === planId
+        }
+      >
+        {actionLoading &&
+        selectedPlan === planId ? (
+          <FiRefreshCw className="spin" />
+        ) : (
+          <FiCreditCard />
+        )}
+
+        {isUpgrade(plan)
+          ? "Upgrade"
+          : "Get started"}
+      </button>
+    );
+  }
+
+  // إذا كان الاشتراك مربوطًا فعلًا بـ Paddle،
+  // تغيير الخطة يمكن أن يستخدم change-plan
+  if (
+    subscription &&
+    subscription.provider === "paddle" &&
+    subscription.providerSubscriptionId &&
+    !plan?.isFree
+  ) {
+    return (
+      <button
+        className="subscription-plan-button"
+        onClick={() => handleChangePlan(plan)}
+        disabled={
+          actionLoading &&
+          selectedPlan === planId
+        }
+      >
+        {actionLoading &&
+        selectedPlan === planId ? (
+          <FiRefreshCw className="spin" />
+        ) : isUpgrade(plan) ? (
+          <FiArrowUp />
+        ) : (
+          <FiArrowDown />
+        )}
+
+        {isUpgrade(plan)
+          ? "Upgrade"
+          : isDowngrade(plan)
+            ? "Change plan"
+            : "Select plan"}
+      </button>
+    );
+  }
+
+  // الخطة المجانية
+  return (
+    <button
+      className="subscription-plan-button"
+      onClick={() => handleCheckout(plan)}
+      disabled={
+        actionLoading &&
+        selectedPlan === planId
+      }
+    >
+      {actionLoading &&
+      selectedPlan === planId ? (
+        <FiRefreshCw className="spin" />
+      ) : (
+        <FiZap />
+      )}
+
+      {plan?.isFree
+        ? "Choose free plan"
+        : "Get started"}
+    </button>
+  );
+}
+/*
   function renderPlanButton(plan) {
     if (isCurrentPlan(plan)) {
       return (
@@ -559,7 +664,7 @@ export default function Subscription() {
           : "Get started"}
       </button>
     );
-  }
+  }*/
 
   function renderFeature(feature) {
     const enabled =
