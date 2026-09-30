@@ -22,6 +22,10 @@ import EmailTemplates from "./pages/EmailTemplates";
 import ResumeEditor from "./pages/ResumeEditor";
 
 
+import Subscription from "./pages/subscription/Subscription";
+import SubscriptionSuccess from "./pages/subscription/SubscriptionSuccess";
+
+
  
 
  
@@ -65,6 +69,16 @@ export default function App() {
 
           <Route path="/auth" element={ <Auth  />} />
           <Route path="/ResumeEditor" element={ <ResumeEditor  />} />
+
+          <Route
+  path="/subscription"
+  element={<Subscription />}
+/>
+
+<Route
+  path="/subscription/success"
+  element={<SubscriptionSuccess />}
+/>
         
           <Route
     path="/email-template/new"
