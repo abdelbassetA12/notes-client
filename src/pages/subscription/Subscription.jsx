@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
+import API_BASE from "../../config/api";
 import {
   FiCheck,
   FiX,
@@ -54,19 +55,19 @@ export default function Subscription() {
         paymentsResponse,
         invoicesResponse
       ] = await Promise.all([
-        fetch("http://localhost:5000/api/subscriptions/plans", {
+        fetch(`${API_BASE}/api/subscriptions/plans`, {
           credentials: "include"
         }),
-        fetch("http://localhost:5000/api/subscriptions/me", {
+        fetch(`${API_BASE}/api/subscriptions/me`, {
           credentials: "include"
         }),
-        fetch("http://localhost:5000/api/subscriptions/entitlements", {
+        fetch(`${API_BASE}/api/subscriptions/entitlements`, {
           credentials: "include"
         }),
-        fetch("http://localhost:5000/api/subscriptions/payments", {
+        fetch(`${API_BASE}/api/subscriptions/payments`, {
           credentials: "include"
         }),
-        fetch("http://localhost:5000/api/subscriptions/invoices", {
+        fetch(`${API_BASE}/api/subscriptions/invoices`, {
           credentials: "include"
         })
       ]);
@@ -300,7 +301,7 @@ export default function Subscription() {
 
       const response =
         await fetch(
-          "http://localhost:5000/api/subscriptions/checkout",
+          `${API_BASE}/api/subscriptions/checkout`,
           {
             method: "POST",
             credentials: "include",
@@ -359,7 +360,7 @@ export default function Subscription() {
 
       const response =
         await fetch(
-          "http://localhost:5000/api/subscriptions/change-plan",
+          `${API_BASE}/api/subscriptions/change-plan`,
           {
             method: "POST",
             credentials: "include",
@@ -405,7 +406,7 @@ export default function Subscription() {
 
       const response =
         await fetch(
-          "http://localhost:5000/api/subscriptions/cancel",
+          `${API_BASE}/api/subscriptions/cancel`,
           {
             method: "POST",
             credentials: "include",
@@ -452,7 +453,7 @@ export default function Subscription() {
 
       const response =
         await fetch(
-          "http://localhost:5000/api/subscriptions/reactivate",
+          `${API_BASE}/api/subscriptions/reactivate`,
           {
             method: "POST",
             credentials: "include",

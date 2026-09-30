@@ -7,6 +7,7 @@ import {
   FiRefreshCw
 } from "react-icons/fi";
 import "./SubscriptionSuccess.css";
+import API_BASE from "../../config/api";
 
 export default function SubscriptionSuccess() {
   const [searchParams] =
@@ -22,7 +23,7 @@ export default function SubscriptionSuccess() {
     try {
       const response =
         await fetch(
-          "http://localhost:5000/api/subscriptions/me",
+          `${API_BASE}/api/subscriptions/me`,
           {
             credentials: "include"
           }
