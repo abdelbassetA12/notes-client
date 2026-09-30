@@ -10,90 +10,80 @@ import "./SubscriptionSuccess.css";
 import API_BASE from "../../config/api";
 
 export default function SubscriptionSuccess() {
-  const [searchParams] =
-    useSearchParams();
+  const [searchParams] = useSearchParams();
 
-  const [status, setStatus] =
-    useState("checking");
+  const [status, setStatus] = useState("checking");
+  const [attempts, setAttempts] = useState(0);
 
-  const [attempts, setAttempts] =
-    useState(0);
+  const transactionId = searchParams.get("_ptxn");
 
-  async function checkSubscription() {
-    try {
-      const response =
-        await fetch(
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkSubscription() {
+      try {
+        const response = await fetch(
           `${API_BASE}/api/subscriptions/me`,
           {
             credentials: "include"
           }
         );
 
-      const data =
-        await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-            "Unable to verify subscription."
-        );
-      }
-
-      const subscription =
-        data.subscription;
-
-      if (
-        subscription &&
-        subscription.provider ===
-          "stripe" &&
-        (
-          subscription.status ===
-            "active" ||
-          subscription.status ===
-            "trialing"
-        )
-      ) {
-        setStatus("success");
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  }
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function verify() {
-      for (
-        let attempt = 0;
-        attempt < 10;
-        attempt++
-      ) {
-        if (cancelled) {
-          return;
+        if (!response.ok) {
+          return false;
         }
 
-        setAttempts(
-          attempt + 1
+        const data = await response.json();
+        const subscription = data?.subscription;
+
+        /*
+         * IMPORTANT:
+         * Do not consider the subscription successful just because
+         * a local/internal subscription exists.
+         *
+         * Paddle success requires:
+         * - provider === "paddle"
+         * - real Paddle subscription ID
+         * - active or trialing status
+         */
+        if (
+          subscription &&
+          subscription.provider === "paddle" &&
+          subscription.providerSubscriptionId &&
+          (
+            subscription.status === "active" ||
+            subscription.status === "trialing"
+          )
+        ) {
+          setStatus("success");
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.error(
+          "Subscription verification error:",
+          error
         );
 
-        const success =
-          await checkSubscription();
+        return false;
+      }
+    }
+
+    async function verify() {
+      for (let attempt = 0; attempt < 10; attempt++) {
+        if (cancelled) return;
+
+        setAttempts(attempt + 1);
+
+        const success = await checkSubscription();
 
         if (success) {
           return;
         }
 
-        await new Promise(
-          (resolve) =>
-            setTimeout(
-              resolve,
-              2000
-            )
+        await new Promise((resolve) =>
+          setTimeout(resolve, 2000)
         );
       }
 
@@ -109,15 +99,19 @@ export default function SubscriptionSuccess() {
     };
   }, []);
 
+  /*
+   * PAYMENT CONFIRMING
+   */
   if (status === "checking") {
     return (
-      <main className="success-page">
-        <section className="success-card">
-          <div className="success-loader">
+      <main className="subscription-success-page">
+        <section className="subscription-success-card">
+
+          <div className="success-icon loading">
             <FiLoader className="spin" />
           </div>
 
-          <span className="success-eyebrow">
+          <span className="success-label">
             PAYMENT RECEIVED
           </span>
 
@@ -126,117 +120,126 @@ export default function SubscriptionSuccess() {
           </h1>
 
           <p>
-            Stripe has received your
-            payment. We are waiting for
-            the subscription confirmation
-            to arrive.
+            Paddle has received your payment. We are waiting
+            for the subscription confirmation to arrive.
           </p>
 
-          <div className="verification-progress">
-            <span>
-              Verification attempt{" "}
-              {attempts}/10
-            </span>
+          <div className="verification-status">
+            <FiLoader className="spin" />
 
-            <div>
-              <span
-                style={{
-                  width: `${Math.min(
-                    attempts * 10,
-                    100
-                  )}%`
-                }}
-              />
-            </div>
+            <span>
+              Verifying payment...
+            </span>
           </div>
+
+          <small>
+            Attempt {attempts} of 10
+          </small>
+
         </section>
       </main>
     );
   }
 
-  if (status === "pending") {
+  /*
+   * SUBSCRIPTION CONFIRMED
+   */
+  if (status === "success") {
     return (
-      <main className="success-page">
-        <section className="success-card">
-          <div className="success-pending-icon">
-            <FiRefreshCw />
+      <main className="subscription-success-page">
+        <section className="subscription-success-card">
+
+          <div className="success-icon">
+            <FiCheck />
           </div>
 
-          <span className="success-eyebrow">
-            PAYMENT COMPLETED
+          <span className="success-label">
+            SUBSCRIPTION ACTIVE
           </span>
 
           <h1>
-            Your payment was received
+            Welcome to your new plan
           </h1>
 
           <p>
-            Your subscription is still
-            being synchronized. This can
-            take a short moment.
+            Your payment has been confirmed and your
+            Qevora subscription is now active.
           </p>
 
-          {searchParams.get(
-            "session_id"
-          ) && (
+          <div className="payment-confirmed">
+            <FiCheck />
+
+            <span>
+              Payment successfully processed
+            </span>
+          </div>
+
+          {transactionId && (
             <div className="session-reference">
-              Session confirmed
+              Transaction: {transactionId}
             </div>
           )}
 
-          <div className="success-actions">
-            <Link to="/subscription">
-              Open subscription
-              <FiArrowRight />
-            </Link>
-          </div>
+          <Link
+            to="/subscription"
+            className="success-button"
+          >
+            Continue to subscription
+            <FiArrowRight />
+          </Link>
+
         </section>
       </main>
     );
   }
 
+  /*
+   * PAYMENT RECEIVED BUT WEBHOOK NOT YET CONFIRMED
+   */
   return (
-    <main className="success-page">
-      <section className="success-card success-card-complete">
-        <div className="success-check">
-          <FiCheck />
+    <main className="subscription-success-page">
+      <section className="subscription-success-card">
+
+        <div className="success-icon pending">
+          <FiRefreshCw />
         </div>
 
-        <span className="success-eyebrow">
-          SUBSCRIPTION ACTIVE
+        <span className="success-label">
+          PAYMENT PROCESSING
         </span>
 
         <h1>
-          Welcome to your new plan
+          Your payment is being processed
         </h1>
 
         <p>
-          Your payment has been
-          confirmed and your Qevora
-          subscription is now active.
+          Paddle has returned you successfully, but the
+          subscription confirmation has not reached Qevora yet.
+          Your payment should be confirmed automatically.
         </p>
 
-        <div className="success-confirmation">
-          <FiCheck />
-          <span>
-            Payment successfully
-            processed
-          </span>
-        </div>
+        {transactionId && (
+          <div className="session-reference">
+            Transaction: {transactionId}
+          </div>
+        )}
 
-        <div className="success-actions">
-          <Link to="/subscription">
-            Manage subscription
-            <FiArrowRight />
-          </Link>
+        <button
+          type="button"
+          className="success-button secondary"
+          onClick={() => window.location.reload()}
+        >
+          <FiRefreshCw />
+          Check again
+        </button>
 
-          <Link
-            className="secondary"
-            to="/dashboard"
-          >
-            Go to dashboard
-          </Link>
-        </div>
+        <Link
+          to="/subscription"
+          className="back-link"
+        >
+          Back to subscription
+        </Link>
+
       </section>
     </main>
   );
