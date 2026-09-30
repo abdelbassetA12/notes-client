@@ -105,7 +105,7 @@ export default function App() {
         
       
         
-
+<Route path="*" element={<NotFound />} />
 
         <Route
          path="/settings"

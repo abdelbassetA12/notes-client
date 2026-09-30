@@ -1,6 +1,9 @@
+ 
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
+import { initializePaddle } from "@paddle/paddle-js";
 import API_BASE from "../../config/api";
+
 import {
   FiCheck,
   FiX,
@@ -9,7 +12,6 @@ import {
   FiFileText,
   FiRefreshCw,
   FiAlertCircle,
-  
   FiArrowUp,
   FiArrowDown,
   FiCalendar,
@@ -17,6 +19,7 @@ import {
   FiClock,
   FiExternalLink
 } from "react-icons/fi";
+
 import "./Subscription.css";
 
 export default function Subscription() {
@@ -26,25 +29,84 @@ export default function Subscription() {
   const [payments, setPayments] = useState([]);
   const [invoices, setInvoices] = useState([]);
 
-  const [billingCycle, setBillingCycle] =
-    useState("monthly");
+  const [billingCycle, setBillingCycle] = useState("monthly");
 
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] =
-    useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
-  const [activeTab, setActiveTab] =
-    useState("plans");
+  const [activeTab, setActiveTab] = useState("plans");
 
-  const [showCancelModal, setShowCancelModal] =
-    useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelImmediately, setCancelImmediately] = useState(false);
 
-  const [cancelImmediately, setCancelImmediately] =
-    useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
-  const [selectedPlan, setSelectedPlan] =
-    useState(null);
+  // Paddle instance
+  const [paddle, setPaddle] = useState(null);
 
+  /*
+   * ---------------------------------------------------------
+   * PADDLE INITIALIZATION
+   * ---------------------------------------------------------
+   */
+  useEffect(() => {
+    let mounted = true;
+
+    async function initializePaddleCheckout() {
+      try {
+        const token = import.meta.env.VITE_PADDLE_CLIENT_TOKEN;
+
+        if (!token) {
+          throw new Error(
+            "VITE_PADDLE_CLIENT_TOKEN is missing from the frontend environment."
+          );
+        }
+
+        if (!token.startsWith("test_")) {
+          throw new Error(
+            "The frontend must use a Paddle Sandbox client-side token starting with test_."
+          );
+        }
+
+        const paddleInstance = await initializePaddle({
+          environment: "sandbox",
+          token,
+          checkout: {
+            settings: {
+              displayMode: "overlay",
+              theme: "light",
+              locale: "en"
+            }
+          }
+        });
+
+        if (mounted) {
+          setPaddle(paddleInstance);
+        }
+      } catch (error) {
+        console.error("Paddle initialization error:", error);
+
+        if (mounted) {
+          toast.error(
+            error?.message ||
+              "Unable to initialize the payment system."
+          );
+        }
+      }
+    }
+
+    initializePaddleCheckout();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  /*
+   * ---------------------------------------------------------
+   * LOAD SUBSCRIPTION DATA
+   * ---------------------------------------------------------
+   */
   async function loadSubscriptionData() {
     try {
       setLoading(true);
@@ -59,93 +121,96 @@ export default function Subscription() {
         fetch(`${API_BASE}/api/subscriptions/plans`, {
           credentials: "include"
         }),
+
         fetch(`${API_BASE}/api/subscriptions/me`, {
           credentials: "include"
         }),
+
         fetch(`${API_BASE}/api/subscriptions/entitlements`, {
           credentials: "include"
         }),
+
         fetch(`${API_BASE}/api/subscriptions/payments`, {
           credentials: "include"
         }),
+
         fetch(`${API_BASE}/api/subscriptions/invoices`, {
           credentials: "include"
         })
       ]);
 
-      const plansData =
-        await plansResponse.json();
-
+      const plansData = await plansResponse.json();
       const subscriptionData =
         await subscriptionResponse.json();
-
       const entitlementData =
         await entitlementResponse.json();
-
       const paymentsData =
         await paymentsResponse.json();
-
       const invoicesData =
         await invoicesResponse.json();
 
       if (!plansResponse.ok) {
         throw new Error(
-          plansData.error ||
+          plansData?.error ||
             "Failed to load plans."
         );
       }
 
       if (!subscriptionResponse.ok) {
         throw new Error(
-          subscriptionData.error ||
+          subscriptionData?.error ||
             "Failed to load subscription."
         );
       }
 
       if (!entitlementResponse.ok) {
         throw new Error(
-          entitlementData.error ||
+          entitlementData?.error ||
             "Failed to load entitlements."
         );
       }
 
       if (!paymentsResponse.ok) {
         throw new Error(
-          paymentsData.error ||
+          paymentsData?.error ||
             "Failed to load payments."
         );
       }
 
       if (!invoicesResponse.ok) {
         throw new Error(
-          invoicesData.error ||
+          invoicesData?.error ||
             "Failed to load invoices."
         );
       }
 
-      setPlans(
-        plansData.plans || []
-      );
+      setPlans(plansData?.plans || []);
 
       setSubscription(
-        subscriptionData.subscription ||
-          null
+        subscriptionData?.subscription || null
       );
 
       setEntitlements(
-        entitlementData.entitlements ||
-          null
+        entitlementData?.entitlements || null
       );
 
       setPayments(
-        paymentsData.payments || []
+        paymentsData?.payments || []
       );
 
       setInvoices(
-        invoicesData.invoices || []
+        invoicesData?.invoices || []
       );
     } catch (error) {
-      toast.error(error.message);
+      console.error(
+        "Subscription data error:",
+        error
+      );
+
+      toast.error(
+        error?.message ||
+          "Unable to load subscription data."
+      );
     } finally {
       setLoading(false);
     }
@@ -155,6 +220,11 @@ export default function Subscription() {
     loadSubscriptionData();
   }, []);
 
+  /*
+   * ---------------------------------------------------------
+   * PLAN HELPERS
+   * ---------------------------------------------------------
+   */
   const currentPlanId =
     subscription?.plan?._id ||
     subscription?.plan?.id ||
@@ -166,10 +236,14 @@ export default function Subscription() {
       plans.find(
         (plan) =>
           String(
-            plan._id || plan.id
+            plan?._id || plan?.id
           ) === String(currentPlanId)
       ) ||
-      subscription?.plan ||
+      (
+        typeof subscription?.plan === "object"
+          ? subscription.plan
+          : null
+      ) ||
       null
     );
   }, [
@@ -189,8 +263,8 @@ export default function Subscription() {
 
     const price =
       billingCycle === "yearly"
-        ? plan.pricing?.yearly
-        : plan.pricing?.monthly;
+        ? plan?.pricing?.yearly
+        : plan?.pricing?.monthly;
 
     return Number(price || 0).toFixed(2);
   }
@@ -207,6 +281,12 @@ export default function Subscription() {
       return "—";
     }
 
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return "—";
+    }
+
     return new Intl.DateTimeFormat(
       "en-US",
       {
@@ -214,7 +294,7 @@ export default function Subscription() {
         month: "short",
         day: "numeric"
       }
-    ).format(new Date(date));
+    ).format(parsedDate);
   }
 
   function getStatusLabel(status) {
@@ -262,7 +342,7 @@ export default function Subscription() {
     }
 
     return Number(
-      plan.sortOrder || 0
+      plan?.sortOrder || 0
     );
   }
 
@@ -288,8 +368,108 @@ export default function Subscription() {
     );
   }
 
+  /*
+   * ---------------------------------------------------------
+   * EXTRACT PADDLE TRANSACTION ID
+   * ---------------------------------------------------------
+   */
+  function extractTransactionId(result) {
+    const directId =
+      result?.transactionId ||
+      result?.transaction?.id ||
+      result?.transaction?.data?.id ||
+      null;
+
+    if (directId) {
+      return directId;
+    }
+
+    if (result?.checkoutUrl) {
+      try {
+        const checkoutUrl = new URL(
+          result.checkoutUrl
+        );
+
+        return (
+          checkoutUrl.searchParams.get(
+            "_ptxn"
+          ) || null
+        );
+      } catch (error) {
+        console.error(
+          "Unable to parse Paddle checkout URL:",
+          error
+        );
+      }
+    }
+
+    return null;
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * PADDLE CHECKOUT
+   * ---------------------------------------------------------
+   */
   async function handleCheckout(plan) {
     if (!plan) {
+      return;
+    }
+
+    if (plan.isFree) {
+      try {
+        setActionLoading(true);
+        setSelectedPlan(
+          plan?._id || plan?.id
+        );
+
+        const response = await fetch(
+          `${API_BASE}/api/subscriptions/change-plan`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              planId:
+                plan?._id || plan?.id,
+              billingCycle: "lifetime"
+            })
+          }
+        );
+
+        const result =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result?.error ||
+              "Unable to select the free plan."
+          );
+        }
+
+        toast.success(
+          result?.message ||
+            "Your free plan has been activated."
+        );
+
+        await loadSubscriptionData();
+      } catch (error) {
+        console.error(
+          "Free plan error:",
+          error
+        );
+
+        toast.error(
+          error?.message ||
+            "Unable to select the free plan."
+        );
+      } finally {
+        setActionLoading(false);
+        setSelectedPlan(null);
+      }
+
       return;
     }
 
@@ -297,56 +477,119 @@ export default function Subscription() {
       setActionLoading(true);
 
       setSelectedPlan(
-        plan._id || plan.id
+        plan?._id || plan?.id
       );
 
-      const response =
-        await fetch(
-          `${API_BASE}/api/subscriptions/checkout`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-            body: JSON.stringify({
-              planId:
-                plan._id || plan.id,
-              billingCycle
-            })
-          }
+      /*
+       * Make sure Paddle is initialized.
+       */
+      if (!paddle) {
+        throw new Error(
+          "Payment system is still loading. Please try again in a moment."
         );
+      }
+
+      /*
+       * Create the Paddle transaction through our backend.
+       */
+      const response = await fetch(
+        `${API_BASE}/api/subscriptions/checkout`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            planId:
+              plan?._id || plan?.id,
+            billingCycle
+          })
+        }
+      );
 
       const result =
         await response.json();
 
       if (!response.ok) {
         throw new Error(
-          result.error ||
+          result?.error ||
             "Checkout failed."
         );
       }
 
-      if (result.checkoutUrl) {
-        window.location.href =
-          result.checkoutUrl;
-        return;
+      /*
+       * Get the Paddle transaction ID.
+       *
+       * Preferred:
+       * result.transactionId
+       *
+       * Fallback:
+       * result.checkoutUrl -> ?_ptxn=txn_...
+       */
+      const transactionId =
+        extractTransactionId(result);
+
+      if (!transactionId) {
+        console.error(
+          "Paddle checkout response:",
+          result
+        );
+
+        throw new Error(
+          "Paddle transaction ID was not returned by the server."
+        );
       }
 
-      await loadSubscriptionData();
+      /*
+       * IMPORTANT:
+       *
+       * Do NOT use:
+       *
+       * window.location.href = result.checkoutUrl
+       *
+       * because that sends the user to:
+       *
+       * https://avertools.site/?_ptxn=...
+       *
+       * Instead, open the transaction directly
+       * inside Paddle Checkout.
+       */
+      paddle.Checkout.open({
+        transactionId,
 
-      toast.success(
-        "Your subscription has been activated."
-      );
+        settings: {
+          displayMode: "overlay",
+          theme: "light",
+          locale: "en",
+
+          successUrl:
+            `${window.location.origin}/subscription/success?_ptxn=${encodeURIComponent(
+              transactionId
+            )}`
+        }
+      });
     } catch (error) {
-      toast.error(error.message);
+      console.error(
+        "Paddle checkout error:",
+        error
+      );
+
+      toast.error(
+        error?.message ||
+          "Unable to open checkout."
+      );
     } finally {
       setActionLoading(false);
       setSelectedPlan(null);
     }
   }
 
+  /*
+   * ---------------------------------------------------------
+   * CHANGE PLAN
+   * ---------------------------------------------------------
+   */
   async function handleChangePlan(plan) {
     if (!plan) {
       return;
@@ -356,78 +599,87 @@ export default function Subscription() {
       setActionLoading(true);
 
       setSelectedPlan(
-        plan._id || plan.id
+        plan?._id || plan?.id
       );
 
-      const response =
-        await fetch(
-          `${API_BASE}/api/subscriptions/change-plan`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-            body: JSON.stringify({
-              planId:
-                plan._id || plan.id,
-              billingCycle
-            })
-          }
-        );
+      const response = await fetch(
+        `${API_BASE}/api/subscriptions/change-plan`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            planId:
+              plan?._id || plan?.id,
+            billingCycle
+          })
+        }
+      );
 
       const result =
         await response.json();
 
       if (!response.ok) {
         throw new Error(
-          result.error ||
+          result?.error ||
             "Unable to change plan."
         );
       }
 
       toast.success(
-        result.message ||
+        result?.message ||
           "Your subscription has been updated."
       );
 
       await loadSubscriptionData();
     } catch (error) {
-      toast.error(error.message);
+      console.error(
+        "Change plan error:",
+        error
+      );
+
+      toast.error(
+        error?.message ||
+          "Unable to change plan."
+      );
     } finally {
       setActionLoading(false);
       setSelectedPlan(null);
     }
   }
 
+  /*
+   * ---------------------------------------------------------
+   * CANCEL SUBSCRIPTION
+   * ---------------------------------------------------------
+   */
   async function handleCancel() {
     try {
       setActionLoading(true);
 
-      const response =
-        await fetch(
-          `${API_BASE}/api/subscriptions/cancel`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-            body: JSON.stringify({
-              immediately:
-                cancelImmediately
-            })
-          }
-        );
+      const response = await fetch(
+        `${API_BASE}/api/subscriptions/cancel`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            immediately:
+              cancelImmediately
+          })
+        }
+      );
 
       const result =
         await response.json();
 
       if (!response.ok) {
         throw new Error(
-          result.error ||
+          result?.error ||
             "Unable to cancel subscription."
         );
       }
@@ -442,35 +694,43 @@ export default function Subscription() {
 
       await loadSubscriptionData();
     } catch (error) {
-      toast.error(error.message);
+      console.error(
+        "Cancel subscription error:",
+        error
+      );
+
+      toast.error(
+        error?.message ||
+          "Unable to cancel subscription."
+      );
     } finally {
       setActionLoading(false);
     }
   }
 
+  /*
+   * ---------------------------------------------------------
+   * REACTIVATE SUBSCRIPTION
+   * ---------------------------------------------------------
+   */
   async function handleReactivate() {
     try {
       setActionLoading(true);
 
-      const response =
-        await fetch(
-          `${API_BASE}/api/subscriptions/reactivate`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type":
-                "application/json"
-            }
-          }
-        );
+      const response = await fetch(
+        `${API_BASE}/api/subscriptions/reactivate`,
+        {
+          method: "POST",
+          credentials: "include"
+        }
+      );
 
       const result =
         await response.json();
 
       if (!response.ok) {
         throw new Error(
-          result.error ||
+          result?.error ||
             "Unable to reactivate subscription."
         );
       }
@@ -481,117 +741,25 @@ export default function Subscription() {
 
       await loadSubscriptionData();
     } catch (error) {
-      toast.error(error.message);
+      console.error(
+        "Reactivate subscription error:",
+        error
+      );
+
+      toast.error(
+        error?.message ||
+          "Unable to reactivate subscription."
+      );
     } finally {
       setActionLoading(false);
     }
   }
-function renderPlanButton(plan) {
-  if (isCurrentPlan(plan)) {
-    return (
-      <button
-        className="subscription-plan-button current"
-        disabled
-      >
-        Current plan
-      </button>
-    );
-  }
 
-  const planId = plan?._id || plan?.id;
-
-  // إذا كان المستخدم على اشتراك Internal/Free
-  // فالانتقال إلى خطة مدفوعة يجب أن يمر عبر Paddle Checkout
-  const needsCheckout =
-    !subscription?.provider ||
-    subscription?.provider === "internal" ||
-    !subscription?.providerSubscriptionId;
-
-  // أي خطة مدفوعة تحتاج Checkout إذا لم يكن هناك
-  // اشتراك Paddle حقيقي مربوط بالمستخدم
-  if (!plan?.isFree && needsCheckout) {
-    return (
-      <button
-        className="subscription-plan-button"
-        onClick={() => handleCheckout(plan)}
-        disabled={
-          actionLoading &&
-          selectedPlan === planId
-        }
-      >
-        {actionLoading &&
-        selectedPlan === planId ? (
-          <FiRefreshCw className="spin" />
-        ) : (
-          <FiCreditCard />
-        )}
-
-        {isUpgrade(plan)
-          ? "Upgrade"
-          : "Get started"}
-      </button>
-    );
-  }
-
-  // إذا كان الاشتراك مربوطًا فعلًا بـ Paddle،
-  // تغيير الخطة يمكن أن يستخدم change-plan
-  if (
-    subscription &&
-    subscription.provider === "paddle" &&
-    subscription.providerSubscriptionId &&
-    !plan?.isFree
-  ) {
-    return (
-      <button
-        className="subscription-plan-button"
-        onClick={() => handleChangePlan(plan)}
-        disabled={
-          actionLoading &&
-          selectedPlan === planId
-        }
-      >
-        {actionLoading &&
-        selectedPlan === planId ? (
-          <FiRefreshCw className="spin" />
-        ) : isUpgrade(plan) ? (
-          <FiArrowUp />
-        ) : (
-          <FiArrowDown />
-        )}
-
-        {isUpgrade(plan)
-          ? "Upgrade"
-          : isDowngrade(plan)
-            ? "Change plan"
-            : "Select plan"}
-      </button>
-    );
-  }
-
-  // الخطة المجانية
-  return (
-    <button
-      className="subscription-plan-button"
-      onClick={() => handleCheckout(plan)}
-      disabled={
-        actionLoading &&
-        selectedPlan === planId
-      }
-    >
-      {actionLoading &&
-      selectedPlan === planId ? (
-        <FiRefreshCw className="spin" />
-      ) : (
-        <FiZap />
-      )}
-
-      {plan?.isFree
-        ? "Choose free plan"
-        : "Get started"}
-    </button>
-  );
-}
-/*
+  /*
+   * ---------------------------------------------------------
+   * PLAN BUTTON
+   * ---------------------------------------------------------
+   */
   function renderPlanButton(plan) {
     if (isCurrentPlan(plan)) {
       return (
@@ -604,9 +772,58 @@ function renderPlanButton(plan) {
       );
     }
 
+    const planId =
+      plan?._id || plan?.id;
+
+    /*
+     * Paid plan:
+     *
+     * If there is no real Paddle subscription,
+     * open a new Paddle Checkout.
+     */
+    const needsCheckout =
+      !subscription?.provider ||
+      subscription?.provider === "internal" ||
+      !subscription?.providerSubscriptionId;
+
+    if (
+      !plan?.isFree &&
+      needsCheckout
+    ) {
+      return (
+        <button
+          className="subscription-plan-button"
+          onClick={() =>
+            handleCheckout(plan)
+          }
+          disabled={
+            actionLoading &&
+            selectedPlan === planId
+          }
+        >
+          {actionLoading &&
+          selectedPlan === planId ? (
+            <FiRefreshCw className="spin" />
+          ) : (
+            <FiCreditCard />
+          )}
+
+          {isUpgrade(plan)
+            ? "Upgrade"
+            : "Get started"}
+        </button>
+      );
+    }
+
+    /*
+     * Existing Paddle subscription:
+     * change the plan through the backend.
+     */
     if (
       subscription &&
-      !plan.isFree
+      subscription.provider === "paddle" &&
+      subscription.providerSubscriptionId &&
+      !plan?.isFree
     ) {
       return (
         <button
@@ -616,13 +833,11 @@ function renderPlanButton(plan) {
           }
           disabled={
             actionLoading &&
-            selectedPlan ===
-              (plan._id || plan.id)
+            selectedPlan === planId
           }
         >
           {actionLoading &&
-          selectedPlan ===
-            (plan._id || plan.id) ? (
+          selectedPlan === planId ? (
             <FiRefreshCw className="spin" />
           ) : isUpgrade(plan) ? (
             <FiArrowUp />
@@ -639,6 +854,9 @@ function renderPlanButton(plan) {
       );
     }
 
+    /*
+     * Free plan.
+     */
     return (
       <button
         className="subscription-plan-button"
@@ -647,26 +865,29 @@ function renderPlanButton(plan) {
         }
         disabled={
           actionLoading &&
-          selectedPlan ===
-            (plan._id || plan.id)
+          selectedPlan === planId
         }
       >
         {actionLoading &&
-        selectedPlan ===
-          (plan._id || plan.id) ? (
+        selectedPlan === planId ? (
           <FiRefreshCw className="spin" />
         ) : (
           <FiZap />
         )}
 
-        {plan.isFree
+        {plan?.isFree
           ? "Choose free plan"
           : "Get started"}
       </button>
     );
-  }*/
+  }
 
-  function renderFeature(feature) {
+  /*
+   * ---------------------------------------------------------
+   * FEATURES
+   * ---------------------------------------------------------
+   */
+  function renderFeature(feature, index) {
     const enabled =
       feature?.enabled !== false;
 
@@ -674,7 +895,7 @@ function renderPlanButton(plan) {
       <li
         key={
           feature?.key ||
-          Math.random()
+          `feature-${index}`
         }
         className={
           enabled
@@ -696,11 +917,17 @@ function renderPlanButton(plan) {
     );
   }
 
+  /*
+   * ---------------------------------------------------------
+   * LOADING
+   * ---------------------------------------------------------
+   */
   if (loading) {
     return (
       <main className="subscription-page">
         <div className="subscription-loading">
           <div className="loading-spinner" />
+
           <p>
             Loading your subscription...
           </p>
@@ -709,9 +936,16 @@ function renderPlanButton(plan) {
     );
   }
 
+  /*
+   * ---------------------------------------------------------
+   * PAGE
+   * ---------------------------------------------------------
+   */
   return (
     <main className="subscription-page">
       <div className="subscription-container">
+
+        {/* HEADER */}
         <header className="subscription-header">
           <div>
             <span className="subscription-eyebrow">
@@ -731,13 +965,15 @@ function renderPlanButton(plan) {
 
           <div className="subscription-security">
             <FiShield />
+
             <span>
               Secure payments powered
-              by Stripe
+              by Paddle
             </span>
           </div>
         </header>
 
+        {/* CURRENT SUBSCRIPTION */}
         <section className="current-subscription-card">
           <div className="current-subscription-main">
             <div className="current-plan-icon">
@@ -761,6 +997,7 @@ function renderPlanButton(plan) {
                   )}`}
                 >
                   <span />
+
                   {getStatusLabel(
                     subscription?.status
                   )}
@@ -826,6 +1063,7 @@ function renderPlanButton(plan) {
           </div>
         </section>
 
+        {/* REACTIVATION */}
         {subscription?.cancelAtPeriodEnd && (
           <section className="reactivation-banner">
             <div>
@@ -852,11 +1090,13 @@ function renderPlanButton(plan) {
               disabled={actionLoading}
             >
               <FiRefreshCw />
+
               Reactivate
             </button>
           </section>
         )}
 
+        {/* TABS */}
         <nav className="subscription-tabs">
           <button
             className={
@@ -901,6 +1141,7 @@ function renderPlanButton(plan) {
           </button>
         </nav>
 
+        {/* PLANS */}
         {activeTab === "plans" && (
           <>
             <section className="billing-selector">
@@ -946,6 +1187,7 @@ function renderPlanButton(plan) {
                   }
                 >
                   Yearly
+
                   <span>
                     Save
                   </span>
@@ -957,28 +1199,26 @@ function renderPlanButton(plan) {
               {plans.map((plan) => (
                 <article
                   key={
-                    plan._id ||
-                    plan.id
+                    plan?._id ||
+                    plan?.id
                   }
                   className={`plan-card ${
                     isCurrentPlan(plan)
                       ? "plan-current"
                       : ""
                   } ${
-                    plan.featured
+                    plan?.featured
                       ? "plan-featured"
                       : ""
                   }`}
                 >
-                  {plan.featured && (
+                  {plan?.featured && (
                     <div className="plan-badge">
                       Recommended
                     </div>
                   )}
 
-                  {isCurrentPlan(
-                    plan
-                  ) && (
+                  {isCurrentPlan(plan) && (
                     <div className="plan-current-badge">
                       Your plan
                     </div>
@@ -986,17 +1226,17 @@ function renderPlanButton(plan) {
 
                   <div className="plan-card-top">
                     <h3>
-                      {plan.name}
+                      {plan?.name}
                     </h3>
 
                     <p>
-                      {plan.description ||
+                      {plan?.description ||
                         "Everything you need to get started."}
                     </p>
                   </div>
 
                   <div className="plan-price">
-                    {plan.isFree ? (
+                    {plan?.isFree ? (
                       <strong>
                         Free
                       </strong>
@@ -1012,7 +1252,9 @@ function renderPlanButton(plan) {
                           {formatCurrency(
                             plan
                           )}
+
                           {" / "}
+
                           {billingCycle ===
                           "yearly"
                             ? "year"
@@ -1026,7 +1268,7 @@ function renderPlanButton(plan) {
 
                   <ul className="plan-features">
                     {(
-                      plan.features ||
+                      plan?.features ||
                       []
                     ).map(
                       renderFeature
@@ -1040,11 +1282,11 @@ function renderPlanButton(plan) {
                       </span>
 
                       <strong>
-                        {plan.limits
+                        {plan?.limits
                           ?.products ===
                         -1
                           ? "Unlimited"
-                          : plan.limits
+                          : plan?.limits
                               ?.products ??
                             0}
                       </strong>
@@ -1056,11 +1298,11 @@ function renderPlanButton(plan) {
                       </span>
 
                       <strong>
-                        {plan.limits
+                        {plan?.limits
                           ?.links ===
                         -1
                           ? "Unlimited"
-                          : plan.limits
+                          : plan?.limits
                               ?.links ??
                             0}
                       </strong>
@@ -1072,11 +1314,11 @@ function renderPlanButton(plan) {
                       </span>
 
                       <strong>
-                        {plan.limits
+                        {plan?.limits
                           ?.storage ===
                         -1
                           ? "Unlimited"
-                          : plan.limits
+                          : plan?.limits
                               ?.storage ??
                             0}
                       </strong>
@@ -1088,11 +1330,11 @@ function renderPlanButton(plan) {
                       </span>
 
                       <strong>
-                        {plan.limits
+                        {plan?.limits
                           ?.teamMembers ===
                         -1
                           ? "Unlimited"
-                          : plan.limits
+                          : plan?.limits
                               ?.teamMembers ??
                             1}
                       </strong>
@@ -1106,6 +1348,7 @@ function renderPlanButton(plan) {
               ))}
             </section>
 
+            {/* CANCEL */}
             {subscription &&
               subscription.status !==
                 "canceled" &&
@@ -1139,6 +1382,7 @@ function renderPlanButton(plan) {
           </>
         )}
 
+        {/* PAYMENTS */}
         {activeTab === "payments" && (
           <section className="history-section">
             <div className="history-header">
@@ -1158,6 +1402,7 @@ function renderPlanButton(plan) {
             {payments.length === 0 ? (
               <div className="empty-history">
                 <FiCreditCard />
+
                 <h3>
                   No payments yet
                 </h3>
@@ -1186,45 +1431,49 @@ function renderPlanButton(plan) {
                       (payment) => (
                         <tr
                           key={
-                            payment._id
+                            payment?._id
                           }
                         >
                           <td>
                             {formatDate(
-                              payment.createdAt
+                              payment?.createdAt
                             )}
                           </td>
 
                           <td>
-                            {payment.type ||
+                            {payment?.type ||
                               "subscription"}
                           </td>
 
                           <td>
                             <strong>
                               {Number(
-                                payment.amount ||
+                                payment?.amount ||
                                   0
                               ).toFixed(
                                 2
                               )}{" "}
                               {
-                                payment.currency
+                                payment?.currency
                               }
                             </strong>
                           </td>
 
                           <td>
-                            {payment.provider}
+                            {
+                              payment?.provider
+                            }
                           </td>
 
                           <td>
                             <span
                               className={`table-status ${getStatusClass(
-                                payment.status
+                                payment?.status
                               )}`}
                             >
-                              {payment.status}
+                              {
+                                payment?.status
+                              }
                             </span>
                           </td>
                         </tr>
@@ -1237,6 +1486,7 @@ function renderPlanButton(plan) {
           </section>
         )}
 
+        {/* INVOICES */}
         {activeTab === "invoices" && (
           <section className="history-section">
             <div className="history-header">
@@ -1256,6 +1506,7 @@ function renderPlanButton(plan) {
             {invoices.length === 0 ? (
               <div className="empty-history">
                 <FiFileText />
+
                 <h3>
                   No invoices yet
                 </h3>
@@ -1271,11 +1522,21 @@ function renderPlanButton(plan) {
                 <table className="history-table">
                   <thead>
                     <tr>
-                      <th>Invoice</th>
-                      <th>Date</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                      <th>Document</th>
+                      <th>
+                        Invoice
+                      </th>
+                      <th>
+                        Date
+                      </th>
+                      <th>
+                        Amount
+                      </th>
+                      <th>
+                        Status
+                      </th>
+                      <th>
+                        Document
+                      </th>
                     </tr>
                   </thead>
 
@@ -1284,47 +1545,49 @@ function renderPlanButton(plan) {
                       (invoice) => (
                         <tr
                           key={
-                            invoice._id
+                            invoice?._id
                           }
                         >
                           <td>
                             <strong>
                               {
-                                invoice.invoiceNumber
+                                invoice?.invoiceNumber
                               }
                             </strong>
                           </td>
 
                           <td>
                             {formatDate(
-                              invoice.createdAt
+                              invoice?.createdAt
                             )}
                           </td>
 
                           <td>
                             {Number(
-                              invoice.amount ||
+                              invoice?.amount ||
                                 0
-                            ).toFixed(2)}{" "}
+                            ).toFixed(
+                              2
+                            )}{" "}
                             {
-                              invoice.currency
+                              invoice?.currency
                             }
                           </td>
 
                           <td>
                             <span
                               className={`table-status ${getStatusClass(
-                                invoice.status
+                                invoice?.status
                               )}`}
                             >
                               {
-                                invoice.status
+                                invoice?.status
                               }
                             </span>
                           </td>
 
                           <td>
-                            {invoice.invoiceUrl ? (
+                            {invoice?.invoiceUrl ? (
                               <a
                                 href={
                                   invoice.invoiceUrl
@@ -1350,6 +1613,7 @@ function renderPlanButton(plan) {
           </section>
         )}
 
+        {/* ENTITLEMENTS */}
         {entitlements && (
           <section className="entitlements-card">
             <div className="entitlements-heading">
@@ -1389,8 +1653,7 @@ function renderPlanButton(plan) {
                         ? value
                           ? "Enabled"
                           : "Disabled"
-                        : value ===
-                            -1
+                        : value === -1
                           ? "Unlimited"
                           : String(
                               value ??
@@ -1405,13 +1668,12 @@ function renderPlanButton(plan) {
         )}
       </div>
 
+      {/* CANCEL MODAL */}
       {showCancelModal && (
         <div
           className="subscription-modal-backdrop"
           onClick={() =>
-            setShowCancelModal(
-              false
-            )
+            setShowCancelModal(false)
           }
         >
           <div
@@ -1469,7 +1731,9 @@ function renderPlanButton(plan) {
                 onClick={
                   handleCancel
                 }
-                disabled={actionLoading}
+                disabled={
+                  actionLoading
+                }
               >
                 {actionLoading ? (
                   <FiRefreshCw className="spin" />
@@ -1484,3 +1748,4 @@ function renderPlanButton(plan) {
     </main>
   );
 }
+ 
