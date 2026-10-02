@@ -1613,59 +1613,98 @@ export default function Subscription() {
           </section>
         )}
 
-        {/* ENTITLEMENTS */}
-        {entitlements && (
-          <section className="entitlements-card">
-            <div className="entitlements-heading">
-              <div className="entitlements-icon">
-                <FiShield />
-              </div>
+        
+{/* ENTITLEMENTS */}
+{entitlements && (
+  <section className="entitlements-card">
+    <div className="entitlements-heading">
+      <div className="entitlements-icon">
+        <FiShield />
+      </div>
 
-              <div>
-                <h2>
-                  Your current access
-                </h2>
+      <div>
+        <h2>Your current access</h2>
+        <p>Features and limits available on your account.</p>
+      </div>
+    </div>
 
-                <p>
-                  Features and limits
-                  available on your
-                  account.
-                </p>
-              </div>
-            </div>
+    <div className="entitlements-grid">
+      <div className="entitlement-item">
+        <span>Subscription</span>
+        <strong>
+          {entitlements.hasSubscription ? "Enabled" : "Disabled"}
+        </strong>
+      </div>
 
-            <div className="entitlements-grid">
-              {Object.entries(
-                entitlements
-              ).map(
-                ([key, value]) => (
-                  <div
-                    className="entitlement-item"
-                    key={key}
-                  >
-                    <span>
-                      {key}
-                    </span>
+      <div className="entitlement-item">
+        <span>Plan</span>
+        <strong>{entitlements.plan?.name || "Free"}</strong>
+      </div>
 
-                    <strong>
-                      {typeof value ===
-                      "boolean"
-                        ? value
-                          ? "Enabled"
-                          : "Disabled"
-                        : value === -1
-                          ? "Unlimited"
-                          : String(
-                              value ??
-                                "—"
-                            )}
-                    </strong>
-                  </div>
-                )
-              )}
-            </div>
-          </section>
-        )}
+      <div className="entitlement-item">
+        <span>Status</span>
+        <strong>{entitlements.status || "—"}</strong>
+      </div>
+
+      <div className="entitlement-item">
+        <span>Paddle Subscription ID</span>
+        <strong>
+          {subscription?.providerSubscriptionId || "—"}
+        </strong>
+      </div>
+
+      <div className="entitlement-item">
+        <span>Current period starts</span>
+        <strong>{formatDate(entitlements.currentPeriodStart)}</strong>
+      </div>
+
+      <div className="entitlement-item">
+        <span>Current period ends</span>
+        <strong>{formatDate(entitlements.currentPeriodEnd)}</strong>
+      </div>
+
+      <div className="entitlement-item">
+        <span>Cancel at period end</span>
+        <strong>
+          {entitlements.cancelAtPeriodEnd ? "Enabled" : "Disabled"}
+        </strong>
+      </div>
+    </div>
+
+    <div className="entitlement-group">
+      <h3>Features</h3>
+
+      {Object.entries(entitlements.features || {}).map(
+        ([key, enabled]) => (
+          <div className="entitlement-item" key={key}>
+            <span>{key}</span>
+            <strong>{enabled ? "Enabled" : "Disabled"}</strong>
+          </div>
+        )
+      )}
+    </div>
+
+    <div className="entitlement-group">
+      <h3>Limits</h3>
+
+      {Object.entries(entitlements.limits || {}).map(
+        ([key, value]) => (
+          <div className="entitlement-item" key={key}>
+            <span>{key}</span>
+            <strong>
+              {value === -1 ? "Unlimited" : String(value ?? "—")}
+            </strong>
+          </div>
+        )
+      )}
+    </div>
+  </section>
+)}
+ 
+
+     
+
+
       </div>
 
       {/* CANCEL MODAL */}
